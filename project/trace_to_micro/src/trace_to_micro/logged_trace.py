@@ -11,15 +11,23 @@ from tau2.runner import load_task_splits
 from trace_to_micro.message_utils import action_record, prompt_tokens, transcript_json
 
 
-def audit_results_completeness(path: Path) -> dict[str, Any]:
+def audit_results_completeness(
+    path: Path,
+    *,
+    expected_task_ids: set[str] | None = None,
+    expected_num_trials: int | None = None,
+) -> dict[str, Any]:
     """Validate that every configured task/trial has one non-empty trajectory."""
 
     metadata = Results.load_metadata(path)
     simulations = list(Results.iter_simulations(path))
+    metadata_task_ids = {str(task.id) for task in metadata.tasks}
+    required_task_ids = expected_task_ids or metadata_task_ids
+    required_num_trials = expected_num_trials or metadata.info.num_trials
     expected = {
-        (str(task.id), trial)
-        for task in metadata.tasks
-        for trial in range(metadata.info.num_trials)
+        (task_id, trial)
+        for task_id in required_task_ids
+        for trial in range(required_num_trials)
     }
     observed = [(str(sim.task_id), sim.trial) for sim in simulations]
     counts = Counter(observed)
@@ -27,6 +35,9 @@ def audit_results_completeness(path: Path) -> dict[str, Any]:
     missing = sorted(expected - set(observed))
     unexpected = sorted(set(observed) - expected)
     empty = sorted(sim.id for sim in simulations if not sim.get_messages())
+    missing_metadata_tasks = sorted(required_task_ids - metadata_task_ids)
+    unexpected_metadata_tasks = sorted(metadata_task_ids - required_task_ids)
+    num_trials_mismatch = metadata.info.num_trials != required_num_trials
     report = {
         "results_path": str(path),
         "behavior_agent_model": metadata.info.agent_info.llm,
@@ -35,16 +46,29 @@ def audit_results_completeness(path: Path) -> dict[str, Any]:
         "behavior_user_args": metadata.info.user_info.llm_args,
         "task_count": len(metadata.tasks),
         "num_trials": metadata.info.num_trials,
+        "required_task_count": len(required_task_ids),
+        "required_num_trials": required_num_trials,
         "expected_simulations": len(expected),
         "observed_simulations": len(simulations),
         "missing_task_trials": missing,
         "duplicate_task_trials": duplicates,
         "unexpected_task_trials": unexpected,
         "empty_simulation_ids": empty,
+        "missing_metadata_tasks": missing_metadata_tasks,
+        "unexpected_metadata_tasks": unexpected_metadata_tasks,
+        "num_trials_mismatch": num_trials_mismatch,
         "termination_reasons": dict(
             sorted(Counter(str(sim.termination_reason) for sim in simulations).items())
         ),
-        "complete": not (missing or duplicates or unexpected or empty),
+        "complete": not (
+            missing
+            or duplicates
+            or unexpected
+            or empty
+            or missing_metadata_tasks
+            or unexpected_metadata_tasks
+            or num_trials_mismatch
+        ),
     }
     if not report["complete"]:
         raise ValueError(f"Incomplete trajectory results: {report}")
@@ -141,6 +165,7 @@ def extract_decision_snapshots(
             snapshots.append(
                 {
                     "snapshot_id": f"{simulation.id}:{message_index}",
+                    "split": split,
                     "simulation_id": simulation.id,
                     "task_id": simulation.task_id,
                     "trial": simulation.trial,

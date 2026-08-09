@@ -75,10 +75,15 @@ def _coverage(
     train_support: dict[Any, set[str]],
     key_fn,
     threshold: int,
+    *,
+    leave_one_task_out: bool,
 ) -> dict[str, Any]:
-    support_counts = [
-        len(train_support.get(key_fn(event), set())) for event in test_events
-    ]
+    support_counts = []
+    for event in test_events:
+        task_ids = train_support.get(key_fn(event), set())
+        if leave_one_task_out:
+            task_ids = task_ids - {event.task_id}
+        support_counts.append(len(task_ids))
     covered = sum(count >= threshold for count in support_counts)
     return {
         "covered": covered,
@@ -95,6 +100,7 @@ def build_support_report(
     test_events: list[TransitionEvent],
     thresholds: tuple[int, ...] = (1, 3, 5),
     state_changing_only: bool = True,
+    leave_one_task_out: bool = False,
 ) -> dict[str, Any]:
     """Measure action/effect reuse from train to held-out task compositions."""
 
@@ -125,17 +131,20 @@ def build_support_report(
                 action_support,
                 lambda event: event.action_key(),
                 threshold,
+                leave_one_task_out=leave_one_task_out,
             ),
             "exact_effect": _coverage(
                 selected_test,
                 exact_effect_support,
                 lambda event: (event.action_key(), event.effect_key()),
                 threshold,
+                leave_one_task_out=leave_one_task_out,
             ),
         }
 
     return {
         "state_changing_only": state_changing_only,
+        "leave_one_task_out": leave_one_task_out,
         "train_event_count": len(selected_train),
         "test_event_count": len(selected_test),
         "train_task_count": len({event.task_id for event in selected_train}),

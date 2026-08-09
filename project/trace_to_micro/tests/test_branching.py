@@ -38,6 +38,7 @@ def test_logged_user_handoff_executes_real_state_change_without_llm() -> None:
     )
 
     assert branch["user_continuation"]["calls"][0]["name"] == "toggle_data"
+    assert len(branch["pre_state_hash"]) == 64
     assert branch["tool_error"] is False
     assert branch["changes"][0]["path"] == "user.device.data_enabled"
     assert branch["changes"][0]["after"] is True

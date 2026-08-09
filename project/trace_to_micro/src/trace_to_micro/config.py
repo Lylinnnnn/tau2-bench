@@ -71,7 +71,7 @@ class ProbeConfig:
     results_path: Path
     output_dir: Path
     train_split: str
-    split: str
+    splits: tuple[str, ...]
     max_snapshots_per_task: int
     support_thresholds: tuple[int, ...]
     variants: tuple[str, ...]
@@ -99,6 +99,13 @@ class ModelExperimentConfig:
             values = tomllib.load(handle)
         trajectory = values["trajectory"]
         probe = values["probe"]
+        splits = tuple(probe["splits"])
+        if len(splits) != 2:
+            raise ValueError("Model pre-experiment requires exactly train/test splits")
+        if len(set(splits)) != len(splits):
+            raise ValueError("Probe splits must be unique")
+        if probe["train_split"] not in splits:
+            raise ValueError("Probe splits must include train_split")
         return cls(
             trajectory=TrajectoryConfig(
                 domain=trajectory["domain"],
@@ -122,7 +129,7 @@ class ModelExperimentConfig:
                 results_path=_project_path(path, probe["results_path"]),
                 output_dir=_project_path(path, probe["output_dir"]),
                 train_split=probe["train_split"],
-                split=probe["split"],
+                splits=splits,
                 max_snapshots_per_task=probe["max_snapshots_per_task"],
                 support_thresholds=tuple(probe["support_thresholds"]),
                 variants=tuple(probe["variants"]),

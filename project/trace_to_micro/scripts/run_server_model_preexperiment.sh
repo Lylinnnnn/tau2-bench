@@ -18,5 +18,13 @@ uv run --no-sync ruff format --check \
   project/trace_to_micro/src project/trace_to_micro/tests \
   project/trace_to_micro/scripts
 
-uv run --no-sync python -m trace_to_micro.cli model-preexperiment \
-  --config project/trace_to_micro/configs/qwen3_30b_model_preexperiment.toml
+CONFIG=project/trace_to_micro/configs/qwen3_30b_model_preexperiment.toml
+
+uv run --no-sync python -m trace_to_micro.cli generate-trajectories \
+  --config "$CONFIG"
+uv run --no-sync python -m trace_to_micro.cli analyze-trajectories \
+  --config "$CONFIG"
+uv run --no-sync python -m trace_to_micro.cli paired-probe \
+  --config "$CONFIG"
+uv run --no-sync python -m trace_to_micro.cli summarize-probe \
+  --config "$CONFIG"

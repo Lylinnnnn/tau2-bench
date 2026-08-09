@@ -60,3 +60,20 @@ def test_support_report_surfaces_mutation_annotation_mismatch() -> None:
     report = build_support_report([event], [], thresholds=(1,))
 
     assert report["declaration_mismatches"]["declared_non_mutating_with_change"] == 1
+
+
+def test_train_loto_never_counts_query_task_as_support() -> None:
+    train_events = [
+        _event("task-1", "train", after=True),
+        _event("task-2", "train", after=True),
+    ]
+
+    report = build_support_report(
+        train_events,
+        train_events,
+        thresholds=(1, 2),
+        leave_one_task_out=True,
+    )
+
+    assert report["coverage"]["1"]["exact_effect"]["rate"] == 1.0
+    assert report["coverage"]["2"]["exact_effect"]["rate"] == 0.0

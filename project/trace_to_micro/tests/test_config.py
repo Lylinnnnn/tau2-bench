@@ -53,7 +53,7 @@ save_to = "experiment"
 results_path = "../../data/simulations/experiment/results.json"
 output_dir = "outputs/model"
 train_split = "train"
-split = "test"
+splits = ["train", "test"]
 max_snapshots_per_task = 3
 support_thresholds = [1, 3, 5]
 variants = ["long_raw", "structured_state", "clean_subtask"]
@@ -77,3 +77,4 @@ seed = 300
         == tmp_path.parent.parent / "data/simulations/experiment/results.json"
     )
     assert config.probe.output_dir == tmp_path / "outputs/model"
+    assert config.probe.splits == ("train", "test")

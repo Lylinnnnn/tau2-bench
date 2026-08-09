@@ -11,17 +11,26 @@ changes, and measures how well train transitions cover unseen test
 compositions. Reference actions are evaluation-only upper bounds; they are not
 treated as off-policy evidence.
 
-The model-based pre-experiment is a separate pipeline. It generates one real
-agent/user rollout per concrete task, refuses to analyze incomplete results,
-extracts early/middle/late decision snapshots, and runs paired model inference
-from the exact same replayed state under three context conditions:
+The model-based pre-experiment is a separate pipeline with two reports over the
+same one-rollout-per-task corpus:
+
+1. `experiment_1_trajectory_analysis` analyzes already-generated complete model
+   trajectories. It reports outcomes by horizon, observed tool errors/no-ops and
+   recovery, train leave-one-task-out transition support, and train-to-test
+   transition support.
+2. `experiment_2_context_probe` replays selected decisions to the exact same
+   environment state and runs paired single-step model inference under three
+   context conditions:
 
 - `long_raw`: the complete agent-visible prefix;
 - `structured_state`: a label-free structured summary of that prefix;
 - `clean_subtask`: the same summary plus an automatically mined local subgoal
   and observable success condition.
 
-The context builder can see only the logged prefix. It cannot see the target
+Both experiments report `train` and `test` separately. Leave-one-task-out is
+needed only for Experiment 1's within-train support calculation; Experiment 2
+does not retrieve cross-task support as model input. The context builder can see
+only the logged prefix. It cannot see the target
 assistant message, future turns, the hidden user scenario, or reference actions.
 For predicted assistant text, the real user simulator is run for one additional
 turn. Assistant/user tool calls are executed against cloned factual states, so
@@ -37,6 +46,8 @@ The focused experiment plan is in
 configs/                 Oracle and model experiment configurations
 scripts/                 Thin executable wrappers
 src/trace_to_micro/      Tested extraction/orchestration code
+                         `model_experiment.py` keeps model experiment
+                         orchestration out of the CLI
 src/trace_to_micro/evaluation/
                          Evaluation metrics kept separate from extraction
 tests/                   Unit and integration tests
@@ -113,11 +124,20 @@ Qwen3-30B endpoint through LiteLLM:
 configs/qwen3_30b_model_preexperiment.toml
 ```
 
-It runs all 114 Telecom `base` tasks once. The paired probe is evaluation-only
-on the 40-task compositional-OOD `test` split and selects at most three
-early/middle/late decisions per task. `num_trials = 1` and hallucination retry is
-disabled, so the source data remains one heterogeneous behavior trajectory per
-task rather than repeated rollouts of the same query.
+It runs all 114 official Telecom `base` tasks once: 74 `train` tasks and 40
+held-out `test` tasks. Both experiments report the splits separately and select
+at most three early/middle/late decisions per task. `num_trials = 1` and
+hallucination retry is disabled, so the source data remains one heterogeneous
+behavior trajectory per task rather than repeated rollouts of the same query.
+
+Experiment 1 is observational: it measures what is already present in the
+logged trajectories and makes no LLM calls. For its train support result, the query task is excluded
+from support; for test transfer, support comes only from train. Experiment 2 is
+the controlled mechanism probe: every `long_raw`, `structured_state`, and
+`clean_subtask` branch is rebuilt from the same prefix and must have the same
+pre-state fingerprint or the run fails. Experiment 2 calls the configured
+context-builder, frozen agent, and—when the agent responds with text—the real
+user simulator for one continuation.
 
 One resumable command runs checks and all five stages:
 
@@ -132,8 +152,7 @@ export PYTHONPATH="$PWD/project/trace_to_micro/src${PYTHONPATH:+:$PYTHONPATH}"
 CONFIG=project/trace_to_micro/configs/qwen3_30b_model_preexperiment.toml
 
 uv run --no-sync python -m trace_to_micro.cli generate-trajectories --config "$CONFIG"
-uv run --no-sync python -m trace_to_micro.cli extract-snapshots --config "$CONFIG"
-uv run --no-sync python -m trace_to_micro.cli logged-audit --config "$CONFIG"
+uv run --no-sync python -m trace_to_micro.cli analyze-trajectories --config "$CONFIG"
 uv run --no-sync python -m trace_to_micro.cli paired-probe --config "$CONFIG"
 uv run --no-sync python -m trace_to_micro.cli summarize-probe --config "$CONFIG"
 ```
@@ -149,17 +168,32 @@ The analysis stage writes compact artifacts under the gitignored directory:
 
 ```text
 outputs/qwen3_30b_model_preexperiment/
-├── trajectory_completeness.json
-├── decision_snapshots.jsonl
-├── snapshot_report.json
-├── logged_transitions.jsonl
-├── logged_support_report.json
-├── structured_contexts.jsonl
-├── paired_predictions.jsonl
-└── paired_probe_report.json
+├── experiment_1_trajectory_analysis/
+│   ├── trajectory_completeness.json
+│   ├── logged_transitions.jsonl
+│   ├── cross_split_support_report.json
+│   ├── cross_split_report.json
+│   ├── train/
+│   │   ├── decision_snapshots.jsonl
+│   │   ├── snapshot_report.json
+│   │   └── trajectory_report.json
+│   └── test/
+│       ├── decision_snapshots.jsonl
+│       ├── snapshot_report.json
+│       └── trajectory_report.json
+└── experiment_2_context_probe/
+    ├── cross_split_report.json
+    ├── train/
+    │   ├── structured_contexts.jsonl
+    │   ├── paired_predictions.jsonl
+    │   └── paired_probe_report.json
+    └── test/
+        ├── structured_contexts.jsonl
+        ├── paired_predictions.jsonl
+        └── paired_probe_report.json
 ```
 
-`decision_snapshots.jsonl` stores pointers into the source results rather than
+The decision manifests store pointers into the source results rather than
 duplicating every long prefix. Verbose LLM logs are disabled to limit disk use.
 
 Before the full run, an optional two-task endpoint smoke test is:

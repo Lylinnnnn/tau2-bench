@@ -46,7 +46,7 @@
 |---|---:|---|
 | `small` | 20 | 单原子任务和 oracle 子目标模板 |
 | `train` | 74 | 已见原子、已见组合的离线挖掘集 |
-| `test` | 40 | 未见精确组合的 LOCO 测试集 |
+| `test` | 40 | 未见精确 task ID 的同域 held-out 组合集 |
 | `base` | 114 | `train + test` |
 | `full` | 2285 | 后续扩大实验规模 |
 
@@ -54,7 +54,7 @@
 
 - 精确 task ID 重合数为 0；
 - 19 个 atomic issues 在两侧全部出现；
-- 因此可验证“已见原子、未见组合”的 compositional OOD；
+- 因此可验证“已见原子、未见精确组合”的同域组合迁移；
 - 不等价于真正未见 atomic skill 的外推。
 
 当前 Telecom tasks 只初始化一个用户 `John Smith / 555-123-2002`，并只有 5 种 ticket 文本。它不能单独支持“真实多用户/entity OOD”结论。该结论需要外部日志或后续数据集。
@@ -187,6 +187,17 @@ H(\Delta S\mid actor,action,args)
 
 ### 5.2 关键统计
 
+该实验只分析已经生成的完整模型轨迹，并分别输出两种设置：
+
+- `train_loto`：query 和 support 都来自 train，但计算每个 query transition 时排除
+  其所属 task 的全部观测，避免同任务自匹配；
+- `test_transfer`：support 只来自 train，query 来自 test，test transition 永不进入
+  support。
+
+除 transition support 外，train/test 还分别报告完整轨迹的 Pass¹、reward、终止原因、
+agent decision 数量、不同 horizon bucket 的成功率，以及真实 tool error、mutating no-op
+和 error 后续状态恢复率。这些是观察性轨迹统计，不解释为上下文干预效应。
+
 #### State recurrence
 
 test transition 的 canonical pre-state/action 在其他 task 中是否有支持。
@@ -228,6 +239,11 @@ test transition 的 canonical pre-state/action 在其他 task 中是否有支持
 | `LONG_RAW` | 完整原始历史 | 真实长程条件 |
 | `STRUCTURED_STATE` | 原始全局目标、当前结构化状态、最近反馈、工具 schema | 状态清理/信息访问 |
 | `CLEAN_SUBTASK` | `STRUCTURED_STATE` + 局部子目标和成功条件 | 分解上限 |
+
+该配对实验在 train 和 test 上分别运行并分别报告。它不把 Experiment 1 的跨任务
+transition support 输入给模型，因此不存在 train query 检索自身的问题；这里的控制变量是
+同一个 snapshot 的底层 pre-state 和目标模型，只改变上下文表示。每个分支都会记录
+`pre_state_hash`，任意 condition 与 logged branch 的 fingerprint 不一致时实验立即失败。
 
 当前实现不使用 `small` task 标签构造子目标。独立 context-builder 只读取目标 turn
 之前的 agent-visible prefix，生成 `user_goal / observed_facts /
@@ -331,6 +347,8 @@ project/trace_to_micro/
 │   ├── replay.py            # reference trajectory 重放
 │   ├── trajectory_run.py    # τ² 完整行为轨迹生成
 │   ├── logged_trace.py      # 完整性审计与决策点抽取
+│   ├── trajectory_analysis.py # 已生成轨迹的 outcome/horizon/transition 报告
+│   ├── model_experiment.py  # 两个模型预实验的 train/test 编排
 │   ├── context_builder.py   # 无 label 的结构化上下文/子目标生成
 │   ├── branching.py         # 同 pre-state 的一步 dual-control 分支执行
 │   ├── probe.py             # 可恢复的配对模型推理
@@ -356,10 +374,12 @@ project/trace_to_micro/
 1. 已完成任务结构审计、reference replay 和 oracle support report；
 2. 服务器生成 Telecom `base` 114 个 task、每 task 一条的真实 simulation；
 3. 完整性 gate 要求 `114 × 1` 个 `(task_id, trial)` 均存在且消息非空；
-4. 从 test 40 个任务各抽最多 3 个 early/middle/late 决策点；
-5. context-builder 从 prefix 自动生成结构化状态与局部子目标；
-6. 对每个决策点运行三种上下文的冻结 agent 推理；
-7. 对 agent tool 或一步 user handoff 做 factual branch execution；
-8. 输出 overall、position-stratified 和 paired-delta 指标；
-9. 若 late-turn 上出现稳定恢复效应，再扩展 natural overlap 审计和数据质量指标；
-10. 只有机制成立后才进入训练。
+4. 实验一分别分析 train 74 和 test 40 条完整模型轨迹；
+5. 实验一输出 train-LOTO、train→test support 和两侧 outcome–horizon 统计；
+6. 从 train/test 每个任务各抽最多 3 个 early/middle/late 决策点；
+7. context-builder 从 prefix 自动生成结构化状态与局部子目标；
+8. 实验二在同一 pre-state 对每个决策点运行三种上下文的冻结 agent 推理；
+9. 对 agent tool 或一步 user handoff 做 factual branch execution；
+10. 分别输出 train/test overall、position、context-length 和 paired-delta，并报告
+    test−train effect-size gap；
+11. 只有机制成立后才进入训练。

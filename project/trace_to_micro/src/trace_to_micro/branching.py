@@ -9,7 +9,11 @@ from tau2.environment.environment import Environment
 from tau2.runner import build_environment, build_user
 from tau2.user.user_simulator_base import is_valid_user_history_message
 from trace_to_micro.message_utils import action_record
-from trace_to_micro.state_diff import diff_snapshots, snapshot_environment
+from trace_to_micro.state_diff import (
+    diff_snapshots,
+    snapshot_environment,
+    snapshot_hash,
+)
 
 
 def replay_prefix_environment(
@@ -82,6 +86,7 @@ def execute_macro_step(
 
     environment = replay_prefix_environment(domain, task, prefix)
     before = snapshot_environment(environment)
+    pre_state_hash = snapshot_hash(before)
     tool_responses: list[dict[str, Any]] = []
     has_error = False
     declared_mutating = False
@@ -117,6 +122,7 @@ def execute_macro_step(
 
     changes = diff_snapshots(before, snapshot_environment(environment))
     return {
+        "pre_state_hash": pre_state_hash,
         "assistant_action": action_record(assistant_message),
         "user_continuation": (
             action_record(user_message) if user_message is not None else None

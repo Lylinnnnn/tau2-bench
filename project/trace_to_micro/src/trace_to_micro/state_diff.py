@@ -1,5 +1,7 @@
 """Environment snapshots, entity-value normalization, and leaf-level diffs."""
 
+import hashlib
+import json
 import re
 from collections.abc import Mapping, Sequence
 from typing import Any
@@ -44,6 +46,15 @@ def canonicalize_value(value: Any, field_name: str | None = None) -> Any:
     if isinstance(value, str) and PHONE_PATTERN.fullmatch(value):
         return "<phone_number>"
     return value
+
+
+def snapshot_hash(snapshot: dict[str, Any]) -> str:
+    """Return a stable fingerprint for a canonicalized environment snapshot."""
+
+    payload = json.dumps(
+        canonicalize_value(snapshot), sort_keys=True, ensure_ascii=False
+    ).encode()
+    return hashlib.sha256(payload).hexdigest()
 
 
 def flatten_state(value: Any, path: tuple[str, ...] = ()) -> dict[str, Any]:

@@ -1,6 +1,5 @@
 """Transition and natural-overlap audit over real behavior-policy trajectories."""
 
-import hashlib
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -16,14 +15,8 @@ from trace_to_micro.state_diff import (
     canonicalize_value,
     diff_snapshots,
     snapshot_environment,
+    snapshot_hash,
 )
-
-
-def _state_hash(state: dict[str, Any]) -> str:
-    payload = json.dumps(
-        canonicalize_value(state), sort_keys=True, ensure_ascii=False
-    ).encode()
-    return hashlib.sha256(payload).hexdigest()
 
 
 def _local_pre_state(event: TransitionEvent) -> str | None:
@@ -91,7 +84,7 @@ def replay_logged_simulation(
                 {
                     "simulation_id": simulation.id,
                     "trial": simulation.trial,
-                    "pre_state_hash": _state_hash(before),
+                    "pre_state_hash": snapshot_hash(before),
                     "effect_local_pre_state": _local_pre_state(event),
                     "replay_error": replayed.error,
                     "recorded_tool_result": (
@@ -163,26 +156,27 @@ def _overlap_at_threshold(
 
 def _state_recurrence(
     train_rows: list[dict[str, Any]],
-    test_rows: list[dict[str, Any]],
+    query_rows: list[dict[str, Any]],
     thresholds: tuple[int, ...],
+    *,
+    leave_one_task_out: bool,
 ) -> dict[str, Any]:
     train_support: dict[str, set[str]] = defaultdict(set)
     for row in train_rows:
         train_support[row["pre_state_hash"]].add(row["task_id"])
+    support_counts = []
+    for row in query_rows:
+        task_ids = train_support[row["pre_state_hash"]]
+        if leave_one_task_out:
+            task_ids = task_ids - {row["task_id"]}
+        support_counts.append(len(task_ids))
     return {
         str(threshold): {
-            "covered": sum(
-                len(train_support[row["pre_state_hash"]]) >= threshold
-                for row in test_rows
-            ),
-            "total": len(test_rows),
+            "covered": sum(count >= threshold for count in support_counts),
+            "total": len(query_rows),
             "rate": (
-                sum(
-                    len(train_support[row["pre_state_hash"]]) >= threshold
-                    for row in test_rows
-                )
-                / len(test_rows)
-                if test_rows
+                sum(count >= threshold for count in support_counts) / len(query_rows)
+                if query_rows
                 else None
             ),
         }
@@ -227,7 +221,14 @@ def build_logged_audit(
         )
     train_rows = [row for row in rows if row["split"] == train_split]
     test_rows = [row for row in rows if row["split"] == test_split]
-    support = build_support_report(
+    train_loto_support = build_support_report(
+        [_to_event(row) for row in train_rows],
+        [_to_event(row) for row in train_rows],
+        thresholds=thresholds,
+        state_changing_only=False,
+        leave_one_task_out=True,
+    )
+    test_transfer_support = build_support_report(
         [_to_event(row) for row in train_rows],
         [_to_event(row) for row in test_rows],
         thresholds=thresholds,
@@ -245,8 +246,29 @@ def build_logged_audit(
         "train_transition_count": len(train_rows),
         "test_transition_count": len(test_rows),
         "replay_error_count": sum(row["replay_error"] for row in rows),
-        "state_recurrence": _state_recurrence(train_rows, test_rows, thresholds),
-        "transition_support": support,
+        "split_protocol": {
+            "train": "train-to-train with the query task excluded from support",
+            "test": "train-to-test; test transitions never enter support",
+            "train_test_task_overlap": len(train_ids & test_ids),
+        },
+        "state_recurrence": {
+            "train_loto": _state_recurrence(
+                train_rows,
+                train_rows,
+                thresholds,
+                leave_one_task_out=True,
+            ),
+            "test_transfer": _state_recurrence(
+                train_rows,
+                test_rows,
+                thresholds,
+                leave_one_task_out=False,
+            ),
+        },
+        "transition_support": {
+            "train_loto": train_loto_support,
+            "test_transfer": test_transfer_support,
+        },
         "natural_action_overlap": {
             "strict_full_pre_state": {
                 str(threshold): _overlap_at_threshold(

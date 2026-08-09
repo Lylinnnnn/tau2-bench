@@ -31,12 +31,13 @@ def _load_source(results_path: Path):
 def run_paired_probe(
     config: ModelExperimentConfig,
     snapshots: list[dict[str, Any]],
+    *,
+    output_dir: Path,
 ) -> dict[str, Path]:
     """Run/resume builder and three paired next-action conditions."""
 
     trajectory = config.trajectory
     probe = config.probe
-    output_dir = probe.output_dir
     contexts_path = output_dir / "structured_contexts.jsonl"
     predictions_path = output_dir / "paired_predictions.jsonl"
     contexts = {row["snapshot_id"]: row for row in read_jsonl(contexts_path)}
@@ -143,6 +144,10 @@ def run_paired_probe(
                 "prediction_generation_seconds": prediction.generation_time_seconds,
                 "actual_branch": actual_branch,
                 "predicted_branch": predicted_branch,
+                "same_pre_state": (
+                    actual_branch["pre_state_hash"]
+                    == predicted_branch["pre_state_hash"]
+                ),
                 "metrics": score_branch(
                     task=task,
                     actual=actual_branch,

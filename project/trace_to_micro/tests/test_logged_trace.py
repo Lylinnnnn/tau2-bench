@@ -1,3 +1,5 @@
+import pytest
+
 from tau2.data_model.message import (
     AssistantMessage,
     ToolCall,
@@ -5,7 +7,11 @@ from tau2.data_model.message import (
     UserMessage,
 )
 from tau2.data_model.simulation import SimulationRun, TerminationReason
-from trace_to_micro.logged_trace import decision_indices, stratified_indices
+from trace_to_micro.logged_trace import (
+    audit_results_completeness,
+    decision_indices,
+    stratified_indices,
+)
 
 
 def _simulation() -> SimulationRun:
@@ -38,3 +44,43 @@ def test_decision_indices_exclude_static_greeting() -> None:
 def test_stratified_indices_keep_early_middle_late() -> None:
     assert stratified_indices([2, 4, 6, 8, 10], 3) == [2, 6, 10]
     assert stratified_indices([2, 4, 6], 1) == [6]
+
+
+def test_completeness_rejects_results_missing_configured_tasks(
+    monkeypatch, tmp_path
+) -> None:
+    metadata = type(
+        "Metadata",
+        (),
+        {
+            "tasks": [type("Task", (), {"id": "task-1"})()],
+            "info": type(
+                "Info",
+                (),
+                {
+                    "num_trials": 1,
+                    "agent_info": type(
+                        "AgentInfo", (), {"llm": "agent", "llm_args": {}}
+                    )(),
+                    "user_info": type(
+                        "UserInfo", (), {"llm": "user", "llm_args": {}}
+                    )(),
+                },
+            )(),
+        },
+    )()
+    simulation = _simulation()
+    monkeypatch.setattr(
+        "trace_to_micro.logged_trace.Results.load_metadata", lambda _: metadata
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.logged_trace.Results.iter_simulations",
+        lambda _: iter([simulation]),
+    )
+
+    with pytest.raises(ValueError, match="Incomplete trajectory results"):
+        audit_results_completeness(
+            tmp_path / "results.json",
+            expected_task_ids={"task-1", "task-2"},
+            expected_num_trials=1,
+        )

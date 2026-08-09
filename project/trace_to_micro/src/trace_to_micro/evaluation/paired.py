@@ -73,6 +73,9 @@ def score_branch(
 ) -> dict[str, bool | None]:
     """Compare a counterfactual macro step with the logged macro step."""
 
+    if actual["pre_state_hash"] != predicted["pre_state_hash"]:
+        raise ValueError("Paired branches must start from the same environment state")
+
     actual_assistant = actual["assistant_action"]
     predicted_assistant = predicted["assistant_action"]
     actual_calls = _macro_calls(actual)
@@ -244,4 +247,59 @@ def build_paired_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "effect_match": "exact one-macro-step state delta match",
             "stateful_effect_match": "effect match only where logged macro step changed state",
         },
+    }
+
+
+def build_cross_split_report(
+    reports: dict[str, dict[str, Any]], *, train_split: str
+) -> dict[str, Any]:
+    """Compare paired single-step effects on train and held-out splits."""
+
+    train = reports[train_split]
+    gaps = {}
+    for split, report in reports.items():
+        if split == train_split:
+            continue
+        by_variant = {}
+        for variant, train_rates in train["by_variant"].items():
+            split_rates = report["by_variant"][variant]
+            by_variant[variant] = {
+                metric: (
+                    split_rates[metric]["rate"] - train_rates[metric]["rate"]
+                    if split_rates[metric]["rate"] is not None
+                    and train_rates[metric]["rate"] is not None
+                    else None
+                )
+                for metric in RATE_METRICS
+            }
+        paired_effects = {}
+        for comparison, train_comparison in train["paired_comparisons"].items():
+            split_comparison = report["paired_comparisons"][comparison]
+            paired_effects[comparison] = {
+                metric: (
+                    split_comparison["metrics"][metric]["alternative_minus_baseline"]
+                    - train_comparison["metrics"][metric]["alternative_minus_baseline"]
+                    if split_comparison["metrics"][metric]["alternative_minus_baseline"]
+                    is not None
+                    and train_comparison["metrics"][metric][
+                        "alternative_minus_baseline"
+                    ]
+                    is not None
+                    else None
+                )
+                for metric in RATE_METRICS
+            }
+        gaps[f"{split}_minus_{train_split}"] = {
+            "by_variant": by_variant,
+            "paired_effect_delta": paired_effects,
+        }
+    return {
+        "experiment": "same_state_different_context_single_step",
+        "train_split": train_split,
+        "split_reports": reports,
+        "generalization_gaps": gaps,
+        "interpretation": (
+            "Each within-split comparison changes only the context condition. "
+            "Cross-split gaps compare effect sizes, not identical task instances."
+        ),
     }
