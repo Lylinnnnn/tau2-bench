@@ -126,14 +126,11 @@ configs/qwen3_32b_thinking_model_preexperiment.toml
 ```
 
 It expects the API model ID `qwen3-32b`. The model path is a server concern and
-is deliberately not written into result metadata. On the GPU server, start the
-downloaded checkpoint in its own tmux window:
+is deliberately not written into result metadata. Both Qwen3-32B experiment
+entry points manage the server automatically using this fixed executable:
 
-```bash
-tmux new -s qwen3-32b-server
-cd /path/to/tau2-bench
-TENSOR_PARALLEL_SIZE=4 \
-project/trace_to_micro/scripts/start_qwen3_32b_vllm.sh
+```text
+/home/liuyanlin.lyl/.venvs/tau2-vllm/bin/vllm
 ```
 
 The launcher defaults to:
@@ -146,14 +143,23 @@ context:    32768 tokens
 ```
 
 Override `TENSOR_PARALLEL_SIZE`, `MAX_MODEL_LEN`, or
-`GPU_MEMORY_UTILIZATION` when required by the server. The launcher uses the
-checkpoint's Hermes-style JSON tool-call template, vLLM automatic tool choice,
-and the `deepseek_r1` reasoning parser. It assumes `vllm` is available in the
-active server environment; set `VLLM_BIN` to an absolute executable path when
-needed.
+`GPU_MEMORY_UTILIZATION` when required by the server. For vLLM 0.25.1, the
+launcher uses `--reasoning-parser qwen3`, `--enable-auto-tool-choice`, and
+`--tool-call-parser hermes`. The obsolete `--enable-reasoning` flag is not
+used. Set `VLLM_BIN` only when the virtual environment moves.
 
-Wait until the server prints that it is listening, then open a second tmux
-session and run the two-case Retail task 2 smoke test:
+The manager first reuses a responding server when one already exists.
+Otherwise it starts vLLM, watches the process and `/v1/models`, and only then
+invokes the experiment's stronger model/tool/JSON preflight. A server started
+by the manager is stopped when the experiment exits. Startup logs are retained
+under:
+
+```text
+project/trace_to_micro/outputs/vllm_logs/
+```
+
+Run the two-case Retail task 2 smoke test directly; no separate server command
+is needed:
 
 ```bash
 tmux new -s qwen3-32b-smoke
@@ -182,6 +188,13 @@ non-thinking JSON mode. This matters because the repository default still
 names the earlier 30B-A3B endpoint; otherwise the dialogue can finish normally
 but reward computation requests a model ID that the new server does not expose.
 The selected evaluator model and arguments are copied into the integrity audit.
+
+For standalone server debugging only, the underlying launcher remains
+available:
+
+```bash
+project/trace_to_micro/scripts/start_qwen3_32b_vllm.sh
+```
 
 After both smoke outputs are structurally valid, run the complete Telecom
 pre-experiment:
