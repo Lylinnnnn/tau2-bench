@@ -5,7 +5,6 @@ from collections.abc import Iterable
 from tau2.data_model.message import ToolCall
 from tau2.data_model.tasks import Task
 from tau2.runner import build_environment
-
 from trace_to_micro.models import TransitionEvent
 from trace_to_micro.state_diff import (
     canonicalize_value,

@@ -1,9 +1,7 @@
 """Thin wrapper for the deterministic task inventory command."""
 
-import sys
-
-from trace_to_micro.cli import main
+from trace_to_micro.cli import task_audit_main
 
 
 if __name__ == "__main__":
-    main(["task-audit", *sys.argv[1:]])
+    task_audit_main()

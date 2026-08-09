@@ -5,7 +5,6 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from tau2.environment.environment import Environment
-
 from trace_to_micro.models import StateChange
 
 

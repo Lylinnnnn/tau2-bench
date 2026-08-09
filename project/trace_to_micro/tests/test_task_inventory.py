@@ -1,5 +1,4 @@
 from tau2.runner import load_task_splits, load_tasks
-
 from trace_to_micro.models import TaskIdentity
 from trace_to_micro.task_inventory import build_task_inventory, parse_task_id
 

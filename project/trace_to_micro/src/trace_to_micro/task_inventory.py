@@ -5,7 +5,6 @@ from collections import Counter
 from typing import Any
 
 from tau2.data_model.tasks import Task
-
 from trace_to_micro.models import TaskIdentity
 
 

@@ -1,10 +1,10 @@
 """Command-line orchestration for deterministic pre-experiments."""
 
 import argparse
+import sys
 from pathlib import Path
 
 from tau2.runner import load_task_splits, load_tasks
-
 from trace_to_micro.config import ExperimentConfig
 from trace_to_micro.evaluation import build_support_report
 from trace_to_micro.io import write_events_jsonl, write_json
@@ -114,6 +114,18 @@ def main(argv: list[str] | None = None) -> None:
     paths = run_oracle_preflight(args.config, args.output_dir)
     for name, path in paths.items():
         print(f"{name}: {path}")
+
+
+def task_audit_main() -> None:
+    """Run the task-audit subcommand from its thin script wrapper."""
+
+    main(["task-audit", *sys.argv[1:]])
+
+
+def oracle_preflight_main() -> None:
+    """Run the oracle-preflight subcommand from its thin script wrapper."""
+
+    main(["oracle-preflight", *sys.argv[1:]])
 
 
 if __name__ == "__main__":
