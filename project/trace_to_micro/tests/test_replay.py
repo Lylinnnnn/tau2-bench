@@ -1,7 +1,6 @@
 from tau2.runner import load_tasks
 from trace_to_micro.replay import replay_reference_task
 
-
 TASK_ID = "[mobile_data_issue]data_mode_off[PERSONA:None]"
 
 

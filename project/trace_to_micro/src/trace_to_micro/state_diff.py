@@ -7,7 +7,6 @@ from typing import Any
 from tau2.environment.environment import Environment
 from trace_to_micro.models import StateChange
 
-
 IDENTIFIER_FIELDS = {
     "account_id",
     "bill_id",

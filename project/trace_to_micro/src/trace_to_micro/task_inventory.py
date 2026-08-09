@@ -7,7 +7,6 @@ from typing import Any
 from tau2.data_model.tasks import Task
 from trace_to_micro.models import TaskIdentity
 
-
 TASK_ID_PATTERN = re.compile(
     r"^\[(?P<intent>[A-Za-z_]+)\]"
     r"(?P<atoms>.+)"
