@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from trace_to_micro.config import ExperimentConfig
+from trace_to_micro.config import ExperimentConfig, ModelExperimentConfig
 
 
 def test_relative_output_directory_is_scoped_to_project(tmp_path: Path) -> None:
@@ -24,3 +24,56 @@ output_dir = "outputs/pilot"
     config = ExperimentConfig.load(config_path)
 
     assert config.output_dir == tmp_path / "outputs" / "pilot"
+
+
+def test_model_experiment_paths_and_models_are_loaded(tmp_path: Path) -> None:
+    config_dir = tmp_path / "configs"
+    config_dir.mkdir()
+    config_path = config_dir / "model.toml"
+    config_path.write_text(
+        """
+[trajectory]
+domain = "telecom"
+task_set = "telecom"
+task_split = "base"
+agent = "llm_agent"
+user = "user_simulator"
+agent_llm = "openai/local-agent"
+user_llm = "openai/local-user"
+agent_llm_args = { temperature = 0.0 }
+user_llm_args = { temperature = 0.0 }
+num_trials = 1
+max_steps = 200
+max_errors = 10
+max_concurrency = 2
+seed = 300
+save_to = "experiment"
+
+[probe]
+results_path = "../../data/simulations/experiment/results.json"
+output_dir = "outputs/model"
+train_split = "train"
+split = "test"
+max_snapshots_per_task = 3
+support_thresholds = [1, 3, 5]
+variants = ["long_raw", "structured_state", "clean_subtask"]
+agent_llm = "openai/local-agent"
+user_llm = "openai/local-user"
+context_builder_llm = "openai/local-builder"
+agent_llm_args = { temperature = 0.0 }
+user_llm_args = { temperature = 0.0 }
+context_builder_llm_args = { temperature = 0.0 }
+seed = 300
+""".strip(),
+        encoding="utf-8",
+    )
+
+    config = ModelExperimentConfig.load(config_path)
+
+    assert config.trajectory.agent_llm == "openai/local-agent"
+    assert config.trajectory.timeout_seconds is None
+    assert (
+        config.probe.results_path
+        == tmp_path.parent.parent / "data/simulations/experiment/results.json"
+    )
+    assert config.probe.output_dir == tmp_path / "outputs/model"

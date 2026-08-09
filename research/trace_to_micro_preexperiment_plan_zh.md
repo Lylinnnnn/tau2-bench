@@ -1,6 +1,6 @@
 # Trace-to-Micro：从稀疏长程离线轨迹提取结构化微任务的预实验计划
 
-> 状态：无训练预实验实施版，2026-08-09
+> 状态：真实模型推理、无训练预实验实施版，2026-08-09
 > 对应工程：[`project/trace_to_micro/`](../project/trace_to_micro/)
 > 相关研究草案：[`evidence_responsive_agents_tau2_research_plan_zh.md`](./evidence_responsive_agents_tau2_research_plan_zh.md)
 
@@ -229,7 +229,18 @@ test transition 的 canonical pre-state/action 在其他 task 中是否有支持
 | `STRUCTURED_STATE` | 原始全局目标、当前结构化状态、最近反馈、工具 schema | 状态清理/信息访问 |
 | `CLEAN_SUBTASK` | `STRUCTURED_STATE` + 局部子目标和成功条件 | 分解上限 |
 
-`CLEAN_SUBTASK` 首轮可以用 `small` task/atomic fix 构造 oracle 上限；主方法最终必须自动从日志中恢复子目标，不能依赖 benchmark labels。
+当前实现不使用 `small` task 标签构造子目标。独立 context-builder 只读取目标 turn
+之前的 agent-visible prefix，生成 `user_goal / observed_facts /
+completed_steps / tool_observations / open_questions / local_subgoal /
+success_condition`。它看不到目标 action、future turns、隐藏 user scenario 或
+reference actions。这样 `CLEAN_SUBTASK` 首轮结果就是自动日志挖掘结果，而不是 oracle
+label 上限。
+
+为区分两个因素，`STRUCTURED_STATE` 使用同一个 builder 输出但移除
+`local_subgoal` 和 `success_condition`；`CLEAN_SUBTASK` 再加入这两个字段。因此：
+
+- `STRUCTURED_STATE - LONG_RAW` 估计信息压缩/状态整理的收益；
+- `CLEAN_SUBTASK - STRUCTURED_STATE` 估计显式局部任务分解的额外收益。
 
 ### 6.2 评分
 
@@ -246,6 +257,12 @@ test transition 的 canonical pre-state/action 在其他 task 中是否有支持
 - user 在限定微交互窗口内是否执行目标 action；
 - 是否实现预期状态增量；
 - handoff latency。
+
+当前一步 probe 的执行边界是一个 **macro step**：若 assistant 预测工具调用，则直接在
+重建状态执行；若 assistant 预测文本指令，则让原 user simulator 在其正常隐藏 scenario
+和完整 user-visible history 下真实生成下一条消息，并执行可能的 user tool call。三种
+condition 的每个分支都从同一 pre-state 重新建立环境。因此 Telecom 中 user-side action
+不会被错误地当作“没有模型调用的静态结果”。
 
 ### 6.3 分析
 
@@ -311,9 +328,15 @@ project/trace_to_micro/
 │   ├── models.py            # transition 数据结构
 │   ├── task_inventory.py    # split 与数据条件审计
 │   ├── state_diff.py        # 状态快照、规范化和差分
-│   ├── replay.py            # reference/logged trajectory 重放
+│   ├── replay.py            # reference trajectory 重放
+│   ├── trajectory_run.py    # τ² 完整行为轨迹生成
+│   ├── logged_trace.py      # 完整性审计与决策点抽取
+│   ├── context_builder.py   # 无 label 的结构化上下文/子目标生成
+│   ├── branching.py         # 同 pre-state 的一步 dual-control 分支执行
+│   ├── probe.py             # 可恢复的配对模型推理
 │   ├── evaluation/          # 与提取逻辑分离的评测代码
-│   │   └── support.py       # LOCO 支持度与一致性指标
+│   │   ├── support.py       # LOCO 支持度与一致性指标
+│   │   └── paired.py        # action/effect 与配对差值指标
 │   ├── io.py                # JSON/JSONL 输出
 │   └── cli.py               # 命令行编排
 └── tests/                   # 单元和小型集成测试
@@ -324,18 +347,19 @@ project/trace_to_micro/
 - 核心逻辑放在可测试模块，脚本只做参数解析和编排；
 - 不吞异常；reference replay 出错时直接中止并显示具体 task/action；
 - 不做大量兼容性和 fallback 分支；
-- 每个关键边界均有测试：task parsing、state diff、replay、support metrics；
+- 每个关键边界均有测试：task parsing、state diff、reference replay、决策点选择、
+  future-target 隔离、user handoff 状态变化和 paired metrics；
 - 输出中保留 commit/config，后续补充 reproducibility metadata。
 
 ## 10. 当前执行顺序
 
-1. 完成任务结构审计；
-2. 完成 reference transition replay；
-3. 完成 state diff 和实体值规范化；
-4. 输出 LOCO oracle support report；
-5. 验证关键测试；
-6. 导入或生成每 task 一条的真实 simulation；
-7. 将同一提取器切换到真实日志；
-8. 根据 natural action overlap 决定是否进入 action comparison；
-9. 实现 paired context probe；
+1. 已完成任务结构审计、reference replay 和 oracle support report；
+2. 服务器生成 Telecom `base` 114 个 task、每 task 一条的真实 simulation；
+3. 完整性 gate 要求 `114 × 1` 个 `(task_id, trial)` 均存在且消息非空；
+4. 从 test 40 个任务各抽最多 3 个 early/middle/late 决策点；
+5. context-builder 从 prefix 自动生成结构化状态与局部子目标；
+6. 对每个决策点运行三种上下文的冻结 agent 推理；
+7. 对 agent tool 或一步 user handoff 做 factual branch execution；
+8. 输出 overall、position-stratified 和 paired-delta 指标；
+9. 若 late-turn 上出现稳定恢复效应，再扩展 natural overlap 审计和数据质量指标；
 10. 只有机制成立后才进入训练。
