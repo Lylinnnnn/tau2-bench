@@ -78,3 +78,22 @@ seed = 300
     )
     assert config.probe.output_dir == tmp_path / "outputs/model"
     assert config.probe.splits == ("train", "test")
+
+
+def test_qwen3_32b_config_separates_thinking_agent_and_json_builder() -> None:
+    config_path = (
+        Path(__file__).parents[1]
+        / "configs/qwen3_32b_thinking_model_preexperiment.toml"
+    )
+
+    config = ModelExperimentConfig.load(config_path)
+
+    assert config.trajectory.agent_llm == "openai/qwen3-32b"
+    assert config.trajectory.agent_llm_args["extra_body"][
+        "chat_template_kwargs"
+    ] == {"enable_thinking": True}
+    assert config.probe.context_builder_llm_args["max_tokens"] == 1024
+    assert config.probe.context_builder_llm_args["extra_body"][
+        "chat_template_kwargs"
+    ] == {"enable_thinking": False}
+    assert "qwen3_32b" in str(config.probe.results_path)

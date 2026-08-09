@@ -3,7 +3,7 @@ set -euo pipefail
 
 project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo_dir="$(cd "${project_dir}/../.." && pwd)"
-config="${project_dir}/configs/qwen3_30b_model_preexperiment.toml"
+config="${CONFIG:-${project_dir}/configs/qwen3_30b_model_preexperiment.toml}"
 
 export PYTHONPATH="${project_dir}/src${PYTHONPATH:+:${PYTHONPATH}}"
 export OPENAI_API_KEY="${OPENAI_API_KEY:-local-vllm}"

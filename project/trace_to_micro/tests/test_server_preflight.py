@@ -12,11 +12,13 @@ def _write_config(path: Path) -> None:
 [trajectory]
 agent_llm = "openai/agent-model"
 user_llm = "openai/user-model"
+agent_llm_args = { temperature = 0.6, extra_body = { chat_template_kwargs = { enable_thinking = true } } }
 
 [probe]
 agent_llm = "openai/agent-model"
 user_llm = "openai/user-model"
 context_builder_llm = "openai/builder-model"
+context_builder_llm_args = { temperature = 0.0, extra_body = { chat_template_kwargs = { enable_thinking = false } } }
 """.strip()
     )
 
@@ -32,6 +34,22 @@ def test_configured_model_ids_come_from_experiment_config(tmp_path: Path) -> Non
     assert model_ids == {"agent-model", "user-model", "builder-model"}
     assert agent_model == "agent-model"
     assert builder_model == "builder-model"
+
+
+def test_configured_request_overrides_preserve_thinking_mode(tmp_path: Path) -> None:
+    config_path = tmp_path / "experiment.toml"
+    _write_config(config_path)
+
+    agent, builder = server_preflight.configured_request_overrides(config_path)
+
+    assert agent == {
+        "temperature": 0.6,
+        "chat_template_kwargs": {"enable_thinking": True},
+    }
+    assert builder == {
+        "temperature": 0.0,
+        "chat_template_kwargs": {"enable_thinking": False},
+    }
 
 
 def test_wait_for_models_retries_transient_failure(monkeypatch) -> None:

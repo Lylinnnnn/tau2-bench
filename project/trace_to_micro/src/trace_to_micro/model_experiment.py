@@ -44,6 +44,8 @@ def _audit_model_results(config: ModelExperimentConfig) -> dict:
         config.probe.results_path,
         expected_task_ids=set(split_map[config.trajectory.task_split]),
         expected_num_trials=config.trajectory.num_trials,
+        expected_agent_model=config.trajectory.agent_llm,
+        expected_user_model=config.trajectory.user_llm,
     )
 
 

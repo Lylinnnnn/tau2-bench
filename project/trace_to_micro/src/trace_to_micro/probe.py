@@ -11,6 +11,7 @@ from tau2.utils.llm_utils import generate
 from trace_to_micro.branching import execute_macro_step
 from trace_to_micro.config import ModelExperimentConfig
 from trace_to_micro.context_builder import (
+    ContextBuildError,
     build_structured_context,
     make_probe_messages,
 )
@@ -39,6 +40,7 @@ def run_paired_probe(
     trajectory = config.trajectory
     probe = config.probe
     contexts_path = output_dir / "structured_contexts.jsonl"
+    context_failures_path = output_dir / "context_failures.jsonl"
     predictions_path = output_dir / "paired_predictions.jsonl"
     contexts = {row["snapshot_id"]: row for row in read_jsonl(contexts_path)}
     completed = {
@@ -46,6 +48,7 @@ def run_paired_probe(
     }
     simulations, tasks = _load_source(probe.results_path)
     seed_args = {"seed": probe.seed}
+    failed_contexts = []
 
     for snapshot in snapshots:
         simulation = simulations[snapshot["simulation_id"]]
@@ -87,25 +90,41 @@ def run_paired_probe(
         )
         context_row = contexts.get(snapshot["snapshot_id"])
         if needs_context and context_row is None:
-            context, usage = build_structured_context(
-                model=probe.context_builder_llm,
-                llm_args={**probe.context_builder_llm_args, **seed_args},
-                policy=environment.get_policy(),
-                tools=tools,
-                prefix=prefix,
-            )
-            context_row = {
-                "snapshot_id": snapshot["snapshot_id"],
-                "context": context,
-                "builder_usage": usage,
-                "source_scope": "agent-visible prefix only; no target or benchmark labels",
-            }
-            append_jsonl(contexts_path, context_row)
-            contexts[snapshot["snapshot_id"]] = context_row
+            try:
+                context, builder_metadata = build_structured_context(
+                    model=probe.context_builder_llm,
+                    llm_args={**probe.context_builder_llm_args, **seed_args},
+                    policy=environment.get_policy(),
+                    tools=tools,
+                    prefix=prefix,
+                )
+            except ContextBuildError as error:
+                failure = {
+                    "snapshot_id": snapshot["snapshot_id"],
+                    "split": snapshot["split"],
+                    "simulation_id": snapshot["simulation_id"],
+                    "task_id": snapshot["task_id"],
+                    "diagnostics": error.diagnostics,
+                }
+                append_jsonl(context_failures_path, failure)
+                failed_contexts.append(failure)
+            else:
+                context_row = {
+                    "snapshot_id": snapshot["snapshot_id"],
+                    "context": context,
+                    "builder_metadata": builder_metadata,
+                    "source_scope": (
+                        "agent-visible prefix only; no target or benchmark labels"
+                    ),
+                }
+                append_jsonl(contexts_path, context_row)
+                contexts[snapshot["snapshot_id"]] = context_row
 
         for variant in probe.variants:
             key = (snapshot["snapshot_id"], variant)
             if key in completed:
+                continue
+            if variant != "long_raw" and context_row is None:
                 continue
             model_messages = make_probe_messages(
                 variant=variant,
@@ -157,4 +176,13 @@ def run_paired_probe(
             append_jsonl(predictions_path, row)
             completed.add(key)
 
-    return {"contexts": contexts_path, "predictions": predictions_path}
+    if failed_contexts:
+        raise ValueError(
+            f"Context construction failed for {len(failed_contexts)} snapshots; "
+            f"diagnostics were written to {context_failures_path}"
+        )
+    return {
+        "contexts": contexts_path,
+        "context_failures": context_failures_path,
+        "predictions": predictions_path,
+    }

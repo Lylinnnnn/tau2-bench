@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from tau2.agent.base_agent import is_valid_agent_history_message
+from tau2.config import DEFAULT_LLM_NL_ASSERTIONS, DEFAULT_LLM_NL_ASSERTIONS_ARGS
 from tau2.data_model.message import AssistantMessage, Message, ToolMessage, UserMessage
 from tau2.data_model.simulation import Results, SimulationRun
 from tau2.runner import load_task_splits
@@ -16,6 +17,8 @@ def audit_results_completeness(
     *,
     expected_task_ids: set[str] | None = None,
     expected_num_trials: int | None = None,
+    expected_agent_model: str | None = None,
+    expected_user_model: str | None = None,
 ) -> dict[str, Any]:
     """Validate that every configured task/trial has one non-empty trajectory."""
 
@@ -38,12 +41,30 @@ def audit_results_completeness(
     missing_metadata_tasks = sorted(required_task_ids - metadata_task_ids)
     unexpected_metadata_tasks = sorted(metadata_task_ids - required_task_ids)
     num_trials_mismatch = metadata.info.num_trials != required_num_trials
+    agent_model_mismatch = (
+        expected_agent_model is not None
+        and metadata.info.agent_info.llm != expected_agent_model
+    )
+    user_model_mismatch = (
+        expected_user_model is not None
+        and metadata.info.user_info.llm != expected_user_model
+    )
     report = {
         "results_path": str(path),
         "behavior_agent_model": metadata.info.agent_info.llm,
         "behavior_user_model": metadata.info.user_info.llm,
         "behavior_agent_args": metadata.info.agent_info.llm_args,
         "behavior_user_args": metadata.info.user_info.llm_args,
+        "nl_assertions_evaluator_model": DEFAULT_LLM_NL_ASSERTIONS,
+        "nl_assertions_evaluator_args": DEFAULT_LLM_NL_ASSERTIONS_ARGS,
+        "evaluator_provenance": (
+            "captured from this audit process; use the checked-in launcher so it "
+            "matches trajectory generation"
+        ),
+        "expected_agent_model": expected_agent_model,
+        "expected_user_model": expected_user_model,
+        "agent_model_mismatch": agent_model_mismatch,
+        "user_model_mismatch": user_model_mismatch,
         "task_count": len(metadata.tasks),
         "num_trials": metadata.info.num_trials,
         "required_task_count": len(required_task_ids),
@@ -68,6 +89,8 @@ def audit_results_completeness(
             or missing_metadata_tasks
             or unexpected_metadata_tasks
             or num_trials_mismatch
+            or agent_model_mismatch
+            or user_model_mismatch
         ),
     }
     if not report["complete"]:

@@ -45,6 +45,29 @@ def configured_model_ids(config_path: Path) -> tuple[set[str], str, str]:
     )
 
 
+def configured_request_overrides(
+    config_path: Path,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Extract only model-generation fields relevant to direct HTTP probes."""
+
+    with config_path.open("rb") as handle:
+        config = tomllib.load(handle)
+
+    def convert(llm_args: dict[str, Any]) -> dict[str, Any]:
+        overrides = {
+            key: llm_args[key]
+            for key in ("temperature", "top_p", "seed")
+            if key in llm_args
+        }
+        overrides.update(llm_args.get("extra_body", {}))
+        return overrides
+
+    return (
+        convert(config["trajectory"].get("agent_llm_args", {})),
+        convert(config["probe"].get("context_builder_llm_args", {})),
+    )
+
+
 def request_json(
     url: str,
     *,
@@ -115,7 +138,13 @@ def require_models(payload: dict[str, Any], expected_ids: set[str]) -> None:
         )
 
 
-def check_tool_call(base_url: str, *, api_key: str, model: str) -> None:
+def check_tool_call(
+    base_url: str,
+    *,
+    api_key: str,
+    model: str,
+    request_overrides: dict[str, Any] | None = None,
+) -> None:
     """Verify the agent model can emit OpenAI-format tool calls."""
 
     payload = {
@@ -142,12 +171,14 @@ def check_tool_call(base_url: str, *, api_key: str, model: str) -> None:
         ],
         "tool_choice": "auto",
         "temperature": 0,
-        "max_tokens": 64,
+        **(request_overrides or {}),
+        "max_tokens": 1_024,
     }
     response = request_json(
         f"{base_url.rstrip('/')}/chat/completions",
         api_key=api_key,
         payload=payload,
+        timeout_seconds=180.0,
     )
     try:
         tool_calls = response["choices"][0]["message"]["tool_calls"]
@@ -162,7 +193,13 @@ def check_tool_call(base_url: str, *, api_key: str, model: str) -> None:
         )
 
 
-def check_json_mode(base_url: str, *, api_key: str, model: str) -> None:
+def check_json_mode(
+    base_url: str,
+    *,
+    api_key: str,
+    model: str,
+    request_overrides: dict[str, Any] | None = None,
+) -> None:
     """Verify the context-builder model supports JSON response mode."""
 
     response = request_json(
@@ -178,8 +215,10 @@ def check_json_mode(base_url: str, *, api_key: str, model: str) -> None:
             ],
             "response_format": {"type": "json_object"},
             "temperature": 0,
-            "max_tokens": 64,
+            **(request_overrides or {}),
+            "max_tokens": 256,
         },
+        timeout_seconds=180.0,
     )
     try:
         content = response["choices"][0]["message"]["content"]
@@ -203,6 +242,7 @@ def run_preflight(
     """Wait for the endpoint and validate the experiment's required features."""
 
     expected_ids, agent_model, context_builder_model = configured_model_ids(config_path)
+    agent_overrides, builder_overrides = configured_request_overrides(config_path)
     models = wait_for_models(
         base_url,
         api_key=api_key,
@@ -210,8 +250,18 @@ def run_preflight(
         poll_seconds=poll_seconds,
     )
     require_models(models, expected_ids)
-    check_tool_call(base_url, api_key=api_key, model=agent_model)
-    check_json_mode(base_url, api_key=api_key, model=context_builder_model)
+    check_tool_call(
+        base_url,
+        api_key=api_key,
+        model=agent_model,
+        request_overrides=agent_overrides,
+    )
+    check_json_mode(
+        base_url,
+        api_key=api_key,
+        model=context_builder_model,
+        request_overrides=builder_overrides,
+    )
 
 
 def main(argv: list[str] | None = None) -> None:

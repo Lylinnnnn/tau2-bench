@@ -1,3 +1,6 @@
+import json
+import os
+
 # =============================================================================
 # SIMULATION DEFAULTS (overridable via CLI)
 # =============================================================================
@@ -21,9 +24,16 @@ DEFAULT_LLM_TEMPERATURE_USER = 0.0
 DEFAULT_LLM_ARGS_AGENT = {"temperature": DEFAULT_LLM_TEMPERATURE_AGENT}
 DEFAULT_LLM_ARGS_USER = {"temperature": DEFAULT_LLM_TEMPERATURE_USER}
 
-DEFAULT_LLM_NL_ASSERTIONS = "openai/qwen3-30b-a3b-instruct-2507"
+DEFAULT_LLM_NL_ASSERTIONS = os.getenv(
+    "TAU2_NL_ASSERTIONS_LLM", "openai/qwen3-30b-a3b-instruct-2507"
+)
 DEFAULT_LLM_NL_ASSERTIONS_TEMPERATURE = 0.0
-DEFAULT_LLM_NL_ASSERTIONS_ARGS = {"temperature": DEFAULT_LLM_NL_ASSERTIONS_TEMPERATURE}
+DEFAULT_LLM_NL_ASSERTIONS_ARGS = json.loads(
+    os.getenv(
+        "TAU2_NL_ASSERTIONS_LLM_ARGS",
+        json.dumps({"temperature": DEFAULT_LLM_NL_ASSERTIONS_TEMPERATURE}),
+    )
+)
 
 DEFAULT_LLM_ENV_INTERFACE = "gpt-4.1-2025-04-14"
 DEFAULT_LLM_ENV_INTERFACE_TEMPERATURE = 0.0

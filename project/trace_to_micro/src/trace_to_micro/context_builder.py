@@ -24,6 +24,9 @@ CONTEXT_FIELDS = (
     "success_condition",
 )
 
+MAX_CONTEXT_BUILD_ATTEMPTS = 2
+RESPONSE_EXCERPT_CHARS = 2_000
+
 BUILDER_INSTRUCTION = """
 You create a compact decision context for a customer-service agent. Use only
 facts visible in the transcript. Do not use benchmark labels, hidden scenario
@@ -36,9 +39,47 @@ Return exactly one JSON object with these keys:
 - open_questions: list of strings
 - local_subgoal: one immediate, outcome-oriented next subtask as a string
 - success_condition: observable evidence that the local subtask is complete
+Keep every list to at most 8 short items and every string concise. Do not copy
+the policy, tool schemas, or transcript into the output.
 The local subgoal must not name a tool or prescribe its arguments unless that
 tool call was already explicitly requested in the visible transcript.
 """.strip()
+
+
+class ContextBuildError(ValueError):
+    """Raised after compact-context JSON remains invalid after one retry."""
+
+    def __init__(self, diagnostics: list[dict[str, Any]]):
+        self.diagnostics = diagnostics
+        last = diagnostics[-1]
+        super().__init__(
+            "Context builder returned invalid JSON after "
+            f"{len(diagnostics)} attempts: {last['error']} "
+            f"(finish_reason={last['finish_reason']!r}, "
+            f"response_chars={last['response_chars']})"
+        )
+
+
+def _response_metadata(response: AssistantMessage) -> dict[str, Any]:
+    raw_data = response.raw_data or {}
+    choices = raw_data.get("choices") or []
+    finish_reason = choices[0].get("finish_reason") if choices else None
+    content = response.content or ""
+    return {
+        "finish_reason": finish_reason,
+        "usage": response.usage,
+        "generation_time_seconds": response.generation_time_seconds,
+        "response_chars": len(content),
+    }
+
+
+def _parse_context_response(response: AssistantMessage) -> dict[str, Any]:
+    if response.content is None:
+        raise TypeError("Context builder returned no text content")
+    parsed = json.loads(extract_json_from_llm_response(response.content))
+    if not isinstance(parsed, dict):
+        raise TypeError("Context builder response must be a JSON object")
+    return _validate_context(parsed)
 
 
 def _validate_context(value: dict[str, Any]) -> dict[str, Any]:
@@ -70,7 +111,7 @@ def build_structured_context(
     tools: list[Tool],
     prefix: list[Message],
     generate_fn: Callable[..., AssistantMessage | UserMessage] = generate,
-) -> tuple[dict[str, Any], dict[str, Any] | None]:
+) -> tuple[dict[str, Any], dict[str, Any]]:
     """Call a context-builder model without exposing target/future messages."""
 
     visible_prefix = [
@@ -85,23 +126,48 @@ def build_structured_context(
             "</available_tools>"
         ),
     )
-    request = UserMessage(
-        role="user",
-        content=(
-            "Build the structured context from this agent-visible prefix:\n"
-            f"{transcript_json(visible_prefix)}"
-        ),
-    )
-    response = generate_fn(
-        model=model,
-        messages=[system, request],
-        call_name="trace_to_micro_context_builder",
-        **llm_args,
-    )
-    if not isinstance(response, AssistantMessage) or response.content is None:
-        raise TypeError("Context builder must return an AssistantMessage with text")
-    parsed = json.loads(extract_json_from_llm_response(response.content))
-    return _validate_context(parsed), response.usage
+    transcript = transcript_json(visible_prefix)
+    diagnostics = []
+    for attempt in range(1, MAX_CONTEXT_BUILD_ATTEMPTS + 1):
+        retry_instruction = ""
+        if attempt > 1:
+            retry_instruction = (
+                "\nYour previous response was not valid, complete JSON. Return a "
+                "shorter object and close every string, list, and brace."
+            )
+        request = UserMessage(
+            role="user",
+            content=(
+                "Build the structured context from this agent-visible prefix:\n"
+                f"{transcript}{retry_instruction}"
+            ),
+        )
+        response = generate_fn(
+            model=model,
+            messages=[system, request],
+            call_name="trace_to_micro_context_builder",
+            **llm_args,
+        )
+        if not isinstance(response, AssistantMessage):
+            raise TypeError("Context builder must return an AssistantMessage")
+        metadata = _response_metadata(response)
+        try:
+            context = _parse_context_response(response)
+        except (json.JSONDecodeError, TypeError, ValueError) as error:
+            content = response.content or ""
+            diagnostics.append(
+                {
+                    "attempt": attempt,
+                    **metadata,
+                    "error_type": type(error).__name__,
+                    "error": str(error),
+                    "response_head": content[:RESPONSE_EXCERPT_CHARS],
+                    "response_tail": content[-RESPONSE_EXCERPT_CHARS:],
+                }
+            )
+            continue
+        return context, {"attempt": attempt, **metadata}
+    raise ContextBuildError(diagnostics)
 
 
 def make_probe_messages(

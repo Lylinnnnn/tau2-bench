@@ -18,6 +18,7 @@ from trace_to_micro.model_experiment import (
     run_trajectory_generation,
 )
 from trace_to_micro.replay import replay_reference_tasks
+from trace_to_micro.results_audit import build_results_audit
 from trace_to_micro.task_inventory import build_task_inventory
 
 
@@ -111,6 +112,14 @@ def _parser() -> argparse.ArgumentParser:
     generate_parser.add_argument("--config", type=Path, required=True)
     generate_parser.add_argument("--num-tasks", type=int)
     generate_parser.add_argument("--save-to")
+    audit_parser = subparsers.add_parser("audit-results")
+    audit_parser.add_argument("--results", type=Path, required=True)
+    audit_parser.add_argument("--domain", required=True)
+    audit_parser.add_argument("--expected-task-ids", nargs="+", required=True)
+    audit_parser.add_argument("--expected-agent-model", required=True)
+    audit_parser.add_argument("--expected-user-model", required=True)
+    audit_parser.add_argument("--expected-num-trials", type=int, default=1)
+    audit_parser.add_argument("--output", type=Path)
     for command in (
         "extract-snapshots",
         "logged-audit",
@@ -139,6 +148,25 @@ def main(argv: list[str] | None = None) -> None:
             args.config,
             num_tasks=args.num_tasks,
             save_to=args.save_to,
+        )
+        return
+    elif args.command == "audit-results":
+        report = build_results_audit(
+            args.results,
+            domain=args.domain,
+            expected_task_ids=set(args.expected_task_ids),
+            expected_agent_model=args.expected_agent_model,
+            expected_user_model=args.expected_user_model,
+            expected_num_trials=args.expected_num_trials,
+        )
+        output = args.output or args.results.parent / "integrity_report.json"
+        write_json(output, report)
+        print(
+            f"{output}: valid_for_analysis="
+            f"{report['data_integrity']['valid_for_analysis']}, "
+            f"mean_reward={report['outcomes']['mean_reward']}, "
+            "invalid_tool_calls="
+            f"{len(report['tool_behavior']['invalid_calls'])}"
         )
         return
     elif args.command == "extract-snapshots":

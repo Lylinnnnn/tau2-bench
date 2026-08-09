@@ -84,3 +84,44 @@ def test_completeness_rejects_results_missing_configured_tasks(
             expected_task_ids={"task-1", "task-2"},
             expected_num_trials=1,
         )
+
+
+def test_completeness_rejects_results_from_another_model(
+    monkeypatch, tmp_path
+) -> None:
+    metadata = type(
+        "Metadata",
+        (),
+        {
+            "tasks": [type("Task", (), {"id": "task-1"})()],
+            "info": type(
+                "Info",
+                (),
+                {
+                    "num_trials": 1,
+                    "agent_info": type(
+                        "AgentInfo", (), {"llm": "old-agent", "llm_args": {}}
+                    )(),
+                    "user_info": type(
+                        "UserInfo", (), {"llm": "new-user", "llm_args": {}}
+                    )(),
+                },
+            )(),
+        },
+    )()
+    monkeypatch.setattr(
+        "trace_to_micro.logged_trace.Results.load_metadata", lambda _: metadata
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.logged_trace.Results.iter_simulations",
+        lambda _: iter([_simulation()]),
+    )
+
+    with pytest.raises(ValueError, match="agent_model_mismatch.*True"):
+        audit_results_completeness(
+            tmp_path / "results.json",
+            expected_task_ids={"task-1"},
+            expected_num_trials=1,
+            expected_agent_model="new-agent",
+            expected_user_model="new-user",
+        )

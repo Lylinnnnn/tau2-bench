@@ -117,6 +117,99 @@ does not resolve or install packages.
 
 ## Run the model-based pre-experiment
 
+### Qwen3-32B thinking run
+
+The Qwen3-32B configuration is isolated from the earlier 30B-A3B run:
+
+```text
+configs/qwen3_32b_thinking_model_preexperiment.toml
+```
+
+It expects the API model ID `qwen3-32b`. The model path is a server concern and
+is deliberately not written into result metadata. On the GPU server, start the
+downloaded checkpoint in its own tmux window:
+
+```bash
+tmux new -s qwen3-32b
+cd /path/to/tau2-bench
+TENSOR_PARALLEL_SIZE=4 \
+project/trace_to_micro/scripts/start_qwen3_32b_vllm.sh
+```
+
+The launcher defaults to:
+
+```text
+model path: /data/oss_bucket_0/yanlin/tau2/models/Qwen3-32B
+served ID:  qwen3-32b
+endpoint:   http://127.0.0.1:8000/v1
+context:    32768 tokens
+```
+
+Override `TENSOR_PARALLEL_SIZE`, `MAX_MODEL_LEN`, or
+`GPU_MEMORY_UTILIZATION` when required by the server. The launcher uses the
+checkpoint's Hermes-style JSON tool-call template, vLLM automatic tool choice,
+and the `deepseek_r1` reasoning parser. It assumes `vllm` is available in the
+active server environment; set `VLLM_BIN` to an absolute executable path when
+needed.
+
+Wait until the server prints that it is listening, then open a second tmux
+window and run the two-case Retail task 2 smoke test:
+
+```bash
+tmux new-window -t qwen3-32b -n smoke
+cd /path/to/tau2-bench
+project/trace_to_micro/scripts/run_qwen3_32b_retail_smoke.sh
+```
+
+The first case is the closest controlled comparison to the old command:
+non-thinking Qwen3-32B with `temperature=0`. The second is the intended
+Qwen3-32B thinking protocol with the model-card sampling settings
+(`temperature=0.6`, `top_p=0.95`, `top_k=20`). They write to separate result
+directories:
+
+```text
+data/simulations/qwen3_32b_retail_task2_nonthinking_t0_smoke/
+data/simulations/qwen3_32b_retail_task2_thinking_t06_smoke/
+```
+
+Each directory receives an `integrity_report.json` after generation. The audit
+requires the requested task/trial and exact model IDs, checks tool-call/response
+linkage, extracts reward and termination reason, and reports cross-role or
+unknown tool calls separately. Such invalid actions remain valid observed
+model behavior; missing tool responses or a model mismatch fail the audit.
+The wrapper also points τ²'s NL-assertion evaluator at `openai/qwen3-32b` in
+non-thinking JSON mode. This matters because the repository default still
+names the earlier 30B-A3B endpoint; otherwise the dialogue can finish normally
+but reward computation requests a model ID that the new server does not expose.
+The selected evaluator model and arguments are copied into the integrity audit.
+
+After both smoke outputs are structurally valid, run the complete Telecom
+pre-experiment:
+
+```bash
+tmux new-window -t qwen3-32b -n telecom
+cd /path/to/tau2-bench
+project/trace_to_micro/scripts/run_qwen3_32b_model_preexperiment.sh
+```
+
+This generates all 114 official Telecom base tasks once, reports the official
+train and test splits separately, and then runs the same-state context probe.
+Its artifacts are isolated at:
+
+```text
+data/simulations/trace_to_micro_qwen3_32b_thinking_t06_telecom_base/results.json
+project/trace_to_micro/outputs/qwen3_32b_thinking_t06_model_preexperiment/
+```
+
+The context builder runs the same checkpoint in non-thinking JSON mode with a
+1,024-token output cap. Invalid JSON gets exactly one shorter retry. If that
+also fails, the script keeps the already valid JSONL rows, stores bounded
+head/tail diagnostics plus `finish_reason`, token usage, and output length in
+`context_failures.jsonl`, and exits non-zero instead of silently accepting or
+mixing malformed data.
+
+### Earlier Qwen3-30B-A3B run
+
 The checked-in configuration uses the server's OpenAI-compatible local
 Qwen3-30B endpoint through LiteLLM:
 
