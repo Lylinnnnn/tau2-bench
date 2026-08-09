@@ -130,7 +130,7 @@ is deliberately not written into result metadata. On the GPU server, start the
 downloaded checkpoint in its own tmux window:
 
 ```bash
-tmux new -s qwen3-32b
+tmux new -s qwen3-32b-server
 cd /path/to/tau2-bench
 TENSOR_PARALLEL_SIZE=4 \
 project/trace_to_micro/scripts/start_qwen3_32b_vllm.sh
@@ -153,10 +153,10 @@ active server environment; set `VLLM_BIN` to an absolute executable path when
 needed.
 
 Wait until the server prints that it is listening, then open a second tmux
-window and run the two-case Retail task 2 smoke test:
+session and run the two-case Retail task 2 smoke test:
 
 ```bash
-tmux new-window -t qwen3-32b -n smoke
+tmux new -s qwen3-32b-smoke
 cd /path/to/tau2-bench
 project/trace_to_micro/scripts/run_qwen3_32b_retail_smoke.sh
 ```
@@ -187,7 +187,7 @@ After both smoke outputs are structurally valid, run the complete Telecom
 pre-experiment:
 
 ```bash
-tmux new-window -t qwen3-32b -n telecom
+tmux new -s qwen3-32b-telecom
 cd /path/to/tau2-bench
 project/trace_to_micro/scripts/run_qwen3_32b_model_preexperiment.sh
 ```
