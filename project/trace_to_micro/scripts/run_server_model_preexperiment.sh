@@ -1,30 +1,41 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ ! -f pyproject.toml || ! -d project/trace_to_micro ]]; then
-  echo "Run this script from the tau2-bench repository root." >&2
-  exit 2
-fi
+project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repo_dir="$(cd "${project_dir}/../.." && pwd)"
+config="${project_dir}/configs/qwen3_30b_model_preexperiment.toml"
 
-export PYTHONPATH="$PWD/project/trace_to_micro/src${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="${project_dir}/src${PYTHONPATH:+:${PYTHONPATH}}"
+export OPENAI_API_KEY="${OPENAI_API_KEY:-local-vllm}"
+openai_base_url="${OPENAI_API_BASE:-${OPENAI_BASE_URL:-http://127.0.0.1:8000/v1}}"
+export OPENAI_API_BASE="${openai_base_url}"
+export OPENAI_BASE_URL="${openai_base_url}"
 
-uv run --no-sync pytest -c project/trace_to_micro/pyproject.toml \
-  project/trace_to_micro/tests
-uv run --no-sync ruff check --config project/trace_to_micro/pyproject.toml \
-  project/trace_to_micro/src project/trace_to_micro/tests \
-  project/trace_to_micro/scripts
+server_wait_seconds="${TRACE_TO_MICRO_SERVER_WAIT_SECONDS:-600}"
+server_poll_seconds="${TRACE_TO_MICRO_SERVER_POLL_SECONDS:-5}"
+
+cd "${repo_dir}"
+
+uv run --no-sync pytest -c "${project_dir}/pyproject.toml" \
+  "${project_dir}/tests"
+uv run --no-sync ruff check --config "${project_dir}/pyproject.toml" \
+  "${project_dir}/src" "${project_dir}/tests" "${project_dir}/scripts"
 uv run --no-sync ruff format --check \
-  --config project/trace_to_micro/pyproject.toml \
-  project/trace_to_micro/src project/trace_to_micro/tests \
-  project/trace_to_micro/scripts
+  --config "${project_dir}/pyproject.toml" \
+  "${project_dir}/src" "${project_dir}/tests" "${project_dir}/scripts"
 
-CONFIG=project/trace_to_micro/configs/qwen3_30b_model_preexperiment.toml
+echo "Waiting for OpenAI-compatible model server at ${OPENAI_API_BASE}"
+uv run --no-sync python -m trace_to_micro.server_preflight \
+  --config "${config}" \
+  --base-url "${OPENAI_API_BASE}" \
+  --wait-seconds "${server_wait_seconds}" \
+  --poll-seconds "${server_poll_seconds}"
 
 uv run --no-sync python -m trace_to_micro.cli generate-trajectories \
-  --config "$CONFIG"
+  --config "${config}"
 uv run --no-sync python -m trace_to_micro.cli analyze-trajectories \
-  --config "$CONFIG"
+  --config "${config}"
 uv run --no-sync python -m trace_to_micro.cli paired-probe \
-  --config "$CONFIG"
+  --config "${config}"
 uv run --no-sync python -m trace_to_micro.cli summarize-probe \
-  --config "$CONFIG"
+  --config "${config}"

@@ -145,6 +145,29 @@ One resumable command runs checks and all five stages:
 project/trace_to_micro/scripts/run_server_model_preexperiment.sh
 ```
 
+The script now treats model-server readiness as a hard gate. For an
+unauthenticated local vLLM server it supplies a non-empty placeholder key and
+the usual local endpoint automatically:
+
+```text
+OPENAI_API_KEY=local-vllm
+OPENAI_API_BASE=http://127.0.0.1:8000/v1
+OPENAI_BASE_URL=http://127.0.0.1:8000/v1
+```
+
+Existing environment variables take precedence. If vLLM was started with
+`--api-key`, export that value as `OPENAI_API_KEY` before invoking the script.
+The preflight waits up to ten minutes by default, reads the exact served model
+IDs required by the TOML, and verifies both tool calling and JSON response
+mode. No trajectory file is opened until all checks pass. The wait can be
+configured without editing code:
+
+```bash
+TRACE_TO_MICRO_SERVER_WAIT_SECONDS=1200 \
+TRACE_TO_MICRO_SERVER_POLL_SECONDS=10 \
+project/trace_to_micro/scripts/run_server_model_preexperiment.sh
+```
+
 The equivalent stages are:
 
 ```bash
