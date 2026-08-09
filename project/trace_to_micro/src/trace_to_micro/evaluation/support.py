@@ -57,15 +57,11 @@ def _effect_consistency(events: list[TransitionEvent]) -> dict[str, Any]:
                 }
             )
 
-    ambiguous_actions.sort(
-        key=lambda item: (-item["task_support"], item["action_key"])
-    )
+    ambiguous_actions.sort(key=lambda item: (-item["task_support"], item["action_key"]))
     return {
         "action_count": len(per_action),
         "dominant_effect_rate": (
-            dominant_observations / total_observations
-            if total_observations
-            else 0.0
+            dominant_observations / total_observations if total_observations else 0.0
         ),
         "conditional_effect_entropy_bits": (
             weighted_entropy / total_observations if total_observations else 0.0
@@ -89,8 +85,7 @@ def _coverage(
         "total": len(test_events),
         "rate": covered / len(test_events) if test_events else 0.0,
         "support_histogram": {
-            str(key): value
-            for key, value in sorted(Counter(support_counts).items())
+            str(key): value for key, value in sorted(Counter(support_counts).items())
         },
     }
 

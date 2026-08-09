@@ -4,9 +4,7 @@ from trace_to_micro.task_inventory import build_task_inventory, parse_task_id
 
 
 def test_parse_composed_task_id() -> None:
-    task_id = (
-        "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:Hard]"
-    )
+    task_id = "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:Hard]"
 
     assert parse_task_id(task_id) == TaskIdentity(
         intent="mobile_data_issue",
@@ -16,9 +14,7 @@ def test_parse_composed_task_id() -> None:
 
 
 def test_parse_none_persona_as_missing_value() -> None:
-    identity = parse_task_id(
-        "[mobile_data_issue]data_mode_off[PERSONA:None]"
-    )
+    identity = parse_task_id("[mobile_data_issue]data_mode_off[PERSONA:None]")
 
     assert identity.persona is None
 

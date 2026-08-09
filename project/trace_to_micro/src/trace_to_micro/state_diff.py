@@ -33,8 +33,7 @@ def canonicalize_value(value: Any, field_name: str | None = None) -> Any:
 
     if isinstance(value, Mapping):
         return {
-            key: canonicalize_value(child, key)
-            for key, child in sorted(value.items())
+            key: canonicalize_value(child, key) for key, child in sorted(value.items())
         }
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
         return [canonicalize_value(child) for child in value]

@@ -19,9 +19,7 @@ def _load_benchmark(config: ExperimentConfig):
     return tasks, split_map, tasks_by_id
 
 
-def _resolve_output_dir(
-    config: ExperimentConfig, output_dir: Path | None
-) -> Path:
+def _resolve_output_dir(config: ExperimentConfig, output_dir: Path | None) -> Path:
     return output_dir if output_dir is not None else config.output_dir
 
 
