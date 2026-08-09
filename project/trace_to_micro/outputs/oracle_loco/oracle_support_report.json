@@ -1,0 +1,201 @@
+{
+  "state_changing_only": true,
+  "train_event_count": 343,
+  "test_event_count": 149,
+  "train_task_count": 66,
+  "test_task_count": 28,
+  "train_actor_counts": {
+    "assistant": 74,
+    "user": 269
+  },
+  "test_actor_counts": {
+    "assistant": 29,
+    "user": 120
+  },
+  "coverage": {
+    "1": {
+      "action": {
+        "covered": 149,
+        "total": 149,
+        "rate": 1.0,
+        "support_histogram": {
+          "3": 9,
+          "11": 5,
+          "12": 7,
+          "13": 11,
+          "16": 9,
+          "18": 7,
+          "20": 14,
+          "23": 7,
+          "28": 28,
+          "30": 11,
+          "35": 15,
+          "38": 12,
+          "42": 14
+        }
+      },
+      "exact_effect": {
+        "covered": 147,
+        "total": 149,
+        "rate": 0.9865771812080537,
+        "support_histogram": {
+          "0": 2,
+          "2": 5,
+          "3": 10,
+          "11": 5,
+          "12": 7,
+          "13": 11,
+          "14": 5,
+          "16": 21,
+          "17": 3,
+          "18": 7,
+          "19": 6,
+          "23": 7,
+          "28": 37,
+          "30": 11,
+          "38": 12
+        }
+      }
+    },
+    "3": {
+      "action": {
+        "covered": 149,
+        "total": 149,
+        "rate": 1.0,
+        "support_histogram": {
+          "3": 9,
+          "11": 5,
+          "12": 7,
+          "13": 11,
+          "16": 9,
+          "18": 7,
+          "20": 14,
+          "23": 7,
+          "28": 28,
+          "30": 11,
+          "35": 15,
+          "38": 12,
+          "42": 14
+        }
+      },
+      "exact_effect": {
+        "covered": 142,
+        "total": 149,
+        "rate": 0.9530201342281879,
+        "support_histogram": {
+          "0": 2,
+          "2": 5,
+          "3": 10,
+          "11": 5,
+          "12": 7,
+          "13": 11,
+          "14": 5,
+          "16": 21,
+          "17": 3,
+          "18": 7,
+          "19": 6,
+          "23": 7,
+          "28": 37,
+          "30": 11,
+          "38": 12
+        }
+      }
+    },
+    "5": {
+      "action": {
+        "covered": 140,
+        "total": 149,
+        "rate": 0.9395973154362416,
+        "support_histogram": {
+          "3": 9,
+          "11": 5,
+          "12": 7,
+          "13": 11,
+          "16": 9,
+          "18": 7,
+          "20": 14,
+          "23": 7,
+          "28": 28,
+          "30": 11,
+          "35": 15,
+          "38": 12,
+          "42": 14
+        }
+      },
+      "exact_effect": {
+        "covered": 132,
+        "total": 149,
+        "rate": 0.8859060402684564,
+        "support_histogram": {
+          "0": 2,
+          "2": 5,
+          "3": 10,
+          "11": 5,
+          "12": 7,
+          "13": 11,
+          "14": 5,
+          "16": 21,
+          "17": 3,
+          "18": 7,
+          "19": 6,
+          "23": 7,
+          "28": 37,
+          "30": 11,
+          "38": 12
+        }
+      }
+    }
+  },
+  "train_effect_consistency": {
+    "action_count": 17,
+    "dominant_effect_rate": 0.892128279883382,
+    "conditional_effect_entropy_bits": 0.3090906001749549,
+    "ambiguous_actions": [
+      {
+        "action_key": "user:set_network_mode_preference:{\"mode\": \"4g_5g_preferred\"}",
+        "distinct_effects": 2,
+        "task_support": 42,
+        "dominant_effect_rate": 0.6666666666666666,
+        "entropy_bits": 0.9182958340544896
+      },
+      {
+        "action_key": "user:toggle_airplane_mode:{}",
+        "distinct_effects": 3,
+        "task_support": 35,
+        "dominant_effect_rate": 0.4857142857142857,
+        "entropy_bits": 1.2582296369090873
+      },
+      {
+        "action_key": "user:reboot_device:{}",
+        "distinct_effects": 3,
+        "task_support": 20,
+        "dominant_effect_rate": 0.8,
+        "entropy_bits": 0.8841837197791889
+      },
+      {
+        "action_key": "user:reset_apn_settings:{}",
+        "distinct_effects": 2,
+        "task_support": 20,
+        "dominant_effect_rate": 0.95,
+        "entropy_bits": 0.28639695711595625
+      }
+    ]
+  },
+  "declaration_mismatches": {
+    "declared_mutating_without_change": 4,
+    "declared_non_mutating_with_change": 0
+  },
+  "experiment": {
+    "domain": "telecom",
+    "task_set": "telecom",
+    "train_split": "train",
+    "test_split": "test",
+    "support_thresholds": [
+      1,
+      3,
+      5
+    ],
+    "data_source": "evaluation_criteria.actions",
+    "claim_scope": "oracle structural upper bound; not off-policy evidence"
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "split_sizes": {
+    "base": 114,
+    "full": 2285,
+    "small": 20,
+    "test": 40,
+    "train": 74
+  },
+  "train_split": "train",
+  "test_split": "test",
+  "exact_task_overlap": [],
+  "shared_atoms": [
+    "airplane_mode_on",
+    "bad_network_preference",
+    "bad_vpn",
+    "bad_wifi_calling",
+    "break_apn_mms_setting",
+    "break_apn_settings",
+    "break_app_both_permissions",
+    "break_app_sms_permission",
+    "break_app_storage_permission",
+    "contract_end_suspension",
+    "data_mode_off",
+    "data_saver_mode_on",
+    "data_usage_exceeded",
+    "lock_sim_card_pin",
+    "overdue_bill_suspension",
+    "unseat_sim_card",
+    "user_abroad_roaming_disabled_off",
+    "user_abroad_roaming_disabled_on",
+    "user_abroad_roaming_enabled_off"
+  ],
+  "train_only_atoms": [],
+  "test_only_atoms": [],
+  "splits": {
+    "train": {
+      "size": 74,
+      "atom_counts": {
+        "airplane_mode_on": 40,
+        "bad_network_preference": 42,
+        "bad_vpn": 11,
+        "bad_wifi_calling": 18,
+        "break_apn_mms_setting": 16,
+        "break_apn_settings": 8,
+        "break_app_both_permissions": 7,
+        "break_app_sms_permission": 6,
+        "break_app_storage_permission": 9,
+        "contract_end_suspension": 2,
+        "data_mode_off": 28,
+        "data_saver_mode_on": 12,
+        "data_usage_exceeded": 38,
+        "lock_sim_card_pin": 7,
+        "overdue_bill_suspension": 7,
+        "unseat_sim_card": 28,
+        "user_abroad_roaming_disabled_off": 15,
+        "user_abroad_roaming_disabled_on": 15,
+        "user_abroad_roaming_enabled_off": 13
+      },
+      "persona_counts": {
+        "Easy": 24,
+        "Hard": 23,
+        "None": 27
+      },
+      "issue_count_histogram": {
+        "2": 15,
+        "3": 17,
+        "4": 13,
+        "5": 9,
+        "6": 8,
+        "7": 4,
+        "8": 4,
+        "9": 4
+      },
+      "intent_counts": {
+        "mms_issue": 33,
+        "mobile_data_issue": 27,
+        "service_issue": 14
+      }
+    },
+    "test": {
+      "size": 40,
+      "atom_counts": {
+        "airplane_mode_on": 22,
+        "bad_network_preference": 14,
+        "bad_vpn": 5,
+        "bad_wifi_calling": 7,
+        "break_apn_mms_setting": 5,
+        "break_apn_settings": 9,
+        "break_app_both_permissions": 7,
+        "break_app_sms_permission": 4,
+        "break_app_storage_permission": 2,
+        "contract_end_suspension": 6,
+        "data_mode_off": 13,
+        "data_saver_mode_on": 7,
+        "data_usage_exceeded": 12,
+        "lock_sim_card_pin": 11,
+        "overdue_bill_suspension": 6,
+        "unseat_sim_card": 12,
+        "user_abroad_roaming_disabled_off": 5,
+        "user_abroad_roaming_disabled_on": 6,
+        "user_abroad_roaming_enabled_off": 10
+      },
+      "persona_counts": {
+        "Easy": 14,
+        "Hard": 13,
+        "None": 13
+      },
+      "issue_count_histogram": {
+        "2": 10,
+        "3": 9,
+        "4": 8,
+        "5": 4,
+        "6": 3,
+        "7": 4,
+        "9": 2
+      },
+      "intent_counts": {
+        "mms_issue": 16,
+        "mobile_data_issue": 9,
+        "service_issue": 15
+      }
+    }
+  },
+  "unique_initialized_users": [
+    {
+      "name": "John Smith",
+      "phone_number": "555-123-2002"
+    }
+  ],
+  "unique_ticket_count": 5
+}
