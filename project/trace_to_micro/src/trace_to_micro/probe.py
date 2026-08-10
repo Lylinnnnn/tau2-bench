@@ -9,6 +9,11 @@ from tau2.data_model.simulation import Results
 from tau2.runner import build_environment
 from tau2.utils.llm_utils import generate
 from trace_to_micro.branching import execute_macro_step
+from trace_to_micro.clean import (
+    attach_source_audit,
+    audit_source_action,
+    build_hybrid_clean_context,
+)
 from trace_to_micro.config import ModelExperimentConfig
 from trace_to_micro.context_builder import (
     ContextBuildError,
@@ -16,7 +21,7 @@ from trace_to_micro.context_builder import (
     make_probe_messages,
 )
 from trace_to_micro.evaluation import score_branch
-from trace_to_micro.io import append_jsonl, read_jsonl
+from trace_to_micro.io import append_jsonl, read_jsonl, write_jsonl
 
 
 def _load_source(results_path: Path):
@@ -35,20 +40,27 @@ def run_paired_probe(
     *,
     output_dir: Path,
 ) -> dict[str, Path]:
-    """Run/resume builder and three paired next-action conditions."""
+    """Run/resume legacy and hybrid paired next-action conditions."""
 
     trajectory = config.trajectory
     probe = config.probe
     contexts_path = output_dir / "structured_contexts.jsonl"
     context_failures_path = output_dir / "context_failures.jsonl"
+    hybrid_contexts_path = output_dir / "hybrid_contexts.jsonl"
     predictions_path = output_dir / "paired_predictions.jsonl"
     contexts = {row["snapshot_id"]: row for row in read_jsonl(contexts_path)}
-    completed = {
-        (row["snapshot_id"], row["variant"]) for row in read_jsonl(predictions_path)
+    hybrid_contexts = {
+        row["snapshot_id"]: row for row in read_jsonl(hybrid_contexts_path)
     }
+    prediction_rows = read_jsonl(predictions_path)
+    predictions_by_key = {
+        (row["snapshot_id"], row["variant"]): row for row in prediction_rows
+    }
+    completed = set(predictions_by_key)
     simulations, tasks = _load_source(probe.results_path)
     seed_args = {"seed": probe.seed}
     failed_contexts = []
+    upgraded_predictions = False
 
     for snapshot in snapshots:
         simulation = simulations[snapshot["simulation_id"]]
@@ -64,6 +76,7 @@ def run_paired_probe(
 
         environment = build_environment(trajectory.domain)
         tools = environment.get_tools()
+        user_tools = environment.get_user_tools()
         agent = LLMAgent(
             tools=tools,
             domain_policy=environment.get_policy(),
@@ -82,9 +95,33 @@ def run_paired_probe(
             logged_messages=messages,
             logged_target_index=target_index,
         )
+        source_action_audit = audit_source_action(
+            target=target,
+            actual_branch=actual_branch,
+            agent_tools=tools,
+            user_tools=user_tools,
+        )
+        for key, existing_row in predictions_by_key.items():
+            if key[0] != snapshot["snapshot_id"]:
+                continue
+            hybrid_row = hybrid_contexts.get(snapshot["snapshot_id"])
+            context_eligible = (
+                hybrid_row["context"]["training_eligible"]
+                if key[1] in {"hybrid_clean", "hybrid_clean_scoped_tools"}
+                and hybrid_row is not None
+                else True
+            )
+            upgraded_predictions = (
+                attach_source_audit(
+                    existing_row,
+                    audit=source_action_audit,
+                    context_eligible=context_eligible,
+                )
+                or upgraded_predictions
+            )
 
         needs_context = any(
-            variant != "long_raw"
+            variant in {"structured_state", "clean_subtask"}
             and (snapshot["snapshot_id"], variant) not in completed
             for variant in probe.variants
         )
@@ -120,23 +157,65 @@ def run_paired_probe(
                 append_jsonl(contexts_path, context_row)
                 contexts[snapshot["snapshot_id"]] = context_row
 
+        needs_hybrid_context = any(
+            variant in {"hybrid_clean", "hybrid_clean_scoped_tools"}
+            and (snapshot["snapshot_id"], variant) not in completed
+            for variant in probe.variants
+        )
+        hybrid_row = hybrid_contexts.get(snapshot["snapshot_id"])
+        if needs_hybrid_context and hybrid_row is None:
+            hybrid_context, hybrid_metadata = build_hybrid_clean_context(
+                model=probe.context_builder_llm,
+                llm_args={**probe.context_builder_llm_args, **seed_args},
+                prefix=prefix,
+                agent_tools=tools,
+                user_tools=user_tools,
+            )
+            hybrid_row = {
+                "snapshot_id": snapshot["snapshot_id"],
+                "context": hybrid_context,
+                "builder_metadata": hybrid_metadata,
+                "source_scope": (
+                    "agent-visible prefix and tool ownership only; no target, "
+                    "reward, benchmark labels, or reference actions"
+                ),
+            }
+            append_jsonl(hybrid_contexts_path, hybrid_row)
+            hybrid_contexts[snapshot["snapshot_id"]] = hybrid_row
+
         for variant in probe.variants:
             key = (snapshot["snapshot_id"], variant)
             if key in completed:
                 continue
-            if variant != "long_raw" and context_row is None:
+            if variant in {"structured_state", "clean_subtask"} and context_row is None:
                 continue
+            if (
+                variant in {"hybrid_clean", "hybrid_clean_scoped_tools"}
+                and hybrid_row is None
+            ):
+                continue
+            selected_context = (
+                hybrid_row["context"]
+                if variant in {"hybrid_clean", "hybrid_clean_scoped_tools"}
+                else context_row["context"]
+                if context_row is not None
+                else None
+            )
             model_messages = make_probe_messages(
                 variant=variant,
                 agent_system_prompt=agent.system_prompt,
                 prefix=prefix,
-                structured_context=(
-                    context_row["context"] if context_row is not None else None
-                ),
+                structured_context=selected_context,
             )
+            prediction_tools = tools
+            if variant == "hybrid_clean_scoped_tools":
+                allowed = set(
+                    hybrid_row["context"]["action_contract"]["allowed_agent_tools"]
+                )
+                prediction_tools = [tool for tool in tools if tool.name in allowed]
             prediction = generate(
                 model=probe.agent_llm,
-                tools=tools,
+                tools=prediction_tools,
                 messages=model_messages,
                 call_name=f"trace_to_micro_{variant}",
                 **{**probe.agent_llm_args, **seed_args},
@@ -163,6 +242,15 @@ def run_paired_probe(
                 "prediction_generation_seconds": prediction.generation_time_seconds,
                 "actual_branch": actual_branch,
                 "predicted_branch": predicted_branch,
+                "source_action_audit": source_action_audit,
+                "training_eligible": (
+                    source_action_audit["valid"]
+                    and (
+                        selected_context.get("training_eligible", True)
+                        if selected_context is not None
+                        else True
+                    )
+                ),
                 "same_pre_state": (
                     actual_branch["pre_state_hash"]
                     == predicted_branch["pre_state_hash"]
@@ -174,6 +262,8 @@ def run_paired_probe(
                 ),
             }
             append_jsonl(predictions_path, row)
+            prediction_rows.append(row)
+            predictions_by_key[key] = row
             completed.add(key)
 
     if failed_contexts:
@@ -181,8 +271,11 @@ def run_paired_probe(
             f"Context construction failed for {len(failed_contexts)} snapshots; "
             f"diagnostics were written to {context_failures_path}"
         )
+    if upgraded_predictions:
+        write_jsonl(predictions_path, prediction_rows)
     return {
         "contexts": contexts_path,
+        "hybrid_contexts": hybrid_contexts_path,
         "context_failures": context_failures_path,
         "predictions": predictions_path,
     }

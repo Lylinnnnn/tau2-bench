@@ -86,9 +86,7 @@ def test_completeness_rejects_results_missing_configured_tasks(
         )
 
 
-def test_completeness_rejects_results_from_another_model(
-    monkeypatch, tmp_path
-) -> None:
+def test_completeness_rejects_results_from_another_model(monkeypatch, tmp_path) -> None:
     metadata = type(
         "Metadata",
         (),

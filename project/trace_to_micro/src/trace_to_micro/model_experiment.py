@@ -5,6 +5,7 @@ from pathlib import Path
 
 from tau2.data_model.simulation import Results
 from tau2.runner import load_task_splits
+from trace_to_micro.clean import build_hybrid_context_report
 from trace_to_micro.config import ModelExperimentConfig
 from trace_to_micro.evaluation import build_cross_split_report, build_paired_report
 from trace_to_micro.io import read_jsonl, write_json, write_jsonl
@@ -218,6 +219,11 @@ def run_probe_summary(config_path: Path) -> dict[str, Path]:
         if not all(row["same_pre_state"] for row in rows):
             raise ValueError(f"Paired probe for {split!r} violated state identity")
         report = build_paired_report(rows)
+        hybrid_contexts = read_jsonl(split_dir / "hybrid_contexts.jsonl")
+        if hybrid_contexts:
+            report["hybrid_context_quality"] = build_hybrid_context_report(
+                hybrid_contexts
+            )
         report["experiment"] = {
             "name": "same_state_different_context_single_step",
             "split": split,

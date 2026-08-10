@@ -126,3 +126,26 @@ def test_long_raw_preserves_visible_prefix() -> None:
     )
 
     assert messages[1] is prefix[0]
+
+
+def test_hybrid_clean_opens_a_new_window_with_action_contract() -> None:
+    context = {
+        "verified_context": {"interaction_phase": "identity_collection"},
+        "semantic_brief": {"proposed_subgoal": "request phone number"},
+        "action_contract": {
+            "agent_response_mode": "request_information",
+            "allowed_agent_tools": [],
+        },
+    }
+    prefix = [UserMessage(role="user", content="raw history must be omitted")]
+
+    messages = make_probe_messages(
+        variant="hybrid_clean",
+        agent_system_prompt="system",
+        prefix=prefix,
+        structured_context=context,
+    )
+
+    assert len(messages) == 2
+    assert "raw history must be omitted" not in messages[-1].content
+    assert "request_information" in messages[-1].content

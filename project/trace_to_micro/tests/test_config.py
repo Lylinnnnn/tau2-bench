@@ -89,11 +89,12 @@ def test_qwen3_32b_config_separates_thinking_agent_and_json_builder() -> None:
     config = ModelExperimentConfig.load(config_path)
 
     assert config.trajectory.agent_llm == "openai/qwen3-32b"
-    assert config.trajectory.agent_llm_args["extra_body"][
-        "chat_template_kwargs"
-    ] == {"enable_thinking": True}
+    assert config.trajectory.agent_llm_args["extra_body"]["chat_template_kwargs"] == {
+        "enable_thinking": True
+    }
     assert config.probe.context_builder_llm_args["max_tokens"] == 1024
     assert config.probe.context_builder_llm_args["extra_body"][
         "chat_template_kwargs"
     ] == {"enable_thinking": False}
     assert "qwen3_32b" in str(config.probe.results_path)
+    assert "hybrid_clean" in config.probe.variants

@@ -194,11 +194,18 @@ def build_paired_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
         by_variant_context[(variant, row["context_length_bucket"])].append(row)
         rows_by_key[(row["snapshot_id"], variant)] = row
     comparisons = {}
-    for baseline, alternative in (
+    candidates = (
         ("long_raw", "structured_state"),
         ("structured_state", "clean_subtask"),
         ("long_raw", "clean_subtask"),
-    ):
+        ("long_raw", "hybrid_clean"),
+        ("clean_subtask", "hybrid_clean"),
+        ("hybrid_clean", "hybrid_clean_scoped_tools"),
+    )
+    available_variants = set(by_variant)
+    for baseline, alternative in candidates:
+        if {baseline, alternative} - available_variants:
+            continue
         comparison = _paired_delta(rows_by_key, baseline, alternative)
         comparison["by_position"] = {
             position: _paired_delta(
@@ -225,12 +232,27 @@ def build_paired_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
             for context_length in ("short", "medium", "long")
         }
         comparisons[f"{alternative}_vs_{baseline}"] = comparison
+    eligible_by_variant = {
+        variant: [row for row in variant_rows if row.get("training_eligible", True)]
+        for variant, variant_rows in by_variant.items()
+    }
     return {
         "prediction_count": len(rows),
         "unique_snapshots": len({row["snapshot_id"] for row in rows}),
         "by_variant": {
             variant: _rates(variant_rows)
             for variant, variant_rows in sorted(by_variant.items())
+        },
+        "by_variant_training_eligible": {
+            variant: _rates(eligible_by_variant[variant])
+            for variant in sorted(eligible_by_variant)
+        },
+        "data_quality": {
+            "training_eligible_count_by_variant": {
+                variant: len(eligible_by_variant[variant])
+                for variant in sorted(eligible_by_variant)
+            },
+            "all_rows_remain_in_primary_metrics": True,
         },
         "by_variant_and_position": {
             f"{variant}:{position}": _rates(group)

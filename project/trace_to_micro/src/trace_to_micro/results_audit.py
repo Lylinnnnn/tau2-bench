@@ -65,9 +65,7 @@ def build_results_audit(
                 finish_reason = _finish_reason(message)
                 finish_reasons[f"{actor}:{finish_reason or 'missing'}"] += 1
                 allowed_tools = agent_tools if actor == "assistant" else task_user_tools
-                opposite_tools = (
-                    all_user_tools if actor == "assistant" else agent_tools
-                )
+                opposite_tools = all_user_tools if actor == "assistant" else agent_tools
                 for call in message.tool_calls or []:
                     key = (call.id, call.requestor)
                     calls[key] = {

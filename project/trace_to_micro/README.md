@@ -19,13 +19,18 @@ same one-rollout-per-task corpus:
    recovery, train leave-one-task-out transition support, and train-to-test
    transition support.
 2. `experiment_2_context_probe` replays selected decisions to the exact same
-   environment state and runs paired single-step model inference under three
+   environment state and runs paired single-step model inference under four
    context conditions:
 
 - `long_raw`: the complete agent-visible prefix;
 - `structured_state`: a label-free structured summary of that prefix;
 - `clean_subtask`: the same summary plus an automatically mined local subgoal
   and observable success condition.
+- `hybrid_clean`: deterministic agent-visible evidence, a gated LLM Semantic
+  Brief, and a code-compiled Action Contract.
+
+The hybrid construction and its no-leakage/retry rules are documented in
+[`HYBRID_CLEAN_README.md`](HYBRID_CLEAN_README.md).
 
 Both experiments report `train` and `test` separately. Leave-one-task-out is
 needed only for Experiment 1's within-train support calculation; Experiment 2
@@ -50,6 +55,8 @@ src/trace_to_micro/      Tested extraction/orchestration code
                          orchestration out of the CLI
 src/trace_to_micro/evaluation/
                          Evaluation metrics kept separate from extraction
+src/trace_to_micro/clean/
+                         Hybrid evidence, semantic gate, contracts, and audits
 tests/                   Unit and integration tests
 outputs/                 Generated reports (gitignored)
 ```
@@ -214,12 +221,11 @@ data/simulations/trace_to_micro_qwen3_32b_thinking_t06_telecom_base/results.json
 project/trace_to_micro/outputs/qwen3_32b_thinking_t06_model_preexperiment/
 ```
 
-The context builder runs the same checkpoint in non-thinking JSON mode with a
-1,024-token output cap. Invalid JSON gets exactly one shorter retry. If that
-also fails, the script keeps the already valid JSONL rows, stores bounded
-head/tail diagnostics plus `finish_reason`, token usage, and output length in
-`context_failures.jsonl`, and exits non-zero instead of silently accepting or
-mixing malformed data.
+The legacy context builder runs the same checkpoint in non-thinking JSON mode
+with a 1,024-token output cap and one invalid-JSON retry. The hybrid Semantic
+Brief builder uses deterministic semantic validation and permits at most two
+retries after the initial generation. A still-invalid brief becomes an
+explicit rule fallback and is marked ineligible for training.
 
 ### Earlier Qwen3-30B-A3B run
 
@@ -314,10 +320,12 @@ outputs/qwen3_30b_model_preexperiment/
     ├── cross_split_report.json
     ├── train/
     │   ├── structured_contexts.jsonl
+    │   ├── hybrid_contexts.jsonl
     │   ├── paired_predictions.jsonl
     │   └── paired_probe_report.json
     └── test/
         ├── structured_contexts.jsonl
+        ├── hybrid_contexts.jsonl
         ├── paired_predictions.jsonl
         └── paired_probe_report.json
 ```

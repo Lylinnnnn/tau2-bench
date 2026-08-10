@@ -99,6 +99,36 @@ def test_report_computes_paired_delta() -> None:
     assert delta["metrics"]["stateful_effect_match"]["improved"] == 1
 
 
+def test_report_keeps_primary_metrics_and_adds_eligible_subset() -> None:
+    base = {
+        "snapshot_id": "s1",
+        "variant": "hybrid_clean",
+        "position_bucket": "late",
+        "context_length_bucket": "long",
+        "prediction_usage": None,
+        "training_eligible": False,
+        "metrics": {
+            "assistant_kind_match": False,
+            "assistant_exact_match": False,
+            "macro_tool_name_match": False,
+            "macro_tool_arguments_match": False,
+            "effect_match": False,
+            "stateful_effect_match": False,
+            "gold_macro_action_match": False,
+            "tool_error": True,
+            "mutation_noop": False,
+        },
+    }
+
+    report = build_paired_report([base])
+
+    assert report["by_variant"]["hybrid_clean"]["count"] == 1
+    assert report["by_variant_training_eligible"]["hybrid_clean"]["count"] == 0
+    assert report["data_quality"]["training_eligible_count_by_variant"] == {
+        "hybrid_clean": 0
+    }
+
+
 def test_cross_split_report_compares_context_effect_sizes() -> None:
     base = {
         "snapshot_id": "s1",

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 PROJECT_DIR = Path(__file__).parents[1]
 SCRIPTS_DIR = PROJECT_DIR / "scripts"
 
@@ -31,4 +30,4 @@ def test_managed_server_waits_for_models_endpoint() -> None:
 
     assert '"${base_url%/}/models"' in script
     assert '"${project_dir}/scripts/start_qwen3_32b_vllm.sh"' in script
-    assert 'trap cleanup EXIT' in script
+    assert "trap cleanup EXIT" in script

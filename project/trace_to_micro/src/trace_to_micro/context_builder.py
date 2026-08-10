@@ -187,6 +187,22 @@ def make_probe_messages(
         return [system, *visible]
     if structured_context is None:
         raise ValueError(f"Variant {variant!r} requires a structured context")
+    if variant in {"hybrid_clean", "hybrid_clean_scoped_tools"}:
+        instruction = (
+            "Continue from the verified context. Follow the action contract exactly. "
+            "Do not invent identifiers or call a user-owned action as an agent tool."
+        )
+        return [
+            system,
+            UserMessage(
+                role="user",
+                content=(
+                    f"{instruction}\n<context>\n"
+                    f"{json.dumps(structured_context, ensure_ascii=False)}"
+                    "\n</context>"
+                ),
+            ),
+        ]
     if variant == "structured_state":
         context = {
             key: value
