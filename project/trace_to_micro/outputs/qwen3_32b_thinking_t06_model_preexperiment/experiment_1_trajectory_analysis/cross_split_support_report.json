@@ -1,0 +1,1367 @@
+{
+  "experiment": {
+    "data_source": "real SimulationRun.messages",
+    "behavior_agent_model": "openai/qwen3-32b",
+    "behavior_user_model": "openai/qwen3-32b",
+    "one_trajectory_per_task": true,
+    "claim_scope": "observational logged support; no unobserved counterfactual claims"
+  },
+  "transition_count": 1947,
+  "train_transition_count": 1295,
+  "test_transition_count": 652,
+  "replay_error_count": 217,
+  "split_protocol": {
+    "train": "train-to-train with the query task excluded from support",
+    "test": "train-to-test; test transitions never enter support",
+    "train_test_task_overlap": 0
+  },
+  "state_recurrence": {
+    "train_loto": {
+      "1": {
+        "covered": 316,
+        "total": 1295,
+        "rate": 0.244015444015444
+      },
+      "3": {
+        "covered": 125,
+        "total": 1295,
+        "rate": 0.09652509652509653
+      },
+      "5": {
+        "covered": 64,
+        "total": 1295,
+        "rate": 0.04942084942084942
+      }
+    },
+    "test_transfer": {
+      "1": {
+        "covered": 154,
+        "total": 652,
+        "rate": 0.2361963190184049
+      },
+      "3": {
+        "covered": 30,
+        "total": 652,
+        "rate": 0.046012269938650305
+      },
+      "5": {
+        "covered": 26,
+        "total": 652,
+        "rate": 0.03987730061349693
+      }
+    }
+  },
+  "transition_support": {
+    "train_loto": {
+      "state_changing_only": false,
+      "leave_one_task_out": true,
+      "train_event_count": 1295,
+      "test_event_count": 1295,
+      "train_task_count": 74,
+      "test_task_count": 74,
+      "train_actor_counts": {
+        "assistant": 420,
+        "user": 875
+      },
+      "test_actor_counts": {
+        "assistant": 420,
+        "user": 875
+      },
+      "coverage": {
+        "1": {
+          "action": {
+            "covered": 1209,
+            "total": 1295,
+            "rate": 0.9335907335907336,
+            "support_histogram": {
+              "0": 86,
+              "1": 22,
+              "2": 21,
+              "3": 24,
+              "4": 20,
+              "5": 6,
+              "6": 21,
+              "7": 8,
+              "8": 9,
+              "9": 33,
+              "10": 22,
+              "11": 12,
+              "12": 29,
+              "13": 28,
+              "14": 31,
+              "16": 17,
+              "17": 18,
+              "20": 21,
+              "21": 22,
+              "24": 61,
+              "30": 43,
+              "31": 71,
+              "33": 70,
+              "35": 39,
+              "36": 40,
+              "38": 39,
+              "41": 44,
+              "43": 53,
+              "46": 110,
+              "52": 135,
+              "54": 64,
+              "70": 76
+            }
+          },
+          "exact_effect": {
+            "covered": 1186,
+            "total": 1295,
+            "rate": 0.9158301158301159,
+            "support_histogram": {
+              "0": 109,
+              "1": 26,
+              "2": 27,
+              "3": 32,
+              "4": 45,
+              "5": 24,
+              "6": 21,
+              "7": 8,
+              "8": 18,
+              "9": 22,
+              "11": 48,
+              "12": 27,
+              "13": 28,
+              "14": 31,
+              "15": 16,
+              "16": 17,
+              "17": 18,
+              "18": 19,
+              "19": 21,
+              "20": 21,
+              "21": 22,
+              "22": 23,
+              "24": 61,
+              "28": 60,
+              "31": 71,
+              "33": 70,
+              "36": 39,
+              "41": 44,
+              "46": 52,
+              "52": 135,
+              "54": 64,
+              "70": 76
+            }
+          }
+        },
+        "3": {
+          "action": {
+            "covered": 1166,
+            "total": 1295,
+            "rate": 0.9003861003861003,
+            "support_histogram": {
+              "0": 86,
+              "1": 22,
+              "2": 21,
+              "3": 24,
+              "4": 20,
+              "5": 6,
+              "6": 21,
+              "7": 8,
+              "8": 9,
+              "9": 33,
+              "10": 22,
+              "11": 12,
+              "12": 29,
+              "13": 28,
+              "14": 31,
+              "16": 17,
+              "17": 18,
+              "20": 21,
+              "21": 22,
+              "24": 61,
+              "30": 43,
+              "31": 71,
+              "33": 70,
+              "35": 39,
+              "36": 40,
+              "38": 39,
+              "41": 44,
+              "43": 53,
+              "46": 110,
+              "52": 135,
+              "54": 64,
+              "70": 76
+            }
+          },
+          "exact_effect": {
+            "covered": 1133,
+            "total": 1295,
+            "rate": 0.8749034749034749,
+            "support_histogram": {
+              "0": 109,
+              "1": 26,
+              "2": 27,
+              "3": 32,
+              "4": 45,
+              "5": 24,
+              "6": 21,
+              "7": 8,
+              "8": 18,
+              "9": 22,
+              "11": 48,
+              "12": 27,
+              "13": 28,
+              "14": 31,
+              "15": 16,
+              "16": 17,
+              "17": 18,
+              "18": 19,
+              "19": 21,
+              "20": 21,
+              "21": 22,
+              "22": 23,
+              "24": 61,
+              "28": 60,
+              "31": 71,
+              "33": 70,
+              "36": 39,
+              "41": 44,
+              "46": 52,
+              "52": 135,
+              "54": 64,
+              "70": 76
+            }
+          }
+        },
+        "5": {
+          "action": {
+            "covered": 1122,
+            "total": 1295,
+            "rate": 0.8664092664092664,
+            "support_histogram": {
+              "0": 86,
+              "1": 22,
+              "2": 21,
+              "3": 24,
+              "4": 20,
+              "5": 6,
+              "6": 21,
+              "7": 8,
+              "8": 9,
+              "9": 33,
+              "10": 22,
+              "11": 12,
+              "12": 29,
+              "13": 28,
+              "14": 31,
+              "16": 17,
+              "17": 18,
+              "20": 21,
+              "21": 22,
+              "24": 61,
+              "30": 43,
+              "31": 71,
+              "33": 70,
+              "35": 39,
+              "36": 40,
+              "38": 39,
+              "41": 44,
+              "43": 53,
+              "46": 110,
+              "52": 135,
+              "54": 64,
+              "70": 76
+            }
+          },
+          "exact_effect": {
+            "covered": 1056,
+            "total": 1295,
+            "rate": 0.8154440154440155,
+            "support_histogram": {
+              "0": 109,
+              "1": 26,
+              "2": 27,
+              "3": 32,
+              "4": 45,
+              "5": 24,
+              "6": 21,
+              "7": 8,
+              "8": 18,
+              "9": 22,
+              "11": 48,
+              "12": 27,
+              "13": 28,
+              "14": 31,
+              "15": 16,
+              "16": 17,
+              "17": 18,
+              "18": 19,
+              "19": 21,
+              "20": 21,
+              "21": 22,
+              "22": 23,
+              "24": 61,
+              "28": 60,
+              "31": 71,
+              "33": 70,
+              "36": 39,
+              "41": 44,
+              "46": 52,
+              "52": 135,
+              "54": 64,
+              "70": 76
+            }
+          }
+        }
+      },
+      "train_effect_consistency": {
+        "action_count": 152,
+        "dominant_effect_rate": 0.8764044943820225,
+        "conditional_effect_entropy_bits": 0.4116307851743723,
+        "ambiguous_actions": [
+          {
+            "action_key": "user:toggle_airplane_mode:{}",
+            "distinct_effects": 7,
+            "task_support": 56,
+            "dominant_effect_rate": 0.3392857142857143,
+            "entropy_bits": 2.2272645601603633
+          },
+          {
+            "action_key": "user:reboot_device:{}",
+            "distinct_effects": 8,
+            "task_support": 52,
+            "dominant_effect_rate": 0.4423076923076923,
+            "entropy_bits": 1.907451749117592
+          },
+          {
+            "action_key": "user:toggle_data:{}",
+            "distinct_effects": 2,
+            "task_support": 41,
+            "dominant_effect_rate": 0.7073170731707317,
+            "entropy_bits": 0.8721617883411699
+          },
+          {
+            "action_key": "assistant:enable_roaming:{\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}",
+            "distinct_effects": 4,
+            "task_support": 39,
+            "dominant_effect_rate": 0.8717948717948718,
+            "entropy_bits": 0.7476141008491319
+          },
+          {
+            "action_key": "user:set_network_mode_preference:{\"mode\": \"4g_5g_preferred\"}",
+            "distinct_effects": 3,
+            "task_support": 39,
+            "dominant_effect_rate": 0.7435897435897436,
+            "entropy_bits": 1.0472529671887538
+          },
+          {
+            "action_key": "user:reset_apn_settings:{}",
+            "distinct_effects": 2,
+            "task_support": 38,
+            "dominant_effect_rate": 0.9736842105263158,
+            "entropy_bits": 0.17556502585750278
+          },
+          {
+            "action_key": "user:reseat_sim_card:{}",
+            "distinct_effects": 4,
+            "task_support": 34,
+            "dominant_effect_rate": 0.35294117647058826,
+            "entropy_bits": 1.9328045775391227
+          },
+          {
+            "action_key": "user:toggle_data_saver_mode:{}",
+            "distinct_effects": 2,
+            "task_support": 15,
+            "dominant_effect_rate": 0.8666666666666667,
+            "entropy_bits": 0.5665095065529053
+          },
+          {
+            "action_key": "assistant:send_payment_request:{\"bill_id\": \"<bill_id>\", \"customer_id\": \"<customer_id>\"}",
+            "distinct_effects": 3,
+            "task_support": 11,
+            "dominant_effect_rate": 0.45454545454545453,
+            "entropy_bits": 1.3485878960124222
+          },
+          {
+            "action_key": "user:make_payment:{}",
+            "distinct_effects": 3,
+            "task_support": 11,
+            "dominant_effect_rate": 0.45454545454545453,
+            "entropy_bits": 1.3485878960124222
+          },
+          {
+            "action_key": "user:set_apn_settings:{\"apn_settings\": {\"apn_name\": \"internet\", \"mms_apn\": \"mms\", \"mmsc_url\": \"http://mms.carrier.com/mms/wapenc\"}}",
+            "distinct_effects": 3,
+            "task_support": 11,
+            "dominant_effect_rate": 0.45454545454545453,
+            "entropy_bits": 1.3485878960124222
+          },
+          {
+            "action_key": "user:grant_app_permission:{\"app_name\": \"messaging\", \"permission\": \"storage\"}",
+            "distinct_effects": 2,
+            "task_support": 10,
+            "dominant_effect_rate": 0.9,
+            "entropy_bits": 0.4689955935892812
+          },
+          {
+            "action_key": "user:set_network_mode_preference:{\"mode\": \"4g_only\"}",
+            "distinct_effects": 2,
+            "task_support": 7,
+            "dominant_effect_rate": 0.8571428571428571,
+            "entropy_bits": 0.5916727785823275
+          },
+          {
+            "action_key": "assistant:resume_line:{\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}",
+            "distinct_effects": 2,
+            "task_support": 5,
+            "dominant_effect_rate": 0.8,
+            "entropy_bits": 0.7219280948873623
+          },
+          {
+            "action_key": "user:set_apn_settings:{\"apn_settings\": {\"apn_name\": \"internet\"}}",
+            "distinct_effects": 3,
+            "task_support": 3,
+            "dominant_effect_rate": 0.3333333333333333,
+            "entropy_bits": 1.584962500721156
+          },
+          {
+            "action_key": "assistant:refuel_data:{\"customer_id\": \"<customer_id>\", \"gb_amount\": 1.0, \"line_id\": \"<line_id>\"}",
+            "distinct_effects": 2,
+            "task_support": 2,
+            "dominant_effect_rate": 0.5,
+            "entropy_bits": 1.0
+          },
+          {
+            "action_key": "user:set_apn_settings:{\"apn_settings\": {\"apn_name\": \"internet\", \"mmsc_url\": \"http://mms.carrier.com/mms/wapenc\"}}",
+            "distinct_effects": 2,
+            "task_support": 2,
+            "dominant_effect_rate": 0.5,
+            "entropy_bits": 1.0
+          }
+        ]
+      },
+      "declaration_mismatches": {
+        "declared_mutating_without_change": 280,
+        "declared_non_mutating_with_change": 0
+      }
+    },
+    "test_transfer": {
+      "state_changing_only": false,
+      "leave_one_task_out": false,
+      "train_event_count": 1295,
+      "test_event_count": 652,
+      "train_task_count": 74,
+      "test_task_count": 40,
+      "train_actor_counts": {
+        "assistant": 420,
+        "user": 875
+      },
+      "test_actor_counts": {
+        "assistant": 204,
+        "user": 448
+      },
+      "coverage": {
+        "1": {
+          "action": {
+            "covered": 604,
+            "total": 652,
+            "rate": 0.9263803680981595,
+            "support_histogram": {
+              "0": 48,
+              "1": 16,
+              "2": 9,
+              "3": 8,
+              "4": 11,
+              "5": 15,
+              "6": 3,
+              "7": 11,
+              "8": 5,
+              "9": 3,
+              "10": 23,
+              "11": 10,
+              "12": 9,
+              "13": 12,
+              "14": 11,
+              "15": 17,
+              "17": 2,
+              "18": 3,
+              "21": 13,
+              "22": 9,
+              "25": 22,
+              "31": 28,
+              "32": 35,
+              "34": 34,
+              "36": 19,
+              "37": 16,
+              "39": 14,
+              "42": 28,
+              "44": 28,
+              "47": 47,
+              "53": 68,
+              "55": 35,
+              "71": 40
+            }
+          },
+          "exact_effect": {
+            "covered": 597,
+            "total": 652,
+            "rate": 0.9156441717791411,
+            "support_histogram": {
+              "0": 55,
+              "1": 21,
+              "2": 9,
+              "3": 13,
+              "4": 17,
+              "5": 27,
+              "6": 10,
+              "7": 9,
+              "8": 5,
+              "9": 6,
+              "10": 16,
+              "12": 31,
+              "13": 12,
+              "14": 11,
+              "15": 17,
+              "16": 3,
+              "17": 2,
+              "18": 3,
+              "19": 13,
+              "20": 8,
+              "21": 12,
+              "22": 9,
+              "23": 17,
+              "25": 22,
+              "29": 29,
+              "32": 35,
+              "34": 35,
+              "37": 16,
+              "42": 28,
+              "47": 18,
+              "53": 68,
+              "55": 35,
+              "71": 40
+            }
+          }
+        },
+        "3": {
+          "action": {
+            "covered": 579,
+            "total": 652,
+            "rate": 0.8880368098159509,
+            "support_histogram": {
+              "0": 48,
+              "1": 16,
+              "2": 9,
+              "3": 8,
+              "4": 11,
+              "5": 15,
+              "6": 3,
+              "7": 11,
+              "8": 5,
+              "9": 3,
+              "10": 23,
+              "11": 10,
+              "12": 9,
+              "13": 12,
+              "14": 11,
+              "15": 17,
+              "17": 2,
+              "18": 3,
+              "21": 13,
+              "22": 9,
+              "25": 22,
+              "31": 28,
+              "32": 35,
+              "34": 34,
+              "36": 19,
+              "37": 16,
+              "39": 14,
+              "42": 28,
+              "44": 28,
+              "47": 47,
+              "53": 68,
+              "55": 35,
+              "71": 40
+            }
+          },
+          "exact_effect": {
+            "covered": 567,
+            "total": 652,
+            "rate": 0.8696319018404908,
+            "support_histogram": {
+              "0": 55,
+              "1": 21,
+              "2": 9,
+              "3": 13,
+              "4": 17,
+              "5": 27,
+              "6": 10,
+              "7": 9,
+              "8": 5,
+              "9": 6,
+              "10": 16,
+              "12": 31,
+              "13": 12,
+              "14": 11,
+              "15": 17,
+              "16": 3,
+              "17": 2,
+              "18": 3,
+              "19": 13,
+              "20": 8,
+              "21": 12,
+              "22": 9,
+              "23": 17,
+              "25": 22,
+              "29": 29,
+              "32": 35,
+              "34": 35,
+              "37": 16,
+              "42": 28,
+              "47": 18,
+              "53": 68,
+              "55": 35,
+              "71": 40
+            }
+          }
+        },
+        "5": {
+          "action": {
+            "covered": 560,
+            "total": 652,
+            "rate": 0.8588957055214724,
+            "support_histogram": {
+              "0": 48,
+              "1": 16,
+              "2": 9,
+              "3": 8,
+              "4": 11,
+              "5": 15,
+              "6": 3,
+              "7": 11,
+              "8": 5,
+              "9": 3,
+              "10": 23,
+              "11": 10,
+              "12": 9,
+              "13": 12,
+              "14": 11,
+              "15": 17,
+              "17": 2,
+              "18": 3,
+              "21": 13,
+              "22": 9,
+              "25": 22,
+              "31": 28,
+              "32": 35,
+              "34": 34,
+              "36": 19,
+              "37": 16,
+              "39": 14,
+              "42": 28,
+              "44": 28,
+              "47": 47,
+              "53": 68,
+              "55": 35,
+              "71": 40
+            }
+          },
+          "exact_effect": {
+            "covered": 537,
+            "total": 652,
+            "rate": 0.8236196319018405,
+            "support_histogram": {
+              "0": 55,
+              "1": 21,
+              "2": 9,
+              "3": 13,
+              "4": 17,
+              "5": 27,
+              "6": 10,
+              "7": 9,
+              "8": 5,
+              "9": 6,
+              "10": 16,
+              "12": 31,
+              "13": 12,
+              "14": 11,
+              "15": 17,
+              "16": 3,
+              "17": 2,
+              "18": 3,
+              "19": 13,
+              "20": 8,
+              "21": 12,
+              "22": 9,
+              "23": 17,
+              "25": 22,
+              "29": 29,
+              "32": 35,
+              "34": 35,
+              "37": 16,
+              "42": 28,
+              "47": 18,
+              "53": 68,
+              "55": 35,
+              "71": 40
+            }
+          }
+        }
+      },
+      "train_effect_consistency": {
+        "action_count": 152,
+        "dominant_effect_rate": 0.8764044943820225,
+        "conditional_effect_entropy_bits": 0.4116307851743723,
+        "ambiguous_actions": [
+          {
+            "action_key": "user:toggle_airplane_mode:{}",
+            "distinct_effects": 7,
+            "task_support": 56,
+            "dominant_effect_rate": 0.3392857142857143,
+            "entropy_bits": 2.2272645601603633
+          },
+          {
+            "action_key": "user:reboot_device:{}",
+            "distinct_effects": 8,
+            "task_support": 52,
+            "dominant_effect_rate": 0.4423076923076923,
+            "entropy_bits": 1.907451749117592
+          },
+          {
+            "action_key": "user:toggle_data:{}",
+            "distinct_effects": 2,
+            "task_support": 41,
+            "dominant_effect_rate": 0.7073170731707317,
+            "entropy_bits": 0.8721617883411699
+          },
+          {
+            "action_key": "assistant:enable_roaming:{\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}",
+            "distinct_effects": 4,
+            "task_support": 39,
+            "dominant_effect_rate": 0.8717948717948718,
+            "entropy_bits": 0.7476141008491319
+          },
+          {
+            "action_key": "user:set_network_mode_preference:{\"mode\": \"4g_5g_preferred\"}",
+            "distinct_effects": 3,
+            "task_support": 39,
+            "dominant_effect_rate": 0.7435897435897436,
+            "entropy_bits": 1.0472529671887538
+          },
+          {
+            "action_key": "user:reset_apn_settings:{}",
+            "distinct_effects": 2,
+            "task_support": 38,
+            "dominant_effect_rate": 0.9736842105263158,
+            "entropy_bits": 0.17556502585750278
+          },
+          {
+            "action_key": "user:reseat_sim_card:{}",
+            "distinct_effects": 4,
+            "task_support": 34,
+            "dominant_effect_rate": 0.35294117647058826,
+            "entropy_bits": 1.9328045775391227
+          },
+          {
+            "action_key": "user:toggle_data_saver_mode:{}",
+            "distinct_effects": 2,
+            "task_support": 15,
+            "dominant_effect_rate": 0.8666666666666667,
+            "entropy_bits": 0.5665095065529053
+          },
+          {
+            "action_key": "assistant:send_payment_request:{\"bill_id\": \"<bill_id>\", \"customer_id\": \"<customer_id>\"}",
+            "distinct_effects": 3,
+            "task_support": 11,
+            "dominant_effect_rate": 0.45454545454545453,
+            "entropy_bits": 1.3485878960124222
+          },
+          {
+            "action_key": "user:make_payment:{}",
+            "distinct_effects": 3,
+            "task_support": 11,
+            "dominant_effect_rate": 0.45454545454545453,
+            "entropy_bits": 1.3485878960124222
+          },
+          {
+            "action_key": "user:set_apn_settings:{\"apn_settings\": {\"apn_name\": \"internet\", \"mms_apn\": \"mms\", \"mmsc_url\": \"http://mms.carrier.com/mms/wapenc\"}}",
+            "distinct_effects": 3,
+            "task_support": 11,
+            "dominant_effect_rate": 0.45454545454545453,
+            "entropy_bits": 1.3485878960124222
+          },
+          {
+            "action_key": "user:grant_app_permission:{\"app_name\": \"messaging\", \"permission\": \"storage\"}",
+            "distinct_effects": 2,
+            "task_support": 10,
+            "dominant_effect_rate": 0.9,
+            "entropy_bits": 0.4689955935892812
+          },
+          {
+            "action_key": "user:set_network_mode_preference:{\"mode\": \"4g_only\"}",
+            "distinct_effects": 2,
+            "task_support": 7,
+            "dominant_effect_rate": 0.8571428571428571,
+            "entropy_bits": 0.5916727785823275
+          },
+          {
+            "action_key": "assistant:resume_line:{\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}",
+            "distinct_effects": 2,
+            "task_support": 5,
+            "dominant_effect_rate": 0.8,
+            "entropy_bits": 0.7219280948873623
+          },
+          {
+            "action_key": "user:set_apn_settings:{\"apn_settings\": {\"apn_name\": \"internet\"}}",
+            "distinct_effects": 3,
+            "task_support": 3,
+            "dominant_effect_rate": 0.3333333333333333,
+            "entropy_bits": 1.584962500721156
+          },
+          {
+            "action_key": "assistant:refuel_data:{\"customer_id\": \"<customer_id>\", \"gb_amount\": 1.0, \"line_id\": \"<line_id>\"}",
+            "distinct_effects": 2,
+            "task_support": 2,
+            "dominant_effect_rate": 0.5,
+            "entropy_bits": 1.0
+          },
+          {
+            "action_key": "user:set_apn_settings:{\"apn_settings\": {\"apn_name\": \"internet\", \"mmsc_url\": \"http://mms.carrier.com/mms/wapenc\"}}",
+            "distinct_effects": 2,
+            "task_support": 2,
+            "dominant_effect_rate": 0.5,
+            "entropy_bits": 1.0
+          }
+        ]
+      },
+      "declaration_mismatches": {
+        "declared_mutating_without_change": 207,
+        "declared_non_mutating_with_change": 0
+      }
+    }
+  },
+  "natural_action_overlap": {
+    "strict_full_pre_state": {
+      "1": {
+        "eligible_state_count": 290,
+        "examples": [
+          {
+            "actor": "assistant",
+            "state_key": "6a29676bdcf981fc8a55937ccb43901006298bce03f01a8d245b485ca9aa9ebc",
+            "actions": {
+              "[\"enable_roaming\", {\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}]": [
+                "[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ],
+              "[\"get_customer_by_phone\", {\"phone_number\": \"<phone_number>\"}]": [
+                "[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ],
+              "[\"get_details_by_id\", {\"id\": \"L1001\"}]": [
+                "[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "30bf402d0ec11650d8c82e2af9cfad1521fe4aaa28f3cc277279d63fe70c3f64",
+            "actions": {
+              "[\"check_network_status\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ],
+              "[\"toggle_airplane_mode\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "c44cbfde43502a7aaf05313647bdf6632f21b2ecddab9df76e11b98fbfc5f63a",
+            "actions": {
+              "[\"check_apn_settings\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ],
+              "[\"check_network_mode_preference\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]",
+                "[mobile_data_issue]bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Hard]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "51af8999ae337169560339570179f5057949d84ae34a99c0af074f3439ea137c",
+            "actions": {
+              "[\"check_network_status\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:None]"
+              ],
+              "[\"get_customer_by_phone\", {\"phone_number\": \"<phone_number>\"}]": [
+                "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:None]"
+              ],
+              "[\"get_details_by_id\", {\"id\": \"L1001\"}]": [
+                "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:None]"
+              ],
+              "[\"get_details_by_id\", {\"id\": \"P1001\"}]": [
+                "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "51af8999ae337169560339570179f5057949d84ae34a99c0af074f3439ea137c",
+            "actions": {
+              "[\"check_status_bar\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:None]"
+              ],
+              "[\"toggle_airplane_mode\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "b6f11898fb99d680a531aeb9db0e6c3936655f148cf90dcadb5072728d719475",
+            "actions": {
+              "[\"can_send_mms\", {}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|break_apn_mms_setting|break_app_storage_permission[PERSONA:None]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|data_mode_off[PERSONA:None]",
+                "[mobile_data_issue]bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "175b558310c6f400fc3be16c689d4d153bec8ef260badf63a35cd8441a019101",
+            "actions": {
+              "[\"get_bills_for_customer\", {\"customer_id\": \"<customer_id>\"}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"get_customer_by_phone\", {\"phone_number\": \"<phone_number>\"}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"send_payment_request\", {\"bill_id\": \"<bill_id>\", \"customer_id\": \"<customer_id>\"}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "8c83ed79b84f6a0d589977bcd07e6799eb2b304934ebe22404e20b09d7e835fb",
+            "actions": {
+              "[\"check_payment_request\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"make_payment\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "0be5f63a81cae10441fda5275fbc0308cfb4f91ae1f51275a9add44f79a0851f",
+            "actions": {
+              "[\"check_apn_settings\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"get_data_usage\", {\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"set_network_mode_preference\", {\"mode\": \"4g_5g_preferred\"}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "0be5f63a81cae10441fda5275fbc0308cfb4f91ae1f51275a9add44f79a0851f",
+            "actions": {
+              "[\"check_apn_settings\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"check_network_mode_preference\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"check_network_status\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"toggle_airplane_mode\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "8fbac2d9aa67e15b04880cea27ab59de920ca0ebb953b2595712b912d38db108",
+            "actions": {
+              "[\"check_network_mode_preference\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ],
+              "[\"set_network_mode_preference\", {\"mode\": \"4g_5g_preferred\"}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "beded92592a286de36481a956254c598a51b57275231859f7475ecfe5426b7be",
+            "actions": {
+              "[\"check_network_mode_preference\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Easy]",
+                "[mobile_data_issue]bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Hard]"
+              ],
+              "[\"check_network_status\", {}]": [
+                "[mobile_data_issue]bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Hard]"
+              ],
+              "[\"toggle_roaming\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "beded92592a286de36481a956254c598a51b57275231859f7475ecfe5426b7be",
+            "actions": {
+              "[\"enable_roaming\", {\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}]": [
+                "[mobile_data_issue]bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Hard]"
+              ],
+              "[\"get_customer_by_phone\", {\"phone_number\": \"<phone_number>\"}]": [
+                "[mobile_data_issue]bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Hard]"
+              ],
+              "[\"set_network_mode_preference\", {\"mode\": \"4g_only\"}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "0fb22d07759c47c184c626e47dc538b369b69725c6e108f22df2f7a9b02fe5f8",
+            "actions": {
+              "[\"enable_roaming\", {\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"get_customer_by_phone\", {\"phone_number\": \"<phone_number>\"}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"get_details_by_id\", {\"id\": \"L1001\"}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "ffecb0fe150dd91a5abbf8950090182ec14980d0fe2ab3de0f77093106d52908",
+            "actions": {
+              "[\"get_details_by_id\", {\"id\": \"L1002\"}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"get_details_by_id\", {\"id\": \"L1003\"}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "ffecb0fe150dd91a5abbf8950090182ec14980d0fe2ab3de0f77093106d52908",
+            "actions": {
+              "[\"check_apn_settings\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"check_network_status\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ],
+              "[\"reboot_device\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"reseat_sim_card\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"reset_apn_settings\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]",
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"set_network_mode_preference\", {\"mode\": \"4g_5g_preferred\"}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"toggle_data\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"toggle_data_saver_mode\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"toggle_roaming\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "119418bd5b999988fb8628b1195f68234eefeb0f70519f21a05ea5c7e3348883",
+            "actions": {
+              "[\"can_send_mms\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"toggle_airplane_mode\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "119418bd5b999988fb8628b1195f68234eefeb0f70519f21a05ea5c7e3348883",
+            "actions": {
+              "[\"reset_apn_settings\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"set_apn_settings\", {\"apn_name\": \"internet\", \"mms_apn\": \"mms\", \"mmsc_url\": \"http://mms.france.carrier.com/mms/wapenc\"}]": [
+                "[mobile_data_issue]data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "49606469f3229c5e456982ad5f07d2d0bf843869dcdf84e77f012727c896ab98",
+            "actions": {
+              "[\"get_bills_for_customer\", {\"customer_id\": \"<customer_id>\"}]": [
+                "[mobile_data_issue]data_saver_mode_on|data_usage_exceeded[PERSONA:Easy]"
+              ],
+              "[\"get_customer_by_phone\", {\"phone_number\": \"<phone_number>\"}]": [
+                "[mobile_data_issue]data_saver_mode_on|data_usage_exceeded[PERSONA:Easy]"
+              ],
+              "[\"get_data_usage\", {\"customer_id\": \"<customer_id>\", \"line_id\": \"<line_id>\"}]": [
+                "[mobile_data_issue]data_saver_mode_on|data_usage_exceeded[PERSONA:Easy]"
+              ],
+              "[\"send_payment_request\", {\"bill_id\": \"<bill_id>\", \"customer_id\": \"<customer_id>\"}]": [
+                "[mobile_data_issue]data_saver_mode_on|data_usage_exceeded[PERSONA:Easy]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "0771fa94480cf2645240a31c561dd0e28cc9dce8ee4fbf65fd5b548db78252ad",
+            "actions": {
+              "[\"check_payment_request\", {}]": [
+                "[mobile_data_issue]data_saver_mode_on|data_usage_exceeded[PERSONA:Easy]"
+              ],
+              "[\"make_payment\", {}]": [
+                "[mobile_data_issue]data_saver_mode_on|data_usage_exceeded[PERSONA:Easy]"
+              ]
+            }
+          }
+        ]
+      },
+      "3": {
+        "eligible_state_count": 3,
+        "examples": [
+          {
+            "actor": "user",
+            "state_key": "54db4c64bb3499a7033b3fcab777e221d509a5bb3252e0012983d267279c258a",
+            "actions": {
+              "[\"check_apn_settings\", {}]": [
+                "[mms_issue]bad_network_preference|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|user_abroad_roaming_disabled_on[PERSONA:Hard]",
+                "[mobile_data_issue]bad_vpn|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]"
+              ],
+              "[\"reset_apn_settings\", {}]": [
+                "[mms_issue]bad_network_preference|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mms_issue]bad_network_preference|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|user_abroad_roaming_disabled_on[PERSONA:Hard]",
+                "[mobile_data_issue]bad_vpn|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|user_abroad_roaming_disabled_on[PERSONA:Hard]",
+                "[mobile_data_issue]bad_vpn|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "044fd249953014607ded02a4a1fd335f1a33b56ad65ffa58f7078904e938df02",
+            "actions": {
+              "[\"can_send_mms\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]"
+              ],
+              "[\"check_apn_settings\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+                "[mobile_data_issue]data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]"
+              ],
+              "[\"check_sim_status\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]"
+              ],
+              "[\"reset_apn_settings\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+                "[mobile_data_issue]data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "4d92ce1004a240aefa2a962277ee45e63abb5ad35e01628b97ffeaa0e902b7c8",
+            "actions": {
+              "[\"check_network_status\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]bad_network_preference|bad_vpn|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]bad_network_preference|bad_vpn|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]"
+              ]
+            }
+          }
+        ]
+      },
+      "5": {
+        "eligible_state_count": 1,
+        "examples": [
+          {
+            "actor": "user",
+            "state_key": "044fd249953014607ded02a4a1fd335f1a33b56ad65ffa58f7078904e938df02",
+            "actions": {
+              "[\"reset_apn_settings\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]"
+              ],
+              "[\"run_speed_test\", {}]": [
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+                "[mobile_data_issue]data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "effect_local_pre_state": {
+      "1": {
+        "eligible_state_count": 4,
+        "examples": [
+          {
+            "actor": "user",
+            "state_key": "[{\"before\": true, \"before_present\": true, \"path\": \"user.device.active_apn_settings.reset_at_reboot\"}]",
+            "actions": {
+              "[\"reboot_device\", {}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_app_sms_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_app_storage_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:Hard]",
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_app_storage_permission|unseat_sim_card[PERSONA:Hard]",
+                "[mms_issue]airplane_mode_on|bad_network_preference|break_apn_mms_setting|break_app_both_permissions|data_mode_off|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]",
+                "[mms_issue]bad_network_preference|break_app_sms_permission|data_mode_off|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]",
+                "[mms_issue]bad_network_preference|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mms_issue]bad_wifi_calling|break_apn_mms_setting|break_app_sms_permission|data_usage_exceeded[PERSONA:Hard]",
+                "[mms_issue]break_app_sms_permission|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Easy]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+                "[mobile_data_issue]airplane_mode_on|bad_network_preference|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+                "[mobile_data_issue]bad_network_preference|bad_vpn|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+                "[mobile_data_issue]bad_network_preference|data_saver_mode_on|data_usage_exceeded[PERSONA:Hard]",
+                "[mobile_data_issue]bad_vpn|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]",
+                "[mobile_data_issue]data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]"
+              ],
+              "[\"set_apn_settings\", {\"apn_settings\": {\"apn_name\": \"internet\", \"mms_apn\": \"mms\", \"mmsc_url\": \"http://mms.carrier.com/mms/wapenc\"}}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|data_usage_exceeded[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "[{\"before\": \"mms\", \"before_present\": true, \"path\": \"user.device.active_apn_settings.mms_apn\"}, {\"before\": \"http://mms.carrier.com/mms/wapenc\", \"before_present\": true, \"path\": \"user.device.active_apn_settings.mmsc_url\"}]",
+            "actions": {
+              "[\"set_apn_settings\", {\"apn_settings\": {\"apn_name\": \"internet\", \"mms_apn\": \"mms.orange.fr\", \"mmsc_url\": \"http://mms.orange.fr/mms/wapenc\"}}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_app_storage_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:Hard]"
+              ],
+              "[\"set_apn_settings\", {\"apn_settings\": {\"apn_name\": \"internet\", \"mms_apn\": \"mms.telecom\", \"mmsc_url\": \"http://mmsc.telecom.com\"}}]": [
+                "[mms_issue]bad_network_preference|user_abroad_roaming_disabled_on[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "user",
+            "state_key": "[{\"before\": null, \"before_present\": true, \"path\": \"user.device.active_apn_settings.mmsc_url\"}]",
+            "actions": {
+              "[\"set_apn_settings\", {\"apn_settings\": {\"apn_name\": \"internet\", \"mms_apn\": \"mms\", \"mmsc_url\": \"http://mms.carrier.com/mms/wapenc\"}}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_storage_permission|data_mode_off|data_usage_exceeded|unseat_sim_card[PERSONA:Easy]",
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_storage_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+                "[mms_issue]airplane_mode_on|bad_network_preference|break_apn_mms_setting|break_app_both_permissions|data_mode_off|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]",
+                "[mms_issue]airplane_mode_on|bad_network_preference|break_apn_mms_setting|data_mode_off|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+                "[mms_issue]bad_wifi_calling|break_apn_mms_setting|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:Easy]"
+              ],
+              "[\"set_apn_settings\", {\"apn_settings\": {\"apn_name\": \"internet\", \"mms_apn\": \"mms\", \"mmsc_url\": \"http://mms.fr.carrier.com/mms/wapenc\"}}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_sms_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:None]"
+              ],
+              "[\"set_apn_settings\", {\"apn_settings\": {\"apn_name\": \"internet\", \"mms_apn\": \"mms\", \"mmsc_url\": \"http://mms.orange.fr\"}}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_both_permissions|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:Hard]"
+              ],
+              "[\"set_apn_settings\", {\"apn_settings\": {\"apn_name\": \"internet\", \"mmsc_url\": \"http://mms.carrier.com/mms/wapenc\"}}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|break_apn_mms_setting|break_app_storage_permission[PERSONA:None]"
+              ]
+            }
+          },
+          {
+            "actor": "assistant",
+            "state_key": "[{\"before\": null, \"before_present\": false, \"path\": \"assistant.bills.2.line_items.0.amount\"}, {\"before\": null, \"before_present\": false, \"path\": \"assistant.bills.2.line_items.0.date\"}, {\"before\": null, \"before_present\": false, \"path\": \"assistant.bills.2.line_items.0.description\"}, {\"before\": null, \"before_present\": false, \"path\": \"assistant.bills.2.line_items.0.item_type\"}, {\"before\": 0.0, \"before_present\": true, \"path\": \"assistant.bills.2.total_due\"}, {\"before\": 0.0, \"before_present\": true, \"path\": \"assistant.lines.0.data_refueling_gb\"}]",
+            "actions": {
+              "[\"refuel_data\", {\"customer_id\": \"<customer_id>\", \"gb_amount\": 1.0, \"line_id\": \"<line_id>\"}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|break_apn_mms_setting|data_usage_exceeded[PERSONA:Hard]"
+              ],
+              "[\"refuel_data\", {\"customer_id\": \"<customer_id>\", \"gb_amount\": 2.0, \"line_id\": \"<line_id>\"}]": [
+                "[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_app_storage_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:Hard]",
+                "[mms_issue]bad_network_preference|bad_wifi_calling|break_app_both_permissions|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+                "[mms_issue]bad_wifi_calling|break_apn_mms_setting|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:Easy]",
+                "[mms_issue]break_apn_mms_setting|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:Hard]"
+              ]
+            }
+          }
+        ]
+      },
+      "3": {
+        "eligible_state_count": 0,
+        "examples": []
+      },
+      "5": {
+        "eligible_state_count": 0,
+        "examples": []
+      }
+    },
+    "interpretation": "Only groups with at least two naturally observed actions are eligible for action comparison; otherwise the method must abstain."
+  }
+}

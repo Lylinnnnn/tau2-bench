@@ -1,0 +1,17 @@
+{
+  "snapshot_count": 119,
+  "unique_tasks": 40,
+  "position_buckets": {
+    "early": 40,
+    "late": 40,
+    "middle": 39
+  },
+  "context_length_buckets": {
+    "long": 39,
+    "medium": 40,
+    "short": 40
+  },
+  "selection": "deterministic early/middle/late within each trajectory",
+  "max_snapshots_per_task": 3,
+  "split": "test"
+}

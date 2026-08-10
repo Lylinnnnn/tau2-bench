@@ -1,0 +1,77 @@
+{
+  "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_telecom_base/results.json",
+  "behavior_agent_model": "openai/qwen3-32b",
+  "behavior_user_model": "openai/qwen3-32b",
+  "behavior_agent_args": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "max_tokens": 4096,
+    "api_base": "http://127.0.0.1:8000/v1",
+    "api_key": "EMPTY",
+    "timeout": 180.0,
+    "num_retries": 0,
+    "extra_body": {
+      "top_k": 20,
+      "min_p": 0.0,
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    }
+  },
+  "behavior_user_args": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "max_tokens": 4096,
+    "api_base": "http://127.0.0.1:8000/v1",
+    "api_key": "EMPTY",
+    "timeout": 180.0,
+    "num_retries": 0,
+    "extra_body": {
+      "top_k": 20,
+      "min_p": 0.0,
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    }
+  },
+  "nl_assertions_evaluator_model": "openai/qwen3-32b",
+  "nl_assertions_evaluator_args": {
+    "temperature": 0,
+    "max_tokens": 1024,
+    "response_format": {
+      "type": "json_object"
+    },
+    "api_base": "http://127.0.0.1:8000/v1",
+    "api_key": "EMPTY",
+    "timeout": 180,
+    "num_retries": 0,
+    "extra_body": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      }
+    }
+  },
+  "evaluator_provenance": "captured from this audit process; use the checked-in launcher so it matches trajectory generation",
+  "expected_agent_model": "openai/qwen3-32b",
+  "expected_user_model": "openai/qwen3-32b",
+  "agent_model_mismatch": false,
+  "user_model_mismatch": false,
+  "task_count": 114,
+  "num_trials": 1,
+  "required_task_count": 114,
+  "required_num_trials": 1,
+  "expected_simulations": 114,
+  "observed_simulations": 114,
+  "missing_task_trials": [],
+  "duplicate_task_trials": [],
+  "unexpected_task_trials": [],
+  "empty_simulation_ids": [],
+  "missing_metadata_tasks": [],
+  "unexpected_metadata_tasks": [],
+  "num_trials_mismatch": false,
+  "termination_reasons": {
+    "TerminationReason.TIMEOUT": 1,
+    "TerminationReason.USER_STOP": 113
+  },
+  "complete": true
+}

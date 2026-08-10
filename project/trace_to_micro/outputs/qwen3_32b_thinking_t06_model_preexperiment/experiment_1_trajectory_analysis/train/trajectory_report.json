@@ -1,0 +1,224 @@
+{
+  "experiment": "already_generated_trajectory_analysis",
+  "split": "train",
+  "simulation_count": 74,
+  "unique_task_count": 74,
+  "outcomes": {
+    "reward_count": 74,
+    "missing_reward_count": 0,
+    "mean_reward": 0.21621621621621623,
+    "pass_1": 0.21621621621621623,
+    "termination_reasons": {
+      "TerminationReason.TIMEOUT": 1,
+      "TerminationReason.USER_STOP": 73
+    }
+  },
+  "trajectory_length": {
+    "mean_message_count": 48.027027027027025,
+    "mean_agent_decision_count": 11.175675675675675,
+    "agent_decision_count_histogram": {
+      "0": 1,
+      "3": 2,
+      "4": 3,
+      "5": 8,
+      "6": 5,
+      "7": 4,
+      "8": 6,
+      "9": 5,
+      "10": 3,
+      "11": 6,
+      "12": 6,
+      "13": 7,
+      "14": 3,
+      "15": 3,
+      "16": 3,
+      "17": 2,
+      "19": 2,
+      "21": 1,
+      "30": 1,
+      "31": 1,
+      "32": 1,
+      "38": 1
+    },
+    "pass_1_by_agent_decision_count": {
+      "0": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "10": {
+        "count": 3,
+        "pass_1": 0.0
+      },
+      "11": {
+        "count": 6,
+        "pass_1": 0.3333333333333333
+      },
+      "12": {
+        "count": 6,
+        "pass_1": 0.16666666666666666
+      },
+      "13": {
+        "count": 7,
+        "pass_1": 0.2857142857142857
+      },
+      "14": {
+        "count": 3,
+        "pass_1": 0.0
+      },
+      "15": {
+        "count": 3,
+        "pass_1": 0.0
+      },
+      "16": {
+        "count": 3,
+        "pass_1": 0.0
+      },
+      "17": {
+        "count": 2,
+        "pass_1": 0.0
+      },
+      "19": {
+        "count": 2,
+        "pass_1": 0.0
+      },
+      "21": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "3": {
+        "count": 2,
+        "pass_1": 0.0
+      },
+      "30": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "31": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "32": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "38": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "4": {
+        "count": 3,
+        "pass_1": 1.0
+      },
+      "5": {
+        "count": 8,
+        "pass_1": 0.625
+      },
+      "6": {
+        "count": 5,
+        "pass_1": 0.4
+      },
+      "7": {
+        "count": 4,
+        "pass_1": 0.0
+      },
+      "8": {
+        "count": 6,
+        "pass_1": 0.16666666666666666
+      },
+      "9": {
+        "count": 5,
+        "pass_1": 0.0
+      }
+    },
+    "pass_1_by_horizon_bucket": {
+      "long_7_plus": {
+        "count": 55,
+        "pass_1": 0.10909090909090909
+      },
+      "medium_4_6": {
+        "count": 16,
+        "pass_1": 0.625
+      },
+      "short_0_3": {
+        "count": 3,
+        "pass_1": 0.0
+      }
+    }
+  },
+  "decision_snapshots": {
+    "count": 219,
+    "position_buckets": {
+      "early": 73,
+      "late": 76,
+      "middle": 70
+    },
+    "context_length_buckets": {
+      "long": 73,
+      "medium": 73,
+      "short": 73
+    },
+    "mean_prefix_message_count": 12.383561643835616,
+    "mean_prefix_char_count": 4417.03196347032
+  },
+  "observed_transitions": {
+    "count": 1295,
+    "actor_counts": {
+      "assistant": 420,
+      "user": 875
+    },
+    "action_counts": {
+      "can_send_mms": 71,
+      "check_apn_settings": 96,
+      "check_app_permissions": 39,
+      "check_app_status": 1,
+      "check_data_restriction_status": 39,
+      "check_data_usage": 1,
+      "check_installed_apps": 22,
+      "check_network_mode_preference": 54,
+      "check_network_status": 78,
+      "check_payment_request": 15,
+      "check_sim_status": 51,
+      "check_status_bar": 13,
+      "check_vpn_status": 3,
+      "check_wifi_calling_status": 5,
+      "check_wifi_status": 2,
+      "disconnect_vpn": 10,
+      "enable_roaming": 39,
+      "get_bills_for_customer": 12,
+      "get_customer_by_id": 1,
+      "get_customer_by_name": 6,
+      "get_customer_by_phone": 76,
+      "get_data_usage": 9,
+      "get_details_by_id": 84,
+      "grant_app_permission": 16,
+      "make_payment": 11,
+      "reboot_device": 59,
+      "refuel_data": 6,
+      "reseat_sim_card": 40,
+      "reset_apn_settings": 61,
+      "resume_line": 5,
+      "run_speed_test": 63,
+      "send_payment_request": 11,
+      "set_apn_settings": 37,
+      "set_network_mode_preference": 57,
+      "toggle_airplane_mode": 76,
+      "toggle_data": 55,
+      "toggle_data_saver_mode": 16,
+      "toggle_roaming": 22,
+      "toggle_wifi_calling": 1,
+      "transfer_to_human_agents": 32
+    },
+    "state_changing_count": 383,
+    "replay_error_count": 153,
+    "mutation_noop_count": 52,
+    "recovery": {
+      "error_transition_count": 153,
+      "followed_by_later_state_change": 107,
+      "observed_recovery_rate": 0.6993464052287581
+    }
+  },
+  "interpretation": {
+    "outcome_by_horizon": "observational association from complete logged trajectories; not a same-state context intervention",
+    "transition_support": "reported separately with train leave-one-task-out and train-to-test"
+  }
+}

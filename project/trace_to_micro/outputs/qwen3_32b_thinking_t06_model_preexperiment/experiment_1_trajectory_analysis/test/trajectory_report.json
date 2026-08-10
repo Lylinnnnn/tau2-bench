@@ -1,0 +1,172 @@
+{
+  "experiment": "already_generated_trajectory_analysis",
+  "split": "test",
+  "simulation_count": 40,
+  "unique_task_count": 40,
+  "outcomes": {
+    "reward_count": 40,
+    "missing_reward_count": 0,
+    "mean_reward": 0.375,
+    "pass_1": 0.375,
+    "termination_reasons": {
+      "TerminationReason.USER_STOP": 40
+    }
+  },
+  "trajectory_length": {
+    "mean_message_count": 43.175,
+    "mean_agent_decision_count": 9.375,
+    "agent_decision_count_histogram": {
+      "2": 1,
+      "5": 3,
+      "6": 4,
+      "7": 6,
+      "8": 3,
+      "9": 3,
+      "10": 3,
+      "11": 7,
+      "12": 6,
+      "14": 2,
+      "15": 1,
+      "19": 1
+    },
+    "pass_1_by_agent_decision_count": {
+      "10": {
+        "count": 3,
+        "pass_1": 0.3333333333333333
+      },
+      "11": {
+        "count": 7,
+        "pass_1": 0.42857142857142855
+      },
+      "12": {
+        "count": 6,
+        "pass_1": 0.16666666666666666
+      },
+      "14": {
+        "count": 2,
+        "pass_1": 0.5
+      },
+      "15": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "19": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "2": {
+        "count": 1,
+        "pass_1": 0.0
+      },
+      "5": {
+        "count": 3,
+        "pass_1": 0.3333333333333333
+      },
+      "6": {
+        "count": 4,
+        "pass_1": 0.5
+      },
+      "7": {
+        "count": 6,
+        "pass_1": 0.5
+      },
+      "8": {
+        "count": 3,
+        "pass_1": 0.0
+      },
+      "9": {
+        "count": 3,
+        "pass_1": 1.0
+      }
+    },
+    "pass_1_by_horizon_bucket": {
+      "long_7_plus": {
+        "count": 32,
+        "pass_1": 0.375
+      },
+      "medium_4_6": {
+        "count": 7,
+        "pass_1": 0.42857142857142855
+      },
+      "short_0_3": {
+        "count": 1,
+        "pass_1": 0.0
+      }
+    }
+  },
+  "decision_snapshots": {
+    "count": 119,
+    "position_buckets": {
+      "early": 40,
+      "late": 40,
+      "middle": 39
+    },
+    "context_length_buckets": {
+      "long": 39,
+      "medium": 40,
+      "short": 40
+    },
+    "mean_prefix_message_count": 10.445378151260504,
+    "mean_prefix_char_count": 3355.378151260504
+  },
+  "observed_transitions": {
+    "count": 652,
+    "actor_counts": {
+      "assistant": 204,
+      "user": 448
+    },
+    "action_counts": {
+      "apply_goodwill_credit": 1,
+      "can_send_mms": 35,
+      "check_apn_settings": 49,
+      "check_app_permissions": 18,
+      "check_data_restriction_status": 17,
+      "check_installed_apps": 10,
+      "check_network_mode_preference": 18,
+      "check_network_status": 45,
+      "check_payment_request": 10,
+      "check_sim_status": 34,
+      "check_status_bar": 10,
+      "check_vpn_status": 2,
+      "check_wifi_calling_status": 2,
+      "check_wifi_status": 2,
+      "disconnect_vpn": 5,
+      "enable_roaming": 19,
+      "get_bills_for_customer": 10,
+      "get_customer_by_name": 3,
+      "get_customer_by_phone": 40,
+      "get_data_usage": 3,
+      "get_details_by_id": 38,
+      "grant_app_permission": 7,
+      "make_payment": 10,
+      "reboot_device": 30,
+      "refuel_data": 2,
+      "reseat_sim_card": 23,
+      "reset_apn_settings": 22,
+      "resume_line": 4,
+      "run_speed_test": 22,
+      "send_payment_request": 8,
+      "set_apn_settings": 21,
+      "set_network_mode_preference": 26,
+      "toggle_airplane_mode": 31,
+      "toggle_data": 30,
+      "toggle_data_saver_mode": 8,
+      "toggle_roaming": 13,
+      "toggle_wifi": 1,
+      "toggle_wifi_calling": 1,
+      "transfer_to_human_agents": 22
+    },
+    "state_changing_count": 195,
+    "replay_error_count": 64,
+    "mutation_noop_count": 33,
+    "recovery": {
+      "error_transition_count": 64,
+      "followed_by_later_state_change": 40,
+      "observed_recovery_rate": 0.625
+    }
+  },
+  "interpretation": {
+    "outcome_by_horizon": "observational association from complete logged trajectories; not a same-state context intervention",
+    "transition_support": "reported separately with train leave-one-task-out and train-to-test"
+  }
+}
