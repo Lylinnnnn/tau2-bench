@@ -32,6 +32,13 @@ same one-rollout-per-task corpus:
 The hybrid construction and its no-leakage/retry rules are documented in
 [`HYBRID_CLEAN_README.md`](HYBRID_CLEAN_README.md).
 
+Source files are governed by
+[`ARCHITECTURE_RULES.md`](src/trace_to_micro/ARCHITECTURE_RULES.md). It defines
+the admission criteria for new modules, dependency boundaries, and the required
+checks for splitting, moving, merging, or deleting code. New source files must
+follow that document rather than being added for individual experiments or
+cases.
+
 Both experiments report `train` and `test` separately. Leave-one-task-out is
 needed only for Experiment 1's within-train support calculation; Experiment 2
 does not retrieve cross-task support as model input. The context builder can see
@@ -51,6 +58,7 @@ The focused experiment plan is in
 configs/                       Experiment configurations
 scripts/                       Thin executable wrappers
 src/trace_to_micro/
+├── ARCHITECTURE_RULES.md       Enforced source-file change rules
 ├── cli.py                     Command dispatch only
 ├── config.py                  Configuration loading
 ├── data_model/                Serializable experiment records
