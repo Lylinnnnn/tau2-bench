@@ -25,7 +25,7 @@ uv run --no-sync ruff format --check \
   "${project_dir}/src" "${project_dir}/tests" "${project_dir}/scripts"
 
 echo "Waiting for OpenAI-compatible model server at ${OPENAI_API_BASE}"
-uv run --no-sync python -m trace_to_micro.server_preflight \
+uv run --no-sync python -m trace_to_micro.runtime.server_preflight \
   --config "${config}" \
   --base-url "${OPENAI_API_BASE}" \
   --wait-seconds "${server_wait_seconds}" \

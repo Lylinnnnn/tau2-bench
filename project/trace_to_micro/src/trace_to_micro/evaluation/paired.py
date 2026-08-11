@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import Any
 
 from tau2.data_model.tasks import Task
-from trace_to_micro.state_diff import canonicalize_value
+from trace_to_micro.replay.state import canonicalize_value
 
 RATE_METRICS = (
     "assistant_kind_match",

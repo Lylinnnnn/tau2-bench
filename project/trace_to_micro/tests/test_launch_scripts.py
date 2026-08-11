@@ -25,6 +25,13 @@ def test_qwen3_32b_entrypoints_use_managed_server() -> None:
     assert manager in read_script("run_qwen3_32b_retail_smoke.sh")
 
 
+def test_model_launchers_use_runtime_preflight_module() -> None:
+    module = "trace_to_micro.runtime.server_preflight"
+
+    assert module in read_script("run_server_model_preexperiment.sh")
+    assert module in read_script("run_qwen3_32b_retail_smoke.sh")
+
+
 def test_managed_server_waits_for_models_endpoint() -> None:
     script = read_script("with_managed_qwen3_32b_vllm.sh")
 

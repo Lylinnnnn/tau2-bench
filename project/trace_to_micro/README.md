@@ -48,18 +48,41 @@ The focused experiment plan is in
 ## Layout
 
 ```text
-configs/                 Oracle and model experiment configurations
-scripts/                 Thin executable wrappers
-src/trace_to_micro/      Tested extraction/orchestration code
-                         `model_experiment.py` keeps model experiment
-                         orchestration out of the CLI
-src/trace_to_micro/evaluation/
-                         Evaluation metrics kept separate from extraction
-src/trace_to_micro/clean/
-                         Hybrid evidence, semantic gate, contracts, and audits
-tests/                   Unit and integration tests
-outputs/                 Generated reports (gitignored)
+configs/                       Experiment configurations
+scripts/                       Thin executable wrappers
+src/trace_to_micro/
+├── cli.py                     Command dispatch only
+├── config.py                  Configuration loading
+├── data_model/                Serializable experiment records
+├── utils/                     JSONL and message helpers
+├── replay/                    State replay, diffing, and branching
+├── analysis/                  Read-only logged-data analysis
+├── evaluation/                Metrics and report aggregation
+├── clean/                     Hybrid clean-context construction
+├── runner/                    Generation and experiment orchestration
+└── runtime/                   Model-service preflight checks
+tests/                         Tests mirroring the source packages
+outputs/                       Generated reports (gitignored)
 ```
+
+The intended dependency direction is:
+
+```text
+data_model / utils / replay
+            |
+            v
+analysis / evaluation / clean
+            |
+            v
+          runner
+            |
+            v
+            cli
+```
+
+Lower layers do not import `runner` or `cli`. `cli.py` contains no experiment
+implementation; it only loads arguments and dispatches to the corresponding
+runner or analysis module.
 
 ## Environment
 

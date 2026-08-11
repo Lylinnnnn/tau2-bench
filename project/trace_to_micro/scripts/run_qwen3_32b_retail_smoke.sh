@@ -22,7 +22,7 @@ fi
 
 cd "${repo_dir}"
 
-uv run --no-sync python -m trace_to_micro.server_preflight \
+uv run --no-sync python -m trace_to_micro.runtime.server_preflight \
   --config "${config}" \
   --base-url "${OPENAI_API_BASE}" \
   --wait-seconds "${TRACE_TO_MICRO_SERVER_WAIT_SECONDS:-600}" \

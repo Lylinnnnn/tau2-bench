@@ -5,10 +5,12 @@ import sys
 from pathlib import Path
 
 from tau2.runner import load_task_splits, load_tasks
+from trace_to_micro.analysis.results import build_results_audit
+from trace_to_micro.analysis.task_inventory import build_task_inventory
 from trace_to_micro.config import ExperimentConfig
 from trace_to_micro.evaluation import build_support_report
-from trace_to_micro.io import write_events_jsonl, write_json
-from trace_to_micro.model_experiment import (
+from trace_to_micro.replay.reference import replay_reference_tasks
+from trace_to_micro.runner.model_experiment import (
     run_full_model_preexperiment,
     run_logged_snapshot_extraction,
     run_logged_transition_audit,
@@ -17,9 +19,7 @@ from trace_to_micro.model_experiment import (
     run_trajectory_analysis,
     run_trajectory_generation,
 )
-from trace_to_micro.replay import replay_reference_tasks
-from trace_to_micro.results_audit import build_results_audit
-from trace_to_micro.task_inventory import build_task_inventory
+from trace_to_micro.utils.io import write_events_jsonl, write_json
 
 
 def _load_benchmark(config: ExperimentConfig):

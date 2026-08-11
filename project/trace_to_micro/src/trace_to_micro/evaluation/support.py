@@ -4,7 +4,7 @@ import math
 from collections import Counter, defaultdict
 from typing import Any
 
-from trace_to_micro.models import TransitionEvent
+from trace_to_micro.data_model import TransitionEvent
 
 
 def _select_events(
