@@ -1,5 +1,5 @@
 {
-  "prediction_count": 357,
+  "prediction_count": 476,
   "unique_snapshots": 119,
   "by_variant": {
     "clean_subtask": {
@@ -41,6 +41,46 @@
         "rate": 0.0
       },
       "mean_prompt_tokens": 7390.697478991597
+    },
+    "hybrid_clean": {
+      "count": 119,
+      "assistant_kind_match": {
+        "count": 119,
+        "rate": 0.5882352941176471
+      },
+      "assistant_exact_match": {
+        "count": 119,
+        "rate": 0.12605042016806722
+      },
+      "macro_tool_name_match": {
+        "count": 77,
+        "rate": 0.19480519480519481
+      },
+      "macro_tool_arguments_match": {
+        "count": 77,
+        "rate": 0.18181818181818182
+      },
+      "effect_match": {
+        "count": 119,
+        "rate": 0.8907563025210085
+      },
+      "stateful_effect_match": {
+        "count": 15,
+        "rate": 0.5333333333333333
+      },
+      "gold_macro_action_match": {
+        "count": 82,
+        "rate": 0.07317073170731707
+      },
+      "tool_error": {
+        "count": 119,
+        "rate": 0.07563025210084033
+      },
+      "mutation_noop": {
+        "count": 119,
+        "rate": 0.008403361344537815
+      },
+      "mean_prompt_tokens": 8936.142857142857
     },
     "long_raw": {
       "count": 119,
@@ -122,6 +162,177 @@
       },
       "mean_prompt_tokens": 7344.697478991597
     }
+  },
+  "by_variant_training_eligible": {
+    "clean_subtask": {
+      "count": 101,
+      "assistant_kind_match": {
+        "count": 101,
+        "rate": 0.5247524752475248
+      },
+      "assistant_exact_match": {
+        "count": 101,
+        "rate": 0.22772277227722773
+      },
+      "macro_tool_name_match": {
+        "count": 59,
+        "rate": 0.4745762711864407
+      },
+      "macro_tool_arguments_match": {
+        "count": 59,
+        "rate": 0.423728813559322
+      },
+      "effect_match": {
+        "count": 101,
+        "rate": 0.8712871287128713
+      },
+      "stateful_effect_match": {
+        "count": 15,
+        "rate": 0.26666666666666666
+      },
+      "gold_macro_action_match": {
+        "count": 82,
+        "rate": 0.024390243902439025
+      },
+      "tool_error": {
+        "count": 101,
+        "rate": 0.15841584158415842
+      },
+      "mutation_noop": {
+        "count": 101,
+        "rate": 0.0
+      },
+      "mean_prompt_tokens": 7391.465346534654
+    },
+    "hybrid_clean": {
+      "count": 86,
+      "assistant_kind_match": {
+        "count": 86,
+        "rate": 0.6511627906976745
+      },
+      "assistant_exact_match": {
+        "count": 86,
+        "rate": 0.1511627906976744
+      },
+      "macro_tool_name_match": {
+        "count": 54,
+        "rate": 0.2222222222222222
+      },
+      "macro_tool_arguments_match": {
+        "count": 54,
+        "rate": 0.2037037037037037
+      },
+      "effect_match": {
+        "count": 86,
+        "rate": 0.9069767441860465
+      },
+      "stateful_effect_match": {
+        "count": 12,
+        "rate": 0.4166666666666667
+      },
+      "gold_macro_action_match": {
+        "count": 58,
+        "rate": 0.034482758620689655
+      },
+      "tool_error": {
+        "count": 86,
+        "rate": 0.08139534883720931
+      },
+      "mutation_noop": {
+        "count": 86,
+        "rate": 0.011627906976744186
+      },
+      "mean_prompt_tokens": 8804.848837209302
+    },
+    "long_raw": {
+      "count": 101,
+      "assistant_kind_match": {
+        "count": 101,
+        "rate": 0.801980198019802
+      },
+      "assistant_exact_match": {
+        "count": 101,
+        "rate": 0.45544554455445546
+      },
+      "macro_tool_name_match": {
+        "count": 59,
+        "rate": 0.5932203389830508
+      },
+      "macro_tool_arguments_match": {
+        "count": 59,
+        "rate": 0.559322033898305
+      },
+      "effect_match": {
+        "count": 101,
+        "rate": 0.8712871287128713
+      },
+      "stateful_effect_match": {
+        "count": 15,
+        "rate": 0.3333333333333333
+      },
+      "gold_macro_action_match": {
+        "count": 64,
+        "rate": 0.0625
+      },
+      "tool_error": {
+        "count": 101,
+        "rate": 0.0891089108910891
+      },
+      "mutation_noop": {
+        "count": 101,
+        "rate": 0.009900990099009901
+      },
+      "mean_prompt_tokens": 8106.9009900990095
+    },
+    "structured_state": {
+      "count": 101,
+      "assistant_kind_match": {
+        "count": 101,
+        "rate": 0.504950495049505
+      },
+      "assistant_exact_match": {
+        "count": 101,
+        "rate": 0.2079207920792079
+      },
+      "macro_tool_name_match": {
+        "count": 59,
+        "rate": 0.3728813559322034
+      },
+      "macro_tool_arguments_match": {
+        "count": 59,
+        "rate": 0.3559322033898305
+      },
+      "effect_match": {
+        "count": 101,
+        "rate": 0.8712871287128713
+      },
+      "stateful_effect_match": {
+        "count": 15,
+        "rate": 0.2
+      },
+      "gold_macro_action_match": {
+        "count": 77,
+        "rate": 0.03896103896103896
+      },
+      "tool_error": {
+        "count": 101,
+        "rate": 0.297029702970297
+      },
+      "mutation_noop": {
+        "count": 101,
+        "rate": 0.009900990099009901
+      },
+      "mean_prompt_tokens": 7345.287128712871
+    }
+  },
+  "data_quality": {
+    "training_eligible_count_by_variant": {
+      "clean_subtask": 101,
+      "hybrid_clean": 86,
+      "long_raw": 101,
+      "structured_state": 101
+    },
+    "all_rows_remain_in_primary_metrics": true
   },
   "by_variant_and_position": {
     "clean_subtask:early": {
@@ -243,6 +454,126 @@
         "rate": 0.0
       },
       "mean_prompt_tokens": 7411.871794871795
+    },
+    "hybrid_clean:early": {
+      "count": 40,
+      "assistant_kind_match": {
+        "count": 40,
+        "rate": 0.375
+      },
+      "assistant_exact_match": {
+        "count": 40,
+        "rate": 0.075
+      },
+      "macro_tool_name_match": {
+        "count": 29,
+        "rate": 0.13793103448275862
+      },
+      "macro_tool_arguments_match": {
+        "count": 29,
+        "rate": 0.10344827586206896
+      },
+      "effect_match": {
+        "count": 40,
+        "rate": 0.975
+      },
+      "stateful_effect_match": {
+        "count": 0,
+        "rate": null
+      },
+      "gold_macro_action_match": {
+        "count": 38,
+        "rate": 0.02631578947368421
+      },
+      "tool_error": {
+        "count": 40,
+        "rate": 0.075
+      },
+      "mutation_noop": {
+        "count": 40,
+        "rate": 0.0
+      },
+      "mean_prompt_tokens": 7856.9
+    },
+    "hybrid_clean:late": {
+      "count": 40,
+      "assistant_kind_match": {
+        "count": 40,
+        "rate": 0.875
+      },
+      "assistant_exact_match": {
+        "count": 40,
+        "rate": 0.175
+      },
+      "macro_tool_name_match": {
+        "count": 9,
+        "rate": 0.3333333333333333
+      },
+      "macro_tool_arguments_match": {
+        "count": 9,
+        "rate": 0.3333333333333333
+      },
+      "effect_match": {
+        "count": 40,
+        "rate": 0.95
+      },
+      "stateful_effect_match": {
+        "count": 5,
+        "rate": 0.6
+      },
+      "gold_macro_action_match": {
+        "count": 13,
+        "rate": 0.15384615384615385
+      },
+      "tool_error": {
+        "count": 40,
+        "rate": 0.025
+      },
+      "mutation_noop": {
+        "count": 40,
+        "rate": 0.0
+      },
+      "mean_prompt_tokens": 9830.775
+    },
+    "hybrid_clean:middle": {
+      "count": 39,
+      "assistant_kind_match": {
+        "count": 39,
+        "rate": 0.5128205128205128
+      },
+      "assistant_exact_match": {
+        "count": 39,
+        "rate": 0.1282051282051282
+      },
+      "macro_tool_name_match": {
+        "count": 39,
+        "rate": 0.20512820512820512
+      },
+      "macro_tool_arguments_match": {
+        "count": 39,
+        "rate": 0.20512820512820512
+      },
+      "effect_match": {
+        "count": 39,
+        "rate": 0.7435897435897436
+      },
+      "stateful_effect_match": {
+        "count": 10,
+        "rate": 0.5
+      },
+      "gold_macro_action_match": {
+        "count": 31,
+        "rate": 0.0967741935483871
+      },
+      "tool_error": {
+        "count": 39,
+        "rate": 0.1282051282051282
+      },
+      "mutation_noop": {
+        "count": 39,
+        "rate": 0.02564102564102564
+      },
+      "mean_prompt_tokens": 9125.48717948718
     },
     "long_raw:early": {
       "count": 40,
@@ -605,6 +936,126 @@
         "rate": 0.0
       },
       "mean_prompt_tokens": 7319.525
+    },
+    "hybrid_clean:long": {
+      "count": 39,
+      "assistant_kind_match": {
+        "count": 39,
+        "rate": 0.7692307692307693
+      },
+      "assistant_exact_match": {
+        "count": 39,
+        "rate": 0.1282051282051282
+      },
+      "macro_tool_name_match": {
+        "count": 17,
+        "rate": 0.23529411764705882
+      },
+      "macro_tool_arguments_match": {
+        "count": 17,
+        "rate": 0.23529411764705882
+      },
+      "effect_match": {
+        "count": 39,
+        "rate": 0.8461538461538461
+      },
+      "stateful_effect_match": {
+        "count": 8,
+        "rate": 0.375
+      },
+      "gold_macro_action_match": {
+        "count": 14,
+        "rate": 0.21428571428571427
+      },
+      "tool_error": {
+        "count": 39,
+        "rate": 0.02564102564102564
+      },
+      "mutation_noop": {
+        "count": 39,
+        "rate": 0.0
+      },
+      "mean_prompt_tokens": 10064.435897435897
+    },
+    "hybrid_clean:medium": {
+      "count": 40,
+      "assistant_kind_match": {
+        "count": 40,
+        "rate": 0.625
+      },
+      "assistant_exact_match": {
+        "count": 40,
+        "rate": 0.175
+      },
+      "macro_tool_name_match": {
+        "count": 31,
+        "rate": 0.22580645161290322
+      },
+      "macro_tool_arguments_match": {
+        "count": 31,
+        "rate": 0.22580645161290322
+      },
+      "effect_match": {
+        "count": 40,
+        "rate": 0.85
+      },
+      "stateful_effect_match": {
+        "count": 7,
+        "rate": 0.7142857142857143
+      },
+      "gold_macro_action_match": {
+        "count": 30,
+        "rate": 0.06666666666666667
+      },
+      "tool_error": {
+        "count": 40,
+        "rate": 0.125
+      },
+      "mutation_noop": {
+        "count": 40,
+        "rate": 0.025
+      },
+      "mean_prompt_tokens": 8915.3
+    },
+    "hybrid_clean:short": {
+      "count": 40,
+      "assistant_kind_match": {
+        "count": 40,
+        "rate": 0.375
+      },
+      "assistant_exact_match": {
+        "count": 40,
+        "rate": 0.075
+      },
+      "macro_tool_name_match": {
+        "count": 29,
+        "rate": 0.13793103448275862
+      },
+      "macro_tool_arguments_match": {
+        "count": 29,
+        "rate": 0.10344827586206896
+      },
+      "effect_match": {
+        "count": 40,
+        "rate": 0.975
+      },
+      "stateful_effect_match": {
+        "count": 0,
+        "rate": null
+      },
+      "gold_macro_action_match": {
+        "count": 38,
+        "rate": 0.02631578947368421
+      },
+      "tool_error": {
+        "count": 40,
+        "rate": 0.075
+      },
+      "mutation_noop": {
+        "count": 40,
+        "rate": 0.0
+      },
+      "mean_prompt_tokens": 7856.9
     },
     "long_raw:long": {
       "count": 39,
@@ -2098,6 +2549,840 @@
           }
         }
       }
+    },
+    "hybrid_clean_vs_long_raw": {
+      "paired_count": 119,
+      "metrics": {
+        "assistant_kind_match": {
+          "count": 119,
+          "alternative_minus_baseline": -0.2184873949579832,
+          "improved": 14,
+          "regressed": 40
+        },
+        "assistant_exact_match": {
+          "count": 119,
+          "alternative_minus_baseline": -0.31932773109243695,
+          "improved": 1,
+          "regressed": 39
+        },
+        "macro_tool_name_match": {
+          "count": 77,
+          "alternative_minus_baseline": -0.37662337662337664,
+          "improved": 5,
+          "regressed": 34
+        },
+        "macro_tool_arguments_match": {
+          "count": 77,
+          "alternative_minus_baseline": -0.33766233766233766,
+          "improved": 5,
+          "regressed": 31
+        },
+        "effect_match": {
+          "count": 119,
+          "alternative_minus_baseline": 0.008403361344537815,
+          "improved": 7,
+          "regressed": 6
+        },
+        "stateful_effect_match": {
+          "count": 15,
+          "alternative_minus_baseline": 0.2,
+          "improved": 4,
+          "regressed": 1
+        },
+        "gold_macro_action_match": {
+          "count": 70,
+          "alternative_minus_baseline": 0.02857142857142857,
+          "improved": 4,
+          "regressed": 2
+        },
+        "tool_error": {
+          "count": 119,
+          "alternative_minus_baseline": -0.1092436974789916,
+          "improved": 21,
+          "regressed": 8
+        },
+        "mutation_noop": {
+          "count": 119,
+          "alternative_minus_baseline": 0.0,
+          "improved": 1,
+          "regressed": 1
+        }
+      },
+      "by_position": {
+        "early": {
+          "paired_count": 40,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.425,
+              "improved": 5,
+              "regressed": 22
+            },
+            "assistant_exact_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.5,
+              "improved": 0,
+              "regressed": 20
+            },
+            "macro_tool_name_match": {
+              "count": 29,
+              "alternative_minus_baseline": -0.6896551724137931,
+              "improved": 0,
+              "regressed": 20
+            },
+            "macro_tool_arguments_match": {
+              "count": 29,
+              "alternative_minus_baseline": -0.6896551724137931,
+              "improved": 0,
+              "regressed": 20
+            },
+            "effect_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.025,
+              "improved": 0,
+              "regressed": 1
+            },
+            "stateful_effect_match": {
+              "count": 0,
+              "alternative_minus_baseline": null,
+              "improved": 0,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 30,
+              "alternative_minus_baseline": 0.03333333333333333,
+              "improved": 1,
+              "regressed": 0
+            },
+            "tool_error": {
+              "count": 40,
+              "alternative_minus_baseline": -0.025,
+              "improved": 4,
+              "regressed": 3
+            },
+            "mutation_noop": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            }
+          }
+        },
+        "middle": {
+          "paired_count": 39,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.23076923076923078,
+              "improved": 5,
+              "regressed": 14
+            },
+            "assistant_exact_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.2564102564102564,
+              "improved": 0,
+              "regressed": 10
+            },
+            "macro_tool_name_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.28205128205128205,
+              "improved": 3,
+              "regressed": 14
+            },
+            "macro_tool_arguments_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.20512820512820512,
+              "improved": 3,
+              "regressed": 11
+            },
+            "effect_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.05128205128205128,
+              "improved": 3,
+              "regressed": 5
+            },
+            "stateful_effect_match": {
+              "count": 10,
+              "alternative_minus_baseline": 0.1,
+              "improved": 2,
+              "regressed": 1
+            },
+            "gold_macro_action_match": {
+              "count": 31,
+              "alternative_minus_baseline": 0.03225806451612903,
+              "improved": 2,
+              "regressed": 1
+            },
+            "tool_error": {
+              "count": 39,
+              "alternative_minus_baseline": -0.2564102564102564,
+              "improved": 14,
+              "regressed": 4
+            },
+            "mutation_noop": {
+              "count": 39,
+              "alternative_minus_baseline": 0.02564102564102564,
+              "improved": 0,
+              "regressed": 1
+            }
+          }
+        },
+        "late": {
+          "paired_count": 40,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 4,
+              "regressed": 4
+            },
+            "assistant_exact_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.2,
+              "improved": 1,
+              "regressed": 9
+            },
+            "macro_tool_name_match": {
+              "count": 9,
+              "alternative_minus_baseline": 0.2222222222222222,
+              "improved": 2,
+              "regressed": 0
+            },
+            "macro_tool_arguments_match": {
+              "count": 9,
+              "alternative_minus_baseline": 0.2222222222222222,
+              "improved": 2,
+              "regressed": 0
+            },
+            "effect_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.1,
+              "improved": 4,
+              "regressed": 0
+            },
+            "stateful_effect_match": {
+              "count": 5,
+              "alternative_minus_baseline": 0.4,
+              "improved": 2,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 9,
+              "alternative_minus_baseline": 0.0,
+              "improved": 1,
+              "regressed": 1
+            },
+            "tool_error": {
+              "count": 40,
+              "alternative_minus_baseline": -0.05,
+              "improved": 3,
+              "regressed": 1
+            },
+            "mutation_noop": {
+              "count": 40,
+              "alternative_minus_baseline": -0.025,
+              "improved": 1,
+              "regressed": 0
+            }
+          }
+        }
+      },
+      "by_context_length": {
+        "short": {
+          "paired_count": 40,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.425,
+              "improved": 5,
+              "regressed": 22
+            },
+            "assistant_exact_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.5,
+              "improved": 0,
+              "regressed": 20
+            },
+            "macro_tool_name_match": {
+              "count": 29,
+              "alternative_minus_baseline": -0.6896551724137931,
+              "improved": 0,
+              "regressed": 20
+            },
+            "macro_tool_arguments_match": {
+              "count": 29,
+              "alternative_minus_baseline": -0.6896551724137931,
+              "improved": 0,
+              "regressed": 20
+            },
+            "effect_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.025,
+              "improved": 0,
+              "regressed": 1
+            },
+            "stateful_effect_match": {
+              "count": 0,
+              "alternative_minus_baseline": null,
+              "improved": 0,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 30,
+              "alternative_minus_baseline": 0.03333333333333333,
+              "improved": 1,
+              "regressed": 0
+            },
+            "tool_error": {
+              "count": 40,
+              "alternative_minus_baseline": -0.025,
+              "improved": 4,
+              "regressed": 3
+            },
+            "mutation_noop": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            }
+          }
+        },
+        "medium": {
+          "paired_count": 40,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.15,
+              "improved": 6,
+              "regressed": 12
+            },
+            "assistant_exact_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.275,
+              "improved": 1,
+              "regressed": 12
+            },
+            "macro_tool_name_match": {
+              "count": 31,
+              "alternative_minus_baseline": -0.25806451612903225,
+              "improved": 3,
+              "regressed": 11
+            },
+            "macro_tool_arguments_match": {
+              "count": 31,
+              "alternative_minus_baseline": -0.1935483870967742,
+              "improved": 3,
+              "regressed": 9
+            },
+            "effect_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.025,
+              "improved": 5,
+              "regressed": 4
+            },
+            "stateful_effect_match": {
+              "count": 7,
+              "alternative_minus_baseline": 0.14285714285714285,
+              "improved": 2,
+              "regressed": 1
+            },
+            "gold_macro_action_match": {
+              "count": 30,
+              "alternative_minus_baseline": -0.03333333333333333,
+              "improved": 1,
+              "regressed": 2
+            },
+            "tool_error": {
+              "count": 40,
+              "alternative_minus_baseline": -0.25,
+              "improved": 14,
+              "regressed": 4
+            },
+            "mutation_noop": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 1,
+              "regressed": 1
+            }
+          }
+        },
+        "long": {
+          "paired_count": 39,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.07692307692307693,
+              "improved": 3,
+              "regressed": 6
+            },
+            "assistant_exact_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.1794871794871795,
+              "improved": 0,
+              "regressed": 7
+            },
+            "macro_tool_name_match": {
+              "count": 17,
+              "alternative_minus_baseline": -0.058823529411764705,
+              "improved": 2,
+              "regressed": 3
+            },
+            "macro_tool_arguments_match": {
+              "count": 17,
+              "alternative_minus_baseline": 0.0,
+              "improved": 2,
+              "regressed": 2
+            },
+            "effect_match": {
+              "count": 39,
+              "alternative_minus_baseline": 0.02564102564102564,
+              "improved": 2,
+              "regressed": 1
+            },
+            "stateful_effect_match": {
+              "count": 8,
+              "alternative_minus_baseline": 0.25,
+              "improved": 2,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 10,
+              "alternative_minus_baseline": 0.2,
+              "improved": 2,
+              "regressed": 0
+            },
+            "tool_error": {
+              "count": 39,
+              "alternative_minus_baseline": -0.05128205128205128,
+              "improved": 3,
+              "regressed": 1
+            },
+            "mutation_noop": {
+              "count": 39,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            }
+          }
+        }
+      }
+    },
+    "hybrid_clean_vs_clean_subtask": {
+      "paired_count": 119,
+      "metrics": {
+        "assistant_kind_match": {
+          "count": 119,
+          "alternative_minus_baseline": 0.11764705882352941,
+          "improved": 37,
+          "regressed": 23
+        },
+        "assistant_exact_match": {
+          "count": 119,
+          "alternative_minus_baseline": -0.08403361344537816,
+          "improved": 9,
+          "regressed": 19
+        },
+        "macro_tool_name_match": {
+          "count": 77,
+          "alternative_minus_baseline": -0.2077922077922078,
+          "improved": 6,
+          "regressed": 22
+        },
+        "macro_tool_arguments_match": {
+          "count": 77,
+          "alternative_minus_baseline": -0.16883116883116883,
+          "improved": 7,
+          "regressed": 20
+        },
+        "effect_match": {
+          "count": 119,
+          "alternative_minus_baseline": 0.01680672268907563,
+          "improved": 6,
+          "regressed": 4
+        },
+        "stateful_effect_match": {
+          "count": 15,
+          "alternative_minus_baseline": 0.26666666666666666,
+          "improved": 4,
+          "regressed": 0
+        },
+        "gold_macro_action_match": {
+          "count": 66,
+          "alternative_minus_baseline": 0.030303030303030304,
+          "improved": 3,
+          "regressed": 1
+        },
+        "tool_error": {
+          "count": 119,
+          "alternative_minus_baseline": -0.08403361344537816,
+          "improved": 16,
+          "regressed": 6
+        },
+        "mutation_noop": {
+          "count": 119,
+          "alternative_minus_baseline": 0.008403361344537815,
+          "improved": 0,
+          "regressed": 1
+        }
+      },
+      "by_position": {
+        "early": {
+          "paired_count": 40,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.325,
+              "improved": 3,
+              "regressed": 16
+            },
+            "assistant_exact_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.4,
+              "improved": 0,
+              "regressed": 16
+            },
+            "macro_tool_name_match": {
+              "count": 29,
+              "alternative_minus_baseline": -0.5517241379310345,
+              "improved": 0,
+              "regressed": 16
+            },
+            "macro_tool_arguments_match": {
+              "count": 29,
+              "alternative_minus_baseline": -0.5517241379310345,
+              "improved": 0,
+              "regressed": 16
+            },
+            "effect_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            },
+            "stateful_effect_match": {
+              "count": 0,
+              "alternative_minus_baseline": null,
+              "improved": 0,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 30,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            },
+            "tool_error": {
+              "count": 40,
+              "alternative_minus_baseline": -0.025,
+              "improved": 3,
+              "regressed": 2
+            },
+            "mutation_noop": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            }
+          }
+        },
+        "middle": {
+          "paired_count": 39,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 39,
+              "alternative_minus_baseline": 0.1794871794871795,
+              "improved": 10,
+              "regressed": 3
+            },
+            "assistant_exact_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.02564102564102564,
+              "improved": 2,
+              "regressed": 3
+            },
+            "macro_tool_name_match": {
+              "count": 39,
+              "alternative_minus_baseline": -0.02564102564102564,
+              "improved": 4,
+              "regressed": 5
+            },
+            "macro_tool_arguments_match": {
+              "count": 39,
+              "alternative_minus_baseline": 0.05128205128205128,
+              "improved": 5,
+              "regressed": 3
+            },
+            "effect_match": {
+              "count": 39,
+              "alternative_minus_baseline": 0.0,
+              "improved": 4,
+              "regressed": 4
+            },
+            "stateful_effect_match": {
+              "count": 10,
+              "alternative_minus_baseline": 0.2,
+              "improved": 2,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 27,
+              "alternative_minus_baseline": 0.0,
+              "improved": 1,
+              "regressed": 1
+            },
+            "tool_error": {
+              "count": 39,
+              "alternative_minus_baseline": -0.1282051282051282,
+              "improved": 9,
+              "regressed": 4
+            },
+            "mutation_noop": {
+              "count": 39,
+              "alternative_minus_baseline": 0.02564102564102564,
+              "improved": 0,
+              "regressed": 1
+            }
+          }
+        },
+        "late": {
+          "paired_count": 40,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.5,
+              "improved": 24,
+              "regressed": 4
+            },
+            "assistant_exact_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.175,
+              "improved": 7,
+              "regressed": 0
+            },
+            "macro_tool_name_match": {
+              "count": 9,
+              "alternative_minus_baseline": 0.1111111111111111,
+              "improved": 2,
+              "regressed": 1
+            },
+            "macro_tool_arguments_match": {
+              "count": 9,
+              "alternative_minus_baseline": 0.1111111111111111,
+              "improved": 2,
+              "regressed": 1
+            },
+            "effect_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.05,
+              "improved": 2,
+              "regressed": 0
+            },
+            "stateful_effect_match": {
+              "count": 5,
+              "alternative_minus_baseline": 0.4,
+              "improved": 2,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 9,
+              "alternative_minus_baseline": 0.2222222222222222,
+              "improved": 2,
+              "regressed": 0
+            },
+            "tool_error": {
+              "count": 40,
+              "alternative_minus_baseline": -0.1,
+              "improved": 4,
+              "regressed": 0
+            },
+            "mutation_noop": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            }
+          }
+        }
+      },
+      "by_context_length": {
+        "short": {
+          "paired_count": 40,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.325,
+              "improved": 3,
+              "regressed": 16
+            },
+            "assistant_exact_match": {
+              "count": 40,
+              "alternative_minus_baseline": -0.4,
+              "improved": 0,
+              "regressed": 16
+            },
+            "macro_tool_name_match": {
+              "count": 29,
+              "alternative_minus_baseline": -0.5517241379310345,
+              "improved": 0,
+              "regressed": 16
+            },
+            "macro_tool_arguments_match": {
+              "count": 29,
+              "alternative_minus_baseline": -0.5517241379310345,
+              "improved": 0,
+              "regressed": 16
+            },
+            "effect_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            },
+            "stateful_effect_match": {
+              "count": 0,
+              "alternative_minus_baseline": null,
+              "improved": 0,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 30,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            },
+            "tool_error": {
+              "count": 40,
+              "alternative_minus_baseline": -0.025,
+              "improved": 3,
+              "regressed": 2
+            },
+            "mutation_noop": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            }
+          }
+        },
+        "medium": {
+          "paired_count": 40,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.225,
+              "improved": 12,
+              "regressed": 3
+            },
+            "assistant_exact_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.025,
+              "improved": 4,
+              "regressed": 3
+            },
+            "macro_tool_name_match": {
+              "count": 31,
+              "alternative_minus_baseline": -0.0967741935483871,
+              "improved": 3,
+              "regressed": 6
+            },
+            "macro_tool_arguments_match": {
+              "count": 31,
+              "alternative_minus_baseline": 0.0,
+              "improved": 4,
+              "regressed": 4
+            },
+            "effect_match": {
+              "count": 40,
+              "alternative_minus_baseline": 0.0,
+              "improved": 3,
+              "regressed": 3
+            },
+            "stateful_effect_match": {
+              "count": 7,
+              "alternative_minus_baseline": 0.2857142857142857,
+              "improved": 2,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 26,
+              "alternative_minus_baseline": -0.038461538461538464,
+              "improved": 0,
+              "regressed": 1
+            },
+            "tool_error": {
+              "count": 40,
+              "alternative_minus_baseline": -0.125,
+              "improved": 8,
+              "regressed": 3
+            },
+            "mutation_noop": {
+              "count": 40,
+              "alternative_minus_baseline": 0.025,
+              "improved": 0,
+              "regressed": 1
+            }
+          }
+        },
+        "long": {
+          "paired_count": 39,
+          "metrics": {
+            "assistant_kind_match": {
+              "count": 39,
+              "alternative_minus_baseline": 0.46153846153846156,
+              "improved": 22,
+              "regressed": 4
+            },
+            "assistant_exact_match": {
+              "count": 39,
+              "alternative_minus_baseline": 0.1282051282051282,
+              "improved": 5,
+              "regressed": 0
+            },
+            "macro_tool_name_match": {
+              "count": 17,
+              "alternative_minus_baseline": 0.17647058823529413,
+              "improved": 3,
+              "regressed": 0
+            },
+            "macro_tool_arguments_match": {
+              "count": 17,
+              "alternative_minus_baseline": 0.17647058823529413,
+              "improved": 3,
+              "regressed": 0
+            },
+            "effect_match": {
+              "count": 39,
+              "alternative_minus_baseline": 0.05128205128205128,
+              "improved": 3,
+              "regressed": 1
+            },
+            "stateful_effect_match": {
+              "count": 8,
+              "alternative_minus_baseline": 0.25,
+              "improved": 2,
+              "regressed": 0
+            },
+            "gold_macro_action_match": {
+              "count": 10,
+              "alternative_minus_baseline": 0.3,
+              "improved": 3,
+              "regressed": 0
+            },
+            "tool_error": {
+              "count": 39,
+              "alternative_minus_baseline": -0.10256410256410256,
+              "improved": 5,
+              "regressed": 1
+            },
+            "mutation_noop": {
+              "count": 39,
+              "alternative_minus_baseline": 0.0,
+              "improved": 0,
+              "regressed": 0
+            }
+          }
+        }
+      }
     }
   },
   "metric_scope": {
@@ -2106,13 +3391,51 @@
     "effect_match": "exact one-macro-step state delta match",
     "stateful_effect_match": "effect match only where logged macro step changed state"
   },
+  "hybrid_context_quality": {
+    "context_count": 119,
+    "training_eligible_count": 100,
+    "training_eligible_rate": 0.8403361344537815,
+    "status_counts": {
+      "passed": 115,
+      "rule_fallback": 4
+    },
+    "retry_count_histogram": {
+      "0": 89,
+      "1": 26,
+      "2": 4
+    },
+    "validation_error_counts": {
+      "ACTION_EXECUTOR_MISMATCH": 1,
+      "REPEATS_INVALID_TOOL": 9,
+      "STALE_ACTIVE_ISSUE": 3,
+      "SUBGOAL_ALREADY_COMPLETED": 5,
+      "UNKNOWN_ACTION": 1,
+      "UNOBSERVABLE_SUCCESS_CONDITION": 24
+    },
+    "action_contract_repair_counts": {
+      "blocked_on_required_inputs": 7,
+      "terminal_transfer_confirmation": 22
+    },
+    "interaction_phase_counts": {
+      "error_recovery": 30,
+      "identity_collection": 19,
+      "resolution_reported": 4,
+      "transfer_completed": 22,
+      "troubleshooting": 44
+    },
+    "quality_flag_counts": {
+      "suspected_user_role_inversion": 15
+    },
+    "max_semantic_retries": 2
+  },
   "experiment": {
     "name": "same_state_different_context_single_step",
     "split": "test",
     "variants": [
       "long_raw",
       "structured_state",
-      "clean_subtask"
+      "clean_subtask",
+      "hybrid_clean"
     ],
     "agent_model": "openai/qwen3-32b",
     "user_model": "openai/qwen3-32b",
