@@ -1,0 +1,228 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.0.1, pluggy-1.6.0
+rootdir: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro
+configfile: pyproject.toml
+plugins: anyio-4.11.0, xdist-3.8.0
+collected 79 items
+
+project/trace_to_micro/tests/analysis/test_logged_trace.py ......        [  7%]
+project/trace_to_micro/tests/analysis/test_logged_transitions.py .       [  8%]
+project/trace_to_micro/tests/analysis/test_results.py ..                 [ 11%]
+project/trace_to_micro/tests/analysis/test_task_inventory.py ...         [ 15%]
+project/trace_to_micro/tests/analysis/test_trajectory.py ..              [ 17%]
+project/trace_to_micro/tests/clean/test_audit.py ..                      [ 20%]
+project/trace_to_micro/tests/clean/test_contract.py .....                [ 26%]
+project/trace_to_micro/tests/clean/test_evidence.py ....                 [ 31%]
+project/trace_to_micro/tests/clean/test_report.py .                      [ 32%]
+project/trace_to_micro/tests/clean/test_semantic.py ...                  [ 36%]
+project/trace_to_micro/tests/evaluation/test_paired.py .....             [ 43%]
+project/trace_to_micro/tests/evaluation/test_success_direction.py ....   [ 48%]
+project/trace_to_micro/tests/evaluation/test_support.py ...              [ 51%]
+project/trace_to_micro/tests/replay/test_branching.py .                  [ 53%]
+project/trace_to_micro/tests/replay/test_reference.py ..                 [ 55%]
+project/trace_to_micro/tests/replay/test_state.py ...                    [ 59%]
+project/trace_to_micro/tests/runner/test_context.py ......               [ 67%]
+project/trace_to_micro/tests/runner/test_trajectory_runner.py ...        [ 70%]
+project/trace_to_micro/tests/runtime/test_activations.py ...             [ 74%]
+project/trace_to_micro/tests/runtime/test_server_preflight.py ......     [ 82%]
+project/trace_to_micro/tests/test_architecture.py ....                   [ 87%]
+project/trace_to_micro/tests/test_config.py ....                         [ 92%]
+project/trace_to_micro/tests/test_launch_scripts.py ......               [100%]
+
+=============================== warnings summary ===============================
+src/tau2/voice/utils/audio_preprocessing.py:4
+  /home/liuyanlin.lyl/notebook/lyl/tau2-bench/src/tau2/voice/utils/audio_preprocessing.py:4: DeprecationWarning: 'audioop' is deprecated and slated for removal in Python 3.13
+    import audioop
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 79 passed, 1 warning in 11.22s ========================
+All checks passed!
+64 files already formatted
+Reusing the existing model server at http://127.0.0.1:8000/v1
+Model-server preflight passed: ['qwen3-32b']
+2026-08-12 18:25:19.618 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-12 18:25:19.618 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+[92m18:25:25 - LiteLLM:WARNING[0m: get_model_cost_map.py:174 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: The read operation timed out. Falling back to local backup.
+2026-08-12 18:25:27.700 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-12 18:25:27.894 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-12 18:25:27.908 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-12 18:25:27.908 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+╭────────────────────────── Simulation Configuration ──────────────────────────╮
+│ Domain: retail  Task Set: retail  Tasks: 2                                   │
+│ Trials: 1  Max Steps: 200  Max Errors: 10                                    │
+│                                                                              │
+│ Agent: llm_agent → openai/qwen3-32b                                          │
+│ User:  user_simulator → openai/qwen3-32b                                     │
+│                                                                              │
+│ Save:                                                                        │
+│ trace_to_micro_qwen3_32b_thinking_t06_success_direction_smoke_retail_task_2  │
+│ Concurrency: 3  Verbose: False                                               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+0/1 (trial 1/1). Running task 2, trial 1
+2026-08-12 18:25:38.161 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:25:51.736 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+Status: 0/1 complete. Avg reward: N/A. 1 running: 2.0(30s)
+2026-08-12 18:26:04.661 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:26:19.366 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+Status: 0/1 complete. Avg reward: N/A. 1 running: 2.0(60s)
+2026-08-12 18:26:33.312 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:26:47.164 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:26:53.270 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+Status: 0/1 complete. Avg reward: N/A. 1 running: 2.0(90s)
+2026-08-12 18:27:17.070 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+Status: 0/1 complete. Avg reward: N/A. 1 running: 2.0(120s)
+2026-08-12 18:27:30.602 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:27:51.234 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+Status: 0/1 complete. Avg reward: N/A. 1 running: 2.0(150s)
+2026-08-12 18:28:01.756 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:28:07.756 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:28:16.114 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:28:21.765 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+Status: 0/1 complete. Avg reward: N/A. 1 running: 2.0(180s)
+2026-08-12 18:28:31.516 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:28:42.799 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:28:50.899 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+Status: 0/1 complete. Avg reward: N/A. 1 running: 2.0(210s)
+2026-08-12 18:29:00.366 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:29:16.825 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:29:22.211 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+Status: 0/1 complete. Avg reward: N/A. 1 running: 2.0(240s)
+2026-08-12 18:29:31.059 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:29:38.602 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:29:41.637 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+2026-08-12 18:29:47.545 | ERROR    | tau2.utils.llm_utils:get_response_cost:129 - This model isn't mapped yet. model=qwen3-32b, custom_llm_provider=openai. Add it here - https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json.
+
+╭───────────────────────────────────── Simulation Overview ─────────────────────────────────────╮
+│ Task ID: 2                                                                                    │
+│ Trial: 0                                                                                      │
+│ Duration: 253.49s                                                                             │
+│ Mode: half_duplex                                                                             │
+│ Termination Reason: TerminationReason.USER_STOP                                               │
+│ Agent Cost: $0.0000                                                                           │
+│ User Cost: $0.0000                                                                            │
+│ Reward: ❌ 0.0000 (DB: 1.0, NL_ASSERTION: 0.0)                                                │
+│                                                                                               │
+│ DB Check:✅ 1.0                                                                               │
+│                                                                                               │
+│ Action Checks:                                                                                │
+│ - 0: agent find_user_id_by_name_zip [read] ✅ 1.0                                             │
+│ - 1: agent get_product_details [read] ❌ 0.0                                                  │
+│ - 2: agent get_product_details [read] ✅ 1.0                                                  │
+│ - 3: agent get_user_details [read] ✅ 1.0                                                     │
+│ - 4: agent get_order_details [read] ✅ 1.0                                                    │
+│ - 5: agent get_order_details [read] ✅ 1.0                                                    │
+│ - 6: agent get_order_details [read] ✅ 1.0                                                    │
+│ - 7: agent get_order_details [read] ✅ 1.0                                                    │
+│ - 8: agent get_order_details [read] ✅ 1.0                                                    │
+│ - 9: agent get_product_details [read] ✅ 1.0                                                  │
+│ - 10: agent return_delivered_order_items [write] ✅ 1.0                                       │
+│                                                                                               │
+│ Partial Action Reward: 10/11 (90.9%)                                                          │
+│   Read:  9/10 (90.0%)                                                                         │
+│   Write: 1/1 (100.0%)                                                                         │
+│                                                                                               │
+│ Communicate Checks:                                                                           │
+│ - 0: 10 ❌                                                                                    │
+│                                                                                               │
+│ NL Assertions:                                                                                │
+│ - 0: Agent should tell the user that there are 10 t-shirt options available. ❌               │
+│         The agent provided a list of 12 t-shirt variants, of which 9 were marked as           │
+│ available. The expected outcome was for the agent to state that there are 10 t-shirt options  │
+│ available, which is not accurate based on the data retrieved. Therefore, the expectation was  │
+│ not met.                                                                                      │
+│                                                                                               │
+│ Additional Info:                                                                              │
+│ env: None                                                                                     │
+│ nl: None                                                                                      │
+│ communicate: None                                                                             │
+│ action: None                                                                                  │
+│                                                                                               │
+╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+
+Successfully completed all simulations!
+To review the simulations, run: tau2 view
+╭────────────────────────────────── Agent Performance Metrics ──────────────────────────────────╮
+│   ═══ Overview ═══                                                                            │
+│   Total Simulations         1                                                                 │
+│   Total Tasks               1                                                                 │
+│                                                                                               │
+│   ═══ Reward Metrics ═══                                                                      │
+│   🏆 Average Reward         0.0000                                                            │
+│      Pass^1                 0.000                                                             │
+│   💰 Avg Cost/Conversation  $0.0000                                                           │
+│                                                                                               │
+│   ═══ Action Metrics ═══                                                                      │
+│   📖 Read Actions           9/10 (90.0%)                                                      │
+│   ✏️  Write Actions          1/1 (100.0%)                                                      │
+│                                                                                               │
+│   ═══ DB Match ═══                                                                            │
+│   🗄️  DB Match               ✓ 1 / ✗ 0 (100.0%)                                                │
+│                                                                                               │
+│   ═══ Authentication ═══                                                                      │
+│      Not Checked            1                                                                 │
+│                                                                                               │
+│   ═══ Termination ═══                                                                         │
+│   🛑 Normal Stop            1 (👤 1 / 🤖 0)                                                   │
+│                                                                                               │
+│   ═══ LLM Judge Review ═══                                                                    │
+│   🤖 Agent Errors           0 errors                                                          │
+│      Sims by severity       -                                                                 │
+│   👤 User Errors            0 errors                                                          │
+│      Sims by severity       -                                                                 │
+│                                                                                               │
+╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+results: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_smoke_retail_task_2/results.json
+trajectory_completeness: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/smoke/trajectory_completeness.json
+official_metrics: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/smoke/official_metrics.json
