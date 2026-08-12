@@ -1,0 +1,28 @@
+{
+  "airline": {
+    "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+    "task_aggregation": "per-task pass^k, then mean across tasks",
+    "configured_num_trials": 1,
+    "total_tasks": 50,
+    "total_simulations": 50,
+    "infrastructure_errors_excluded_by_official_metric": 0,
+    "average_reward": 0.4,
+    "pass^1": 0.4,
+    "pass^k": {
+      "1": 0.4
+    }
+  },
+  "retail": {
+    "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+    "task_aggregation": "per-task pass^k, then mean across tasks",
+    "configured_num_trials": 1,
+    "total_tasks": 114,
+    "total_simulations": 114,
+    "infrastructure_errors_excluded_by_official_metric": 0,
+    "average_reward": 0.2631578947368421,
+    "pass^1": 0.2631578947368421,
+    "pass^k": {
+      "1": 0.2631578947368421
+    }
+  }
+}

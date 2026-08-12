@@ -1,0 +1,302 @@
+{
+  "num_shards": 8,
+  "assignment": "round-robin over the combined Airline/Retail base task list",
+  "domains": {
+    "airline": [
+      {
+        "shard_index": 0,
+        "task_ids": [
+          "0",
+          "11",
+          "27",
+          "41",
+          "8",
+          "26",
+          "45"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base_shard_00_of_08/results.json",
+        "api_base": "http://127.0.0.1:8100/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 1,
+        "task_ids": [
+          "1",
+          "12",
+          "28",
+          "42",
+          "13",
+          "29",
+          "48"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base_shard_01_of_08/results.json",
+        "api_base": "http://127.0.0.1:8101/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 2,
+        "task_ids": [
+          "3",
+          "14",
+          "33",
+          "43",
+          "16",
+          "30"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base_shard_02_of_08/results.json",
+        "api_base": "http://127.0.0.1:8102/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 3,
+        "task_ids": [
+          "4",
+          "15",
+          "34",
+          "46",
+          "18",
+          "31"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base_shard_03_of_08/results.json",
+        "api_base": "http://127.0.0.1:8103/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 4,
+        "task_ids": [
+          "5",
+          "17",
+          "36",
+          "47",
+          "19",
+          "32"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base_shard_04_of_08/results.json",
+        "api_base": "http://127.0.0.1:8104/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 5,
+        "task_ids": [
+          "7",
+          "20",
+          "38",
+          "49",
+          "22",
+          "35"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base_shard_05_of_08/results.json",
+        "api_base": "http://127.0.0.1:8105/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 6,
+        "task_ids": [
+          "9",
+          "21",
+          "39",
+          "2",
+          "24",
+          "37"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base_shard_06_of_08/results.json",
+        "api_base": "http://127.0.0.1:8106/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 7,
+        "task_ids": [
+          "10",
+          "23",
+          "40",
+          "6",
+          "25",
+          "44"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base_shard_07_of_08/results.json",
+        "api_base": "http://127.0.0.1:8107/v1",
+        "complete": true
+      }
+    ],
+    "retail": [
+      {
+        "shard_index": 0,
+        "task_ids": [
+          "7",
+          "19",
+          "29",
+          "44",
+          "58",
+          "75",
+          "85",
+          "96",
+          "109",
+          "18",
+          "40",
+          "60",
+          "74",
+          "101"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base_shard_00_of_08/results.json",
+        "api_base": "http://127.0.0.1:8100/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 1,
+        "task_ids": [
+          "8",
+          "20",
+          "30",
+          "46",
+          "59",
+          "76",
+          "87",
+          "98",
+          "110",
+          "26",
+          "42",
+          "61",
+          "77",
+          "102"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base_shard_01_of_08/results.json",
+        "api_base": "http://127.0.0.1:8101/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 2,
+        "task_ids": [
+          "0",
+          "10",
+          "21",
+          "31",
+          "47",
+          "63",
+          "78",
+          "88",
+          "99",
+          "112",
+          "27",
+          "45",
+          "62",
+          "79",
+          "108"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base_shard_02_of_08/results.json",
+        "api_base": "http://127.0.0.1:8102/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 3,
+        "task_ids": [
+          "1",
+          "11",
+          "22",
+          "34",
+          "48",
+          "66",
+          "80",
+          "89",
+          "103",
+          "113",
+          "32",
+          "49",
+          "64",
+          "86",
+          "111"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base_shard_03_of_08/results.json",
+        "api_base": "http://127.0.0.1:8103/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 4,
+        "task_ids": [
+          "2",
+          "13",
+          "23",
+          "35",
+          "50",
+          "67",
+          "81",
+          "91",
+          "104",
+          "5",
+          "33",
+          "51",
+          "65",
+          "90"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base_shard_04_of_08/results.json",
+        "api_base": "http://127.0.0.1:8104/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 5,
+        "task_ids": [
+          "3",
+          "14",
+          "24",
+          "37",
+          "52",
+          "69",
+          "82",
+          "92",
+          "105",
+          "9",
+          "36",
+          "53",
+          "68",
+          "94"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base_shard_05_of_08/results.json",
+        "api_base": "http://127.0.0.1:8105/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 6,
+        "task_ids": [
+          "4",
+          "15",
+          "25",
+          "41",
+          "54",
+          "72",
+          "83",
+          "93",
+          "106",
+          "12",
+          "38",
+          "55",
+          "70",
+          "97"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base_shard_06_of_08/results.json",
+        "api_base": "http://127.0.0.1:8106/v1",
+        "complete": true
+      },
+      {
+        "shard_index": 7,
+        "task_ids": [
+          "6",
+          "16",
+          "28",
+          "43",
+          "57",
+          "73",
+          "84",
+          "95",
+          "107",
+          "17",
+          "39",
+          "56",
+          "71",
+          "100"
+        ],
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base_shard_07_of_08/results.json",
+        "api_base": "http://127.0.0.1:8107/v1",
+        "complete": true
+      }
+    ]
+  }
+}
