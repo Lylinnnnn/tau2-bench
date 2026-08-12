@@ -1,0 +1,123 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.0.1, pluggy-1.6.0
+rootdir: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro
+configfile: pyproject.toml
+plugins: anyio-4.11.0, xdist-3.8.0
+collected 86 items
+
+project/trace_to_micro/tests/analysis/test_logged_trace.py .......       [  8%]
+project/trace_to_micro/tests/analysis/test_logged_transitions.py .       [  9%]
+project/trace_to_micro/tests/analysis/test_results.py ..                 [ 11%]
+project/trace_to_micro/tests/analysis/test_task_inventory.py ...         [ 15%]
+project/trace_to_micro/tests/analysis/test_trajectory.py ..              [ 17%]
+project/trace_to_micro/tests/clean/test_audit.py ..                      [ 19%]
+project/trace_to_micro/tests/clean/test_contract.py .....                [ 25%]
+project/trace_to_micro/tests/clean/test_evidence.py ....                 [ 30%]
+project/trace_to_micro/tests/clean/test_report.py .                      [ 31%]
+project/trace_to_micro/tests/clean/test_semantic.py ...                  [ 34%]
+project/trace_to_micro/tests/evaluation/test_paired.py .....             [ 40%]
+project/trace_to_micro/tests/evaluation/test_success_direction.py ....   [ 45%]
+project/trace_to_micro/tests/evaluation/test_support.py ...              [ 48%]
+project/trace_to_micro/tests/replay/test_branching.py .                  [ 50%]
+project/trace_to_micro/tests/replay/test_reference.py ..                 [ 52%]
+project/trace_to_micro/tests/replay/test_state.py ...                    [ 55%]
+project/trace_to_micro/tests/runner/test_context.py ......               [ 62%]
+project/trace_to_micro/tests/runner/test_success_direction_runner.py ... [ 66%]
+                                                                         [ 66%]
+project/trace_to_micro/tests/runner/test_trajectory_runner.py ...        [ 69%]
+project/trace_to_micro/tests/runtime/test_activations.py ...             [ 73%]
+project/trace_to_micro/tests/runtime/test_server_preflight.py ......     [ 80%]
+project/trace_to_micro/tests/test_architecture.py ....                   [ 84%]
+project/trace_to_micro/tests/test_config.py ....                         [ 89%]
+project/trace_to_micro/tests/test_launch_scripts.py .........            [100%]
+
+=============================== warnings summary ===============================
+src/tau2/voice/utils/audio_preprocessing.py:4
+  /home/liuyanlin.lyl/notebook/lyl/tau2-bench/src/tau2/voice/utils/audio_preprocessing.py:4: DeprecationWarning: 'audioop' is deprecated and slated for removal in Python 3.13
+    import audioop
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 86 passed, 1 warning in 11.24s ========================
+All checks passed!
+65 files already formatted
+2026-08-12 23:57:34.967 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-12 23:57:34.967 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+[92m23:57:40 - LiteLLM:WARNING[0m: get_model_cost_map.py:174 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: _ssl.c:993: The handshake operation timed out. Falling back to local backup.
+2026-08-12 23:57:43.023 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-12 23:57:43.227 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-12 23:57:43.238 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-12 23:57:43.239 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/activation_requests.jsonl
+Started activations shard 0: GPU 0, HTTP 8100, internal 20000, master 40000, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/success_direction_8gpu/activations_shard_0.log
+Started activations shard 1: GPU 1, HTTP 8101, internal 21000, master 40001, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/success_direction_8gpu/activations_shard_1.log
+Started activations shard 2: GPU 2, HTTP 8102, internal 22000, master 40002, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/success_direction_8gpu/activations_shard_2.log
+Started activations shard 3: GPU 3, HTTP 8103, internal 23000, master 40003, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/success_direction_8gpu/activations_shard_3.log
+Started activations shard 4: GPU 4, HTTP 8104, internal 24000, master 40004, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/success_direction_8gpu/activations_shard_4.log
+Started activations shard 5: GPU 5, HTTP 8105, internal 25000, master 40005, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/success_direction_8gpu/activations_shard_5.log
+Started activations shard 6: GPU 6, HTTP 8106, internal 26000, master 40006, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/success_direction_8gpu/activations_shard_6.log
+Started activations shard 7: GPU 7, HTTP 8107, internal 27000, master 40007, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/success_direction_8gpu/activations_shard_7.log
+2026-08-13 00:11:09.953 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-13 00:11:09.954 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+2026-08-13 00:11:14.519 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-13 00:11:14.699 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-13 00:11:14.710 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-13 00:11:14.710 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/activations.jsonl

@@ -1,0 +1,3364 @@
+{
+  "experiment": "success direction existence",
+  "primary_test": {
+    "definition": "pre-generation, overall official success, preregistered layer, trajectory-level mean over selected tool decisions",
+    "layer_id": 47,
+    "evidence_rule": "A domain passes only if held-out AUROC > 0.5 and the one-sided label-permutation p-value is < 0.05. Both domains passing is the preregistered consistency criterion.",
+    "evidence_status": "no_detectable_held_out_direction",
+    "domains_passing": [],
+    "results": {
+      "airline_to_airline:before:overall_success:layer_47": {
+        "eligible": true,
+        "training_trajectory_count": 30,
+        "training_positive_count": 13,
+        "training_negative_count": 17,
+        "trajectory_count": 20,
+        "positive_count": 7,
+        "negative_count": 13,
+        "auroc": 0.2967032967032967,
+        "auroc_stratified_bootstrap_95_ci": [
+          0.08791208791208792,
+          0.5497252747252732
+        ],
+        "one_sided_label_permutation_p": 0.9270145970805839,
+        "balanced_accuracy_at_centroid_midpoint": 0.45054945054945056,
+        "surface_baselines": [
+          {
+            "field": "prefix_char_count",
+            "direction_selected_on_train": "positive",
+            "trajectory_count": 20,
+            "auroc": 0.38461538461538464
+          },
+          {
+            "field": "prefix_message_count",
+            "direction_selected_on_train": "positive",
+            "trajectory_count": 20,
+            "auroc": 0.45054945054945056
+          },
+          {
+            "field": "decision_position",
+            "direction_selected_on_train": "positive",
+            "trajectory_count": 20,
+            "auroc": 0.5
+          },
+          {
+            "field": "prior_tool_errors",
+            "direction_selected_on_train": "positive",
+            "trajectory_count": 20,
+            "auroc": 0.5
+          },
+          {
+            "field": "prompt_tokens",
+            "direction_selected_on_train": "positive",
+            "trajectory_count": 20,
+            "auroc": 0.44505494505494503
+          }
+        ]
+      },
+      "retail_to_retail:before:overall_success:layer_47": {
+        "eligible": true,
+        "training_trajectory_count": 70,
+        "training_positive_count": 18,
+        "training_negative_count": 52,
+        "trajectory_count": 37,
+        "positive_count": 12,
+        "negative_count": 25,
+        "auroc": 0.43333333333333335,
+        "auroc_stratified_bootstrap_95_ci": [
+          0.24333333333333335,
+          0.6334166666666662
+        ],
+        "one_sided_label_permutation_p": 0.747250549890022,
+        "balanced_accuracy_at_centroid_midpoint": 0.4683333333333334,
+        "surface_baselines": [
+          {
+            "field": "prefix_char_count",
+            "direction_selected_on_train": "negative",
+            "trajectory_count": 37,
+            "auroc": 0.44666666666666666
+          },
+          {
+            "field": "prefix_message_count",
+            "direction_selected_on_train": "negative",
+            "trajectory_count": 37,
+            "auroc": 0.48
+          },
+          {
+            "field": "decision_position",
+            "direction_selected_on_train": "positive",
+            "trajectory_count": 37,
+            "auroc": 0.5
+          },
+          {
+            "field": "prior_tool_errors",
+            "direction_selected_on_train": "positive",
+            "trajectory_count": 37,
+            "auroc": 0.5
+          },
+          {
+            "field": "prompt_tokens",
+            "direction_selected_on_train": "negative",
+            "trajectory_count": 37,
+            "auroc": 0.46
+          }
+        ]
+      }
+    }
+  },
+  "evaluations": {
+    "airline_to_airline:before:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.32967032967032966,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.45054945054945056,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.44505494505494503
+        }
+      ]
+    },
+    "airline_to_airline:before:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.2967032967032967,
+      "auroc_stratified_bootstrap_95_ci": [
+        0.08791208791208792,
+        0.5497252747252732
+      ],
+      "one_sided_label_permutation_p": 0.9270145970805839,
+      "balanced_accuracy_at_centroid_midpoint": 0.45054945054945056,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.44505494505494503
+        }
+      ]
+    },
+    "airline_to_airline:before:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.38461538461538464,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.45054945054945056,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.44505494505494503
+        }
+      ]
+    },
+    "airline_to_airline:before:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.24175824175824176,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.45054945054945056,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.44505494505494503
+        }
+      ]
+    },
+    "airline_to_airline:before:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.05263157894736842,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.42105263157894735,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.15789473684210525
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.05263157894736842
+        }
+      ]
+    },
+    "airline_to_airline:before:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.0,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4473684210526316,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.15789473684210525
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.05263157894736842
+        }
+      ]
+    },
+    "airline_to_airline:action:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.34065934065934067,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.34065934065934067,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        }
+      ]
+    },
+    "airline_to_airline:action:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.24175824175824176,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.3076923076923077,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        }
+      ]
+    },
+    "airline_to_airline:action:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.3516483516483517,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.34065934065934067,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        }
+      ]
+    },
+    "airline_to_airline:action:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.2967032967032967,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.30219780219780223,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        }
+      ]
+    },
+    "airline_to_airline:action:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.2631578947368421,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.3684210526315789,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.15789473684210525
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.05263157894736842
+        }
+      ]
+    },
+    "airline_to_airline:action:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.6842105263157895,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.15789473684210525
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.05263157894736842
+        }
+      ]
+    },
+    "airline_to_airline:result:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.45054945054945056,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.41208791208791207,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5824175824175825
+        }
+      ]
+    },
+    "airline_to_airline:result:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.3516483516483517,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.45054945054945056,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5824175824175825
+        }
+      ]
+    },
+    "airline_to_airline:result:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.46153846153846156,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.41208791208791207,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5824175824175825
+        }
+      ]
+    },
+    "airline_to_airline:result:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.4065934065934066,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.37362637362637363,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.38461538461538464
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.45054945054945056
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5824175824175825
+        }
+      ]
+    },
+    "airline_to_airline:result:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.05263157894736842,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.15789473684210525
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.05263157894736842
+        }
+      ]
+    },
+    "airline_to_airline:result:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.05263157894736842,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.15789473684210525
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.05263157894736842
+        }
+      ]
+    },
+    "airline_to_retail:before:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.56,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5316666666666667,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5533333333333333
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.52
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.54
+        }
+      ]
+    },
+    "airline_to_retail:before:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.5866666666666667,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5316666666666667,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5533333333333333
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.52
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.54
+        }
+      ]
+    },
+    "airline_to_retail:before:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.5705128205128205,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5368589743589743,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5480769230769231
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5448717948717948
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.530448717948718
+        }
+      ]
+    },
+    "airline_to_retail:before:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.6089743589743589,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5576923076923077,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5480769230769231
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5448717948717948
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.530448717948718
+        }
+      ]
+    },
+    "airline_to_retail:before:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.46464646464646464,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.6212121212121212,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.43434343434343436
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.51010101010101
+        }
+      ]
+    },
+    "airline_to_retail:before:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.47474747474747475,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.6515151515151515,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.43434343434343436
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.51010101010101
+        }
+      ]
+    },
+    "airline_to_retail:action:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.61,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.6166666666666667,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5533333333333333
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.52
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5366666666666666
+        }
+      ]
+    },
+    "airline_to_retail:action:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.52,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5366666666666666,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5533333333333333
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.52
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5366666666666666
+        }
+      ]
+    },
+    "airline_to_retail:action:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.6314102564102564,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.46474358974358976,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5480769230769231
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5448717948717948
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5336538461538461
+        }
+      ]
+    },
+    "airline_to_retail:action:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.5705128205128205,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5512820512820513,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5480769230769231
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5448717948717948
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5336538461538461
+        }
+      ]
+    },
+    "airline_to_retail:action:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.5151515151515151,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5757575757575757,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.43434343434343436
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.4797979797979798
+        }
+      ]
+    },
+    "airline_to_retail:action:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.43434343434343436,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.48484848484848486,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.43434343434343436
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.4797979797979798
+        }
+      ]
+    },
+    "airline_to_retail:result:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.5266666666666666,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.52,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5533333333333333
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.52
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.5433333333333333
+        }
+      ]
+    },
+    "airline_to_retail:result:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 13,
+      "training_negative_count": 17,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.5033333333333333,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.54,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5533333333333333
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.52
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.5433333333333333
+        }
+      ]
+    },
+    "airline_to_retail:result:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.5865384615384616,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5208333333333334,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5480769230769231
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5448717948717948
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.5560897435897436
+        }
+      ]
+    },
+    "airline_to_retail:result:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 16,
+      "training_negative_count": 14,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.5641025641025641,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5208333333333334,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5480769230769231
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5448717948717948
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.5560897435897436
+        }
+      ]
+    },
+    "airline_to_retail:result:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.2828282828282828,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.43434343434343436
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5404040404040404
+        }
+      ]
+    },
+    "airline_to_retail:result:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 30,
+      "training_positive_count": 25,
+      "training_negative_count": 5,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.6868686868686869,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.43434343434343436
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5404040404040404
+        }
+      ]
+    },
+    "retail_to_airline:before:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.6923076923076923,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5494505494505495,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.554945054945055
+        }
+      ]
+    },
+    "retail_to_airline:before:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.6153846153846154,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5494505494505495,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.554945054945055
+        }
+      ]
+    },
+    "retail_to_airline:before:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.7362637362637363,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5494505494505495,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.554945054945055
+        }
+      ]
+    },
+    "retail_to_airline:before:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.6373626373626373,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5494505494505495,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.554945054945055
+        }
+      ]
+    },
+    "retail_to_airline:before:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.7368421052631579,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.868421052631579,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.8421052631578947
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.9473684210526315
+        }
+      ]
+    },
+    "retail_to_airline:before:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.7894736842105263,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.868421052631579,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.8421052631578947
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.9473684210526315
+        }
+      ]
+    },
+    "retail_to_airline:action:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.6043956043956044,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5494505494505495,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        }
+      ]
+    },
+    "retail_to_airline:action:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.45054945054945056,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5824175824175823,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        }
+      ]
+    },
+    "retail_to_airline:action:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.6483516483516484,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5494505494505495,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        }
+      ]
+    },
+    "retail_to_airline:action:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.45054945054945056,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5824175824175823,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        }
+      ]
+    },
+    "retail_to_airline:action:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.7894736842105263,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.8947368421052632,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.8421052631578947
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.9473684210526315
+        }
+      ]
+    },
+    "retail_to_airline:action:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.8421052631578947,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.8421052631578947
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.9473684210526315
+        }
+      ]
+    },
+    "retail_to_airline:result:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.5714285714285714,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5824175824175825
+        }
+      ]
+    },
+    "retail_to_airline:result:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.43956043956043955,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5824175824175823,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5824175824175825
+        }
+      ]
+    },
+    "retail_to_airline:result:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.5274725274725275,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5824175824175825
+        }
+      ]
+    },
+    "retail_to_airline:result:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 20,
+      "positive_count": 7,
+      "negative_count": 13,
+      "auroc": 0.4725274725274725,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5439560439560439,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.6153846153846154
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5494505494505495
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.5824175824175825
+        }
+      ]
+    },
+    "retail_to_airline:result:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.3684210526315789,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.8421052631578947
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.05263157894736842
+        }
+      ]
+    },
+    "retail_to_airline:result:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 20,
+      "positive_count": 19,
+      "negative_count": 1,
+      "auroc": 0.6842105263157895,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.0
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 20,
+          "auroc": 0.8421052631578947
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 20,
+          "auroc": 0.05263157894736842
+        }
+      ]
+    },
+    "retail_to_retail:before:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.38333333333333336,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4683333333333334,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.44666666666666666
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.48
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.46
+        }
+      ]
+    },
+    "retail_to_retail:before:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.43333333333333335,
+      "auroc_stratified_bootstrap_95_ci": [
+        0.24333333333333335,
+        0.6334166666666662
+      ],
+      "one_sided_label_permutation_p": 0.747250549890022,
+      "balanced_accuracy_at_centroid_midpoint": 0.4683333333333334,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.44666666666666666
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.48
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.46
+        }
+      ]
+    },
+    "retail_to_retail:before:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.3557692307692308,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4423076923076923,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4519230769230769
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4551282051282051
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.46955128205128205
+        }
+      ]
+    },
+    "retail_to_retail:before:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.41346153846153844,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4423076923076923,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4519230769230769
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4551282051282051
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.46955128205128205
+        }
+      ]
+    },
+    "retail_to_retail:before:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.5555555555555556,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.40909090909090906,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.5656565656565656
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.4898989898989899
+        }
+      ]
+    },
+    "retail_to_retail:before:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.5454545454545454,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5757575757575757,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.5656565656565656
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.4898989898989899
+        }
+      ]
+    },
+    "retail_to_retail:action:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.4166666666666667,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4683333333333334,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.44666666666666666
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.48
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4633333333333333
+        }
+      ]
+    },
+    "retail_to_retail:action:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.42,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4683333333333334,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.44666666666666666
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.48
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4633333333333333
+        }
+      ]
+    },
+    "retail_to_retail:action:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.41025641025641024,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4423076923076923,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4519230769230769
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4551282051282051
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.46634615384615385
+        }
+      ]
+    },
+    "retail_to_retail:action:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.391025641025641,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4423076923076923,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4519230769230769
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4551282051282051
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.46634615384615385
+        }
+      ]
+    },
+    "retail_to_retail:action:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.6666666666666666,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5757575757575757,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.5656565656565656
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.5202020202020202
+        }
+      ]
+    },
+    "retail_to_retail:action:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.40404040404040403,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.5757575757575757,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.5656565656565656
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.5202020202020202
+        }
+      ]
+    },
+    "retail_to_retail:result:overall_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.48,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4666666666666667,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.44666666666666666
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.48
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.5433333333333333
+        }
+      ]
+    },
+    "retail_to_retail:result:overall_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 18,
+      "training_negative_count": 52,
+      "trajectory_count": 37,
+      "positive_count": 12,
+      "negative_count": 25,
+      "auroc": 0.45,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4666666666666667,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.44666666666666666
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.48
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.5433333333333333
+        }
+      ]
+    },
+    "retail_to_retail:result:db_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.41025641025641024,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.44551282051282054,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4519230769230769
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4551282051282051
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.5560897435897436
+        }
+      ]
+    },
+    "retail_to_retail:result:db_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 70,
+      "training_positive_count": 21,
+      "training_negative_count": 49,
+      "trajectory_count": 37,
+      "positive_count": 13,
+      "negative_count": 24,
+      "auroc": 0.33974358974358976,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.4423076923076923,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4519230769230769
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.4551282051282051
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 37,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 37,
+          "auroc": 0.5560897435897436
+        }
+      ]
+    },
+    "retail_to_retail:result:language_success:layer_31": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.8181818181818182,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.7575757575757576,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.5656565656565656
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5404040404040404
+        }
+      ]
+    },
+    "retail_to_retail:result:language_success:layer_47": {
+      "eligible": true,
+      "training_trajectory_count": 69,
+      "training_positive_count": 53,
+      "training_negative_count": 16,
+      "trajectory_count": 36,
+      "positive_count": 33,
+      "negative_count": 3,
+      "auroc": 0.7171717171717171,
+      "auroc_stratified_bootstrap_95_ci": null,
+      "one_sided_label_permutation_p": null,
+      "balanced_accuracy_at_centroid_midpoint": 0.6363636363636364,
+      "surface_baselines": [
+        {
+          "field": "prefix_char_count",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.494949494949495
+        },
+        {
+          "field": "prefix_message_count",
+          "direction_selected_on_train": "negative",
+          "trajectory_count": 36,
+          "auroc": 0.5656565656565656
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "trajectory_count": 36,
+          "auroc": 0.5404040404040404
+        }
+      ]
+    }
+  },
+  "metric_notes": {
+    "auroc": "0.5 is random; computed on held-out official test tasks",
+    "balanced_accuracy_at_centroid_midpoint": "no threshold tuning; zero is the midpoint of train centroids",
+    "unit_of_analysis": "one trajectory, not one decision",
+    "bootstrap_samples": 2000,
+    "permutation_samples": 5000,
+    "random_seed": 300
+  }
+}
