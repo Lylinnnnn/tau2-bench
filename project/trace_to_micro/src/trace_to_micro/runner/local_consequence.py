@@ -102,25 +102,17 @@ def _support_report(
         report[domain] = {}
         for split in splits:
             selected = [
-                row
-                for row in rows
-                if row["domain"] == domain and row["split"] == split
+                row for row in rows if row["domain"] == domain and row["split"] == split
             ]
             tool_progress = {}
             for tool_name in sorted({row["tool_name"] for row in selected}):
-                tool_rows = [
-                    row for row in selected if row["tool_name"] == tool_name
-                ]
+                tool_rows = [row for row in selected if row["tool_name"] == tool_name]
                 tool_progress[tool_name] = dict(
-                    Counter(
-                        str(row["goal_progress"]).lower() for row in tool_rows
-                    )
+                    Counter(str(row["goal_progress"]).lower() for row in tool_rows)
                 )
             report[domain][split] = {
                 "decision_count": len(selected),
-                "trajectory_count": len(
-                    {row["simulation_id"] for row in selected}
-                ),
+                "trajectory_count": len({row["simulation_id"] for row in selected}),
                 "tool_success": dict(
                     Counter(str(row["tool_success"]).lower() for row in selected)
                 ),
@@ -199,9 +191,7 @@ def build_local_consequence_requests(config_path: Path) -> Path:
     write_jsonl(config.output_dir / "local_consequences.jsonl", consequences)
     write_json(
         config.output_dir / "local_consequence_support.json",
-        _support_report(
-            consequences, splits=(config.train_split, config.test_split)
-        ),
+        _support_report(consequences, splits=(config.train_split, config.test_split)),
     )
     path = config.output_dir / "activation_requests.jsonl"
     write_jsonl(path, requests)
@@ -305,9 +295,7 @@ def run_local_consequence_smoke(config_path: Path, *, base_url: str) -> Path:
             for key in ("tool_success", "state_changed", "goal_progress")
         },
         "moments": [row["moment"] for row in activations],
-        "prompt_tokens": {
-            row["moment"]: row["prompt_tokens"] for row in activations
-        },
+        "prompt_tokens": {row["moment"]: row["prompt_tokens"] for row in activations},
     }
     path = config.smoke_output_dir() / "smoke_report.json"
     write_json(path, report)
@@ -334,8 +322,7 @@ def run_local_consequence_activation_shard(
         raise ValueError(f"Local consequence activation shard {shard_index} is empty")
     output = config.activation_shard_path(shard_index, num_shards)
     current = {
-        (request["sample_id"], request["request_fingerprint"])
-        for request in requests
+        (request["sample_id"], request["request_fingerprint"]) for request in requests
     }
     retained = [
         row
@@ -346,9 +333,7 @@ def run_local_consequence_activation_shard(
     return _extract_requests(requests, output, base_url=base_url, config=config)
 
 
-def merge_local_consequence_activations(
-    config_path: Path, *, num_shards: int
-) -> Path:
+def merge_local_consequence_activations(config_path: Path, *, num_shards: int) -> Path:
     """Strictly merge local-consequence activation shards."""
 
     config = LocalConsequenceConfig.load(config_path)
@@ -377,9 +362,7 @@ def run_local_consequence_evaluation(config_path: Path) -> Path:
     config = LocalConsequenceConfig.load(config_path)
     requests = read_jsonl(config.output_dir / "activation_requests.jsonl")
     rows = read_jsonl(config.output_dir / "activations.jsonl")
-    expected = {
-        (row["sample_id"], row["request_fingerprint"]) for row in requests
-    }
+    expected = {(row["sample_id"], row["request_fingerprint"]) for row in requests}
     observed = {(row["sample_id"], row.get("request_fingerprint")) for row in rows}
     if len(rows) != len(requests) or observed != expected:
         raise ValueError(

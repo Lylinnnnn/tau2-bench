@@ -43,9 +43,7 @@ def _within_group_auc(
             continue
         eligible_groups += 1
         wins += sum(left > right for left in positives for right in negatives)
-        wins += 0.5 * sum(
-            left == right for left in positives for right in negatives
-        )
+        wins += 0.5 * sum(left == right for left in positives for right in negatives)
         pairs += len(positives) * len(negatives)
     return (wins / pairs if pairs else None), eligible_groups, pairs
 
@@ -123,10 +121,7 @@ def _scores(
     labels = [bool(row[label]) for row in selected]
     scores = [
         float(
-            (
-                _unit(decode_float16_vector(row["activations"][str(layer_id)]))
-                - midpoint
-            )
+            (_unit(decode_float16_vector(row["activations"][str(layer_id)])) - midpoint)
             @ direction
         )
         for row in selected
@@ -145,11 +140,7 @@ def _tool_centered_scores(
     eligible_tools: set[str],
 ) -> tuple[list[bool], list[float], list[str], list[str]]:
     train = _eligible(train, label)
-    test = [
-        row
-        for row in _eligible(test, label)
-        if row["tool_name"] in eligible_tools
-    ]
+    test = [row for row in _eligible(test, label) if row["tool_name"] in eligible_tools]
     train_by_tool: dict[str, list[np.ndarray]] = defaultdict(list)
     for row in train:
         train_by_tool[row["tool_name"]].append(
@@ -477,8 +468,7 @@ def build_local_consequence_report(
     ]
     primary = {key: evaluations[key] for key in primary_keys}
     evaluable = [
-        value["eligible"]
-        and value.get("tool_centered_within_tool_auroc") is not None
+        value["eligible"] and value.get("tool_centered_within_tool_auroc") is not None
         for value in primary.values()
     ]
     passes = []

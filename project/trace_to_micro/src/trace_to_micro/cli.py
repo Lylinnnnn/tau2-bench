@@ -171,9 +171,7 @@ def _parser() -> argparse.ArgumentParser:
     success_activation_shard.add_argument("--shard-index", type=int, required=True)
     success_activation_shard.add_argument("--num-shards", type=int, required=True)
     success_activation_shard.add_argument("--base-url", required=True)
-    local_activation_shard = subparsers.add_parser(
-        "local-consequence-activation-shard"
-    )
+    local_activation_shard = subparsers.add_parser("local-consequence-activation-shard")
     local_activation_shard.add_argument("--config", type=Path, required=True)
     local_activation_shard.add_argument("--shard-index", type=int, required=True)
     local_activation_shard.add_argument("--num-shards", type=int, required=True)
@@ -308,9 +306,7 @@ def main(argv: list[str] | None = None) -> None:
         return
     elif args.command == "local-consequence-merge-activations":
         print(
-            merge_local_consequence_activations(
-                args.config, num_shards=args.num_shards
-            )
+            merge_local_consequence_activations(args.config, num_shards=args.num_shards)
         )
         return
     elif args.command == "local-consequence-evaluate":

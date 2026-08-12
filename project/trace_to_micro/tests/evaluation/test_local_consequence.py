@@ -40,12 +40,8 @@ def test_local_consequence_direction_uses_held_out_decisions() -> None:
             ]
         )
         for index in range(10):
-            rows.append(
-                _row(domain, "test", f"{domain}-test-f-{index}", False, -1)
-            )
-            rows.append(
-                _row(domain, "test", f"{domain}-test-s-{index}", True, 1)
-            )
+            rows.append(_row(domain, "test", f"{domain}-test-f-{index}", False, -1))
+            rows.append(_row(domain, "test", f"{domain}-test-s-{index}", True, 1))
 
     report = build_local_consequence_report(
         rows,

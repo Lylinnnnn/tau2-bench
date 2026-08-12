@@ -98,9 +98,7 @@ def replay_local_consequences(
     goal = target_snapshot(domain, task)
     messages = simulation.get_messages()
     recorded_results = {
-        message.id: message
-        for message in messages
-        if isinstance(message, ToolMessage)
+        message.id: message for message in messages if isinstance(message, ToolMessage)
     }
     rows = []
     assistant_position = 0
@@ -163,9 +161,7 @@ def replay_local_consequences(
                         ),
                         "target_distance_before": distance_before,
                         "target_distance_after": distance_after,
-                        "target_distance_reduction": (
-                            distance_before - distance_after
-                        ),
+                        "target_distance_reduction": (distance_before - distance_after),
                         "changes": [asdict(change) for change in changes],
                     }
                 )

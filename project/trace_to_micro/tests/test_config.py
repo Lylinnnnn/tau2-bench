@@ -126,9 +126,7 @@ def test_success_direction_config_preregisters_primary_layer() -> None:
 
 
 def test_local_consequence_config_reuses_existing_complete_trajectories() -> None:
-    config_path = (
-        Path(__file__).parents[1] / "configs/qwen3_32b_local_consequence.toml"
-    )
+    config_path = Path(__file__).parents[1] / "configs/qwen3_32b_local_consequence.toml"
 
     config = LocalConsequenceConfig.load(config_path)
 

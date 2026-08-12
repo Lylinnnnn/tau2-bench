@@ -80,9 +80,10 @@ def test_local_activation_shards_keep_decision_moments_together() -> None:
         for moment in ("before", "action", "result")
     ]
 
-    assert {
-        row["decision_id"] for row in local_requests_for_shard(requests, 0, 2)
-    } == {"d0", "d2"}
+    assert {row["decision_id"] for row in local_requests_for_shard(requests, 0, 2)} == {
+        "d0",
+        "d2",
+    }
 
 
 def test_official_metrics_also_writes_trajectory_completeness(
