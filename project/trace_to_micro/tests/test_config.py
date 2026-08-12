@@ -1,6 +1,10 @@
 from pathlib import Path
 
-from trace_to_micro.config import ExperimentConfig, ModelExperimentConfig
+from trace_to_micro.config import (
+    ExperimentConfig,
+    ModelExperimentConfig,
+    SuccessDirectionConfig,
+)
 
 
 def test_relative_output_directory_is_scoped_to_project(tmp_path: Path) -> None:
@@ -98,3 +102,16 @@ def test_qwen3_32b_config_separates_thinking_agent_and_json_builder() -> None:
     ] == {"enable_thinking": False}
     assert "qwen3_32b" in str(config.probe.results_path)
     assert "hybrid_clean" in config.probe.variants
+
+
+def test_success_direction_config_preregisters_primary_layer() -> None:
+    config_path = Path(__file__).parents[1] / "configs/qwen3_32b_success_direction.toml"
+
+    config = SuccessDirectionConfig.load(config_path)
+
+    assert config.domains == ("airline", "retail")
+    assert config.force_overwrite is True
+    assert config.primary_layer_id == 47
+    assert config.primary_layer_id in config.hidden_layer_ids
+    assert config.bootstrap_samples == 2000
+    assert config.permutation_samples == 5000

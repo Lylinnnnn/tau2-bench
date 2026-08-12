@@ -117,6 +117,21 @@ analysis / evaluation / clean / runtime
 | 完整轨迹或 paired-probe 的运行流程 | `runner/trajectory.py` 或 `runner/paired_probe.py` |
 | 模型实验总编排 | `runner/model_experiment.py` |
 | vLLM/OpenAI-compatible endpoint 就绪检查 | `runtime/server_preflight.py` |
+| 隐藏表示导出、紧凑编码与临时文件清理 | `runtime/activations.py` |
+| 成功方向的中心计算、迁移评测与普通信息基线 | `evaluation/success_direction.py` |
+| 成功方向实验的跨领域阶段编排 | `runner/success_direction.py` |
+
+隐藏表示实验额外遵守以下约束：
+
+- `analysis/` 只从官方落盘轨迹编译事实请求，不允许伪造模型内部表示。
+- `runtime/activations.py` 只能负责模型接口与向量序列化，禁止在其中拟合或挑选
+  最优层。
+- vLLM 导出的逐词隐藏表示临时文件必须在读取选定层、最后一个位置后立即删除；
+  长期产物只保存配置声明的层，并使用紧凑的半精度编码。
+- 主层必须在配置中预先声明。逐层结果可以作为诊断报告，但禁止在测试任务上选择
+  层或分类阈值后再报告为主结果。
+- 成功方向必须在任务级训练/测试划分上拟合和评测；同一条轨迹的多个决策不得跨
+  划分，统计时每条轨迹权重相同。
 
 只有当需求与这些文件的变化原因确实不同，且满足第 3 节时，才新增模块。
 

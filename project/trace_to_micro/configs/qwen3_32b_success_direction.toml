@@ -1,0 +1,28 @@
+[success_direction]
+domains = ["airline", "retail"]
+task_split = "base"
+train_split = "train"
+test_split = "test"
+agent = "llm_agent"
+user = "user_simulator"
+agent_llm = "openai/qwen3-32b"
+user_llm = "openai/qwen3-32b"
+agent_llm_args = { temperature = 0.6, top_p = 0.95, max_tokens = 4096, api_base = "http://127.0.0.1:8000/v1", api_key = "EMPTY", timeout = 180.0, num_retries = 0, extra_body = { top_k = 20, min_p = 0.0, chat_template_kwargs = { enable_thinking = true } } }
+user_llm_args = { temperature = 0.6, top_p = 0.95, max_tokens = 4096, api_base = "http://127.0.0.1:8000/v1", api_key = "EMPTY", timeout = 180.0, num_retries = 0, extra_body = { top_k = 20, min_p = 0.0, chat_template_kwargs = { enable_thinking = true } } }
+num_trials = 1
+max_steps = 200
+max_errors = 10
+max_concurrency = 3
+seed = 300
+timeout_seconds = 1800.0
+save_to_prefix = "trace_to_micro_qwen3_32b_thinking_t06_success_direction"
+results_dir = "../../data/simulations"
+output_dir = "outputs/qwen3_32b_thinking_t06_success_direction"
+hidden_base_url = "http://127.0.0.1:8000/v1"
+hidden_model = "qwen3-32b"
+hidden_layer_ids = [31, 47]
+primary_layer_id = 47
+max_tool_decisions_per_trajectory = 1
+bootstrap_samples = 2000
+permutation_samples = 5000
+force_overwrite = true

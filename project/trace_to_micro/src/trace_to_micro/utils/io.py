@@ -1,8 +1,11 @@
 """Small JSON output helpers for pre-experiment artifacts."""
 
+import base64
 import json
 from pathlib import Path
 from typing import Any
+
+import numpy as np
 
 from trace_to_micro.data_model import TransitionEvent
 
@@ -52,3 +55,15 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
         return []
     with path.open(encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
+
+
+def encode_float16_vector(vector: np.ndarray) -> str:
+    """Encode one numeric vector as compact base64 float16 bytes."""
+
+    return base64.b64encode(vector.astype("<f2").tobytes()).decode("ascii")
+
+
+def decode_float16_vector(value: str) -> np.ndarray:
+    """Decode one compact vector into float32 for stable evaluation."""
+
+    return np.frombuffer(base64.b64decode(value), dtype="<f2").astype(np.float32)

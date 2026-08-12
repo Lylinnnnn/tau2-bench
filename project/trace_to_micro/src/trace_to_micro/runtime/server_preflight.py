@@ -268,7 +268,8 @@ def main(argv: list[str] | None = None) -> None:
     """Run the server preflight from the command line."""
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=Path, required=True)
+    parser.add_argument("--config", type=Path)
+    parser.add_argument("--model-id", action="append", default=[])
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--wait-seconds", type=float, default=600.0)
     parser.add_argument("--poll-seconds", type=float, default=5.0)
@@ -276,6 +277,18 @@ def main(argv: list[str] | None = None) -> None:
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise ServerPreflightError("OPENAI_API_KEY must be non-empty")
+    if args.config is None and not args.model_id:
+        parser.error("provide --config or at least one --model-id")
+    if args.config is None:
+        models = wait_for_models(
+            args.base_url,
+            api_key=api_key,
+            wait_seconds=args.wait_seconds,
+            poll_seconds=args.poll_seconds,
+        )
+        require_models(models, set(args.model_id))
+        print(f"Model-server preflight passed: {sorted(set(args.model_id))}")
+        return
     run_preflight(
         config_path=args.config,
         base_url=args.base_url,

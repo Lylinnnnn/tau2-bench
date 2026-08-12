@@ -142,3 +142,98 @@ class ModelExperimentConfig:
                 seed=probe["seed"],
             ),
         )
+
+
+@dataclass(frozen=True)
+class SuccessDirectionConfig:
+    """Configuration for the Airline/Retail hidden-state direction probe."""
+
+    domains: tuple[str, ...]
+    task_split: str
+    train_split: str
+    test_split: str
+    agent: str
+    user: str
+    agent_llm: str
+    user_llm: str
+    agent_llm_args: dict[str, Any]
+    user_llm_args: dict[str, Any]
+    num_trials: int
+    max_steps: int
+    max_errors: int
+    max_concurrency: int
+    seed: int
+    timeout_seconds: float | None
+    save_to_prefix: str
+    results_dir: Path
+    output_dir: Path
+    hidden_base_url: str
+    hidden_model: str
+    hidden_layer_ids: tuple[int, ...]
+    primary_layer_id: int
+    max_tool_decisions_per_trajectory: int
+    bootstrap_samples: int
+    permutation_samples: int
+    force_overwrite: bool
+
+    @classmethod
+    def load(cls, path: Path) -> "SuccessDirectionConfig":
+        """Load and validate the `[success_direction]` table."""
+
+        with path.open("rb") as handle:
+            values = tomllib.load(handle)["success_direction"]
+        domains = tuple(values["domains"])
+        layer_ids = tuple(values["hidden_layer_ids"])
+        if len(domains) != 2 or len(set(domains)) != len(domains):
+            raise ValueError(
+                "Success-direction domains must be unique and contain two domains"
+            )
+        if values["train_split"] == values["test_split"]:
+            raise ValueError("Success-direction train/test splits must differ")
+        if values["primary_layer_id"] not in layer_ids:
+            raise ValueError("primary_layer_id must be included in hidden_layer_ids")
+        if values["max_tool_decisions_per_trajectory"] <= 0:
+            raise ValueError("max_tool_decisions_per_trajectory must be positive")
+        if values["bootstrap_samples"] <= 0 or values["permutation_samples"] <= 0:
+            raise ValueError("Resampling counts must be positive")
+        return cls(
+            domains=domains,
+            task_split=values["task_split"],
+            train_split=values["train_split"],
+            test_split=values["test_split"],
+            agent=values["agent"],
+            user=values["user"],
+            agent_llm=values["agent_llm"],
+            user_llm=values["user_llm"],
+            agent_llm_args=dict(values["agent_llm_args"]),
+            user_llm_args=dict(values["user_llm_args"]),
+            num_trials=values["num_trials"],
+            max_steps=values["max_steps"],
+            max_errors=values["max_errors"],
+            max_concurrency=values["max_concurrency"],
+            seed=values["seed"],
+            timeout_seconds=values.get("timeout_seconds"),
+            save_to_prefix=values["save_to_prefix"],
+            results_dir=_project_path(path, values["results_dir"]),
+            output_dir=_project_path(path, values["output_dir"]),
+            hidden_base_url=values["hidden_base_url"],
+            hidden_model=values["hidden_model"],
+            hidden_layer_ids=layer_ids,
+            primary_layer_id=values["primary_layer_id"],
+            max_tool_decisions_per_trajectory=values[
+                "max_tool_decisions_per_trajectory"
+            ],
+            bootstrap_samples=values["bootstrap_samples"],
+            permutation_samples=values["permutation_samples"],
+            force_overwrite=values["force_overwrite"],
+        )
+
+    def save_name(self, domain: str) -> str:
+        """Return the τ² result-directory name for one domain."""
+
+        return f"{self.save_to_prefix}_{domain}_{self.task_split}"
+
+    def results_path(self, domain: str) -> Path:
+        """Return the expected τ² results file for one domain."""
+
+        return self.results_dir / self.save_name(domain) / "results.json"

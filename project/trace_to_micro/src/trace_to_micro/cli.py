@@ -19,6 +19,12 @@ from trace_to_micro.runner.model_experiment import (
     run_trajectory_analysis,
     run_trajectory_generation,
 )
+from trace_to_micro.runner.success_direction import (
+    build_activation_requests,
+    run_activation_extraction,
+    run_success_direction_evaluation,
+    run_success_trajectories,
+)
 from trace_to_micro.utils.io import write_events_jsonl, write_json
 
 
@@ -130,6 +136,16 @@ def _parser() -> argparse.ArgumentParser:
     ):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, required=True)
+    success_trajectories = subparsers.add_parser("success-trajectories")
+    success_trajectories.add_argument("--config", type=Path, required=True)
+    success_trajectories.add_argument("--force", action=argparse.BooleanOptionalAction)
+    for command in (
+        "success-activation-requests",
+        "success-activations",
+        "success-evaluate",
+    ):
+        subparser = subparsers.add_parser(command)
+        subparser.add_argument("--config", type=Path, required=True)
     return parser
 
 
@@ -179,6 +195,18 @@ def main(argv: list[str] | None = None) -> None:
         paths = run_model_probe(args.config)
     elif args.command == "summarize-probe":
         paths = run_probe_summary(args.config)
+    elif args.command == "success-trajectories":
+        run_success_trajectories(args.config, force=args.force)
+        return
+    elif args.command == "success-activation-requests":
+        print(build_activation_requests(args.config))
+        return
+    elif args.command == "success-activations":
+        print(run_activation_extraction(args.config))
+        return
+    elif args.command == "success-evaluate":
+        print(run_success_direction_evaluation(args.config))
+        return
     else:
         paths = run_full_model_preexperiment(args.config)
     for name, path in paths.items():

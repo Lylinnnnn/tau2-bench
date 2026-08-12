@@ -1,5 +1,7 @@
 """Launch complete behavior-policy trajectories through the τ² runner."""
 
+from pathlib import Path
+
 from tau2.data_model.simulation import Results, TextRunConfig
 from tau2.runner import run_domain
 from trace_to_micro.config import TrajectoryConfig
@@ -10,6 +12,7 @@ def build_run_config(
     *,
     num_tasks: int | None = None,
     save_to: str | None = None,
+    auto_resume: bool = True,
 ) -> TextRunConfig:
     """Translate the experiment TOML into τ²'s canonical run config."""
 
@@ -31,7 +34,7 @@ def build_run_config(
         seed=config.seed,
         timeout=config.timeout_seconds,
         save_to=save_to or config.save_to,
-        auto_resume=True,
+        auto_resume=auto_resume,
         auto_review=False,
         hallucination_retries=0,
         verbose_logs=False,
@@ -44,7 +47,28 @@ def run_complete_trajectories(
     *,
     num_tasks: int | None = None,
     save_to: str | None = None,
+    auto_resume: bool = True,
 ) -> Results:
     """Generate or resume exactly one configured rollout per task/trial."""
 
-    return run_domain(build_run_config(config, num_tasks=num_tasks, save_to=save_to))
+    return run_domain(
+        build_run_config(
+            config,
+            num_tasks=num_tasks,
+            save_to=save_to,
+            auto_resume=auto_resume,
+        )
+    )
+
+
+def remove_existing_run(results_path: Path) -> bool:
+    """Remove one exact τ² text result file so the next run cannot resume it."""
+
+    if not results_path.exists():
+        return False
+    is_results_file = results_path.name == "results.json"
+    is_simulation_run = results_path.parent.parent.name == "simulations"
+    if not is_results_file or not is_simulation_run:
+        raise ValueError(f"Refusing to overwrite unexpected path: {results_path}")
+    results_path.unlink()
+    return True

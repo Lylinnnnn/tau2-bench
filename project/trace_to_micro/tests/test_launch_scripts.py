@@ -38,3 +38,20 @@ def test_managed_server_waits_for_models_endpoint() -> None:
     assert '"${base_url%/}/models"' in script
     assert '"${project_dir}/scripts/start_qwen3_32b_vllm.sh"' in script
     assert "trap cleanup EXIT" in script
+    assert '--model-id "${served_model_name}"' in script
+
+
+def test_success_direction_stages_reuse_or_validate_existing_servers() -> None:
+    launcher = read_script("run_qwen3_32b_success_direction.sh")
+    hidden_manager = read_script("with_managed_qwen3_32b_hidden_vllm.sh")
+    hidden_server = read_script("start_qwen3_32b_hidden_vllm.sh")
+
+    assert "with_managed_qwen3_32b_vllm.sh" in launcher
+    assert "with_managed_qwen3_32b_hidden_vllm.sh" in launcher
+    assert "hidden_export_responds" in hidden_manager
+    assert "Reusing the existing hidden-state model server" in hidden_manager
+    assert "Port 8000 has a healthy generation server" in hidden_manager
+    assert "--enforce-eager" in hidden_server
+    assert "--no-enable-chunked-prefill" in hidden_server
+    assert "/dev/shm/trace_to_micro_hidden_states" in hidden_server
+    assert "VLLM_USE_V2_MODEL_RUNNER=0" in hidden_server

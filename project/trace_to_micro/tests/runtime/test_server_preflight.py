@@ -86,6 +86,26 @@ def test_require_models_reports_missing_ids() -> None:
         )
 
 
+def test_model_id_only_cli_does_not_run_generation(monkeypatch, capsys) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "local-vllm")
+    monkeypatch.setattr(
+        server_preflight,
+        "wait_for_models",
+        lambda *args, **kwargs: {"data": [{"id": "qwen3-32b"}]},
+    )
+
+    server_preflight.main(
+        [
+            "--base-url",
+            "http://127.0.0.1:8000/v1",
+            "--model-id",
+            "qwen3-32b",
+        ]
+    )
+
+    assert "qwen3-32b" in capsys.readouterr().out
+
+
 def test_tool_and_json_checks_validate_response_shapes(monkeypatch) -> None:
     responses = iter(
         [

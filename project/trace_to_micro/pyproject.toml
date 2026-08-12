@@ -9,6 +9,7 @@ description = "Training-free pre-experiments for mining local transitions from t
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
 dependencies = [
+    "numpy>=1.24.0",
     "tau2",
 ]
 

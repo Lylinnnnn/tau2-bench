@@ -6,8 +6,10 @@ from tau2.data_model.message import (
     ToolMessage,
     UserMessage,
 )
-from tau2.data_model.simulation import SimulationRun, TerminationReason
+from tau2.data_model.simulation import RewardInfo, SimulationRun, TerminationReason
+from tau2.data_model.tasks import RewardType
 from trace_to_micro.analysis.logged_trace import (
+    _component_success,
     audit_results_completeness,
     decision_indices,
     stratified_indices,
@@ -44,6 +46,18 @@ def test_decision_indices_exclude_static_greeting() -> None:
 def test_stratified_indices_keep_early_middle_late() -> None:
     assert stratified_indices([2, 4, 6, 8, 10], 3) == [2, 6, 10]
     assert stratified_indices([2, 4, 6], 1) == [6]
+
+
+def test_component_success_uses_official_reward_breakdown() -> None:
+    reward = RewardInfo(
+        reward=0.0,
+        reward_basis=[RewardType.DB, RewardType.COMMUNICATE],
+        reward_breakdown={RewardType.DB: 1.0, RewardType.COMMUNICATE: 0.0},
+    )
+
+    assert _component_success(reward, RewardType.DB) is True
+    assert _component_success(reward, RewardType.COMMUNICATE) is False
+    assert _component_success(reward, RewardType.ACTION) is None
 
 
 def test_completeness_rejects_results_missing_configured_tasks(

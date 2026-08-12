@@ -6,10 +6,26 @@ from typing import Any
 from tau2.data_model.message import (
     AssistantMessage,
     Message,
+    SystemMessage,
     ToolMessage,
     UserMessage,
 )
+from tau2.utils.llm_utils import to_litellm_messages
 from trace_to_micro.replay.state import canonicalize_value
+
+
+def to_openai_messages(
+    messages: list[Message], system_prompt: str
+) -> list[dict[str, Any]]:
+    """Serialize exactly the agent-visible prefix used by τ² generation."""
+
+    agent_history = [
+        message
+        for message in messages
+        if not isinstance(message, ToolMessage) or message.requestor == "assistant"
+    ]
+    system = SystemMessage(role="system", content=system_prompt)
+    return to_litellm_messages([system, *agent_history])
 
 
 def action_record(message: AssistantMessage | UserMessage) -> dict[str, Any]:
