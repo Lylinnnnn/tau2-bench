@@ -76,9 +76,7 @@ def test_success_direction_8gpu_uses_isolated_single_gpu_workers() -> None:
     assert 'num_shards="${NUM_SHARDS:-8}"' in launcher
     assert 'base_port="${BASE_PORT:-8100}"' in launcher
     assert 'internal_base_port="${INTERNAL_BASE_PORT:-20000}"' in launcher
-    assert (
-        'internal_port_stride="${INTERNAL_PORT_STRIDE:-1000}"' in launcher
-    )
+    assert 'internal_port_stride="${INTERNAL_PORT_STRIDE:-1000}"' in launcher
     assert 'master_base_port="${MASTER_BASE_PORT:-40000}"' in launcher
     assert 'shard_ids_raw="${SHARD_IDS:-}"' in launcher
     assert "for shard in \"${selected_shards[@]}\"" in launcher
@@ -96,9 +94,7 @@ def test_success_direction_8gpu_uses_isolated_single_gpu_workers() -> None:
     assert "success-activation-shard" in launcher
     assert "success-merge-activations" in launcher
     assert "ensure_target_ports_are_free" in launcher
-    assert (
-        'http_port="${QWEN3_32B_HTTP_PORT:-8000}"' in generation_server
-    )
+    assert 'http_port="${QWEN3_32B_HTTP_PORT:-8000}"' in generation_server
     assert 'http_port="${QWEN3_32B_HTTP_PORT:-8000}"' in hidden_server
     assert 'port="${VLLM_PORT:-8000}"' not in generation_server
     assert 'port="${VLLM_PORT:-8000}"' not in hidden_server

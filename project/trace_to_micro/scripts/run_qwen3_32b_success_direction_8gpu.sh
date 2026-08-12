@@ -126,6 +126,7 @@ run_workers() {
       export VLLM_HOST_IP="127.0.0.1"
       export VLLM_PORT="${internal_port}"
       export VLLM_RPC_BASE_PATH="/tmp/trace_to_micro_vllm_rpc_${mode}_${shard}_${BASHPID}"
+      mkdir -p "${VLLM_RPC_BASE_PATH}"
       export MASTER_ADDR="127.0.0.1"
       export MASTER_PORT="${master_port}"
       export TENSOR_PARALLEL_SIZE=1

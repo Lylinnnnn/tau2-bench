@@ -70,9 +70,7 @@ def _validate_shard(shard_index: int, num_shards: int) -> None:
     if num_shards <= 0:
         raise ValueError("num_shards must be positive")
     if shard_index < 0 or shard_index >= num_shards:
-        raise ValueError(
-            f"shard_index must be in [0, {num_shards}), got {shard_index}"
-        )
+        raise ValueError(f"shard_index must be in [0, {num_shards}), got {shard_index}")
 
 
 def task_ids_for_shard(
@@ -229,9 +227,7 @@ def merge_success_trajectory_shards(config_path: Path, *, num_shards: int) -> No
             for position, task in enumerate(load_tasks(domain, config.task_split))
         }
         simulations = [
-            simulation
-            for result in shard_results
-            for simulation in result.simulations
+            simulation for result in shard_results for simulation in result.simulations
         ]
         simulations.sort(
             key=lambda simulation: (
@@ -441,15 +437,12 @@ def run_activation_extraction_shard(
             "Build activation requests before starting sharded extraction"
         )
     all_requests = read_jsonl(request_path)
-    requests = activation_requests_for_shard(
-        all_requests, shard_index, num_shards
-    )
+    requests = activation_requests_for_shard(all_requests, shard_index, num_shards)
     if not requests:
         raise ValueError(f"Activation shard {shard_index} has no requests")
     output_path = config.activation_shard_path(shard_index, num_shards)
     current = {
-        (request["sample_id"], request["request_fingerprint"])
-        for request in requests
+        (request["sample_id"], request["request_fingerprint"]) for request in requests
     }
     retained = [
         row
@@ -457,10 +450,7 @@ def run_activation_extraction_shard(
         if (row["sample_id"], row.get("request_fingerprint")) in current
     ]
     write_jsonl(output_path, retained)
-    completed = {
-        (row["sample_id"], row.get("request_fingerprint"))
-        for row in retained
-    }
+    completed = {(row["sample_id"], row.get("request_fingerprint")) for row in retained}
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("OPENAI_API_KEY must be non-empty")
@@ -497,13 +487,9 @@ def merge_activation_shards(config_path: Path, *, num_shards: int) -> Path:
     rows = [
         row
         for shard_index in range(num_shards)
-        for row in read_jsonl(
-            config.activation_shard_path(shard_index, num_shards)
-        )
+        for row in read_jsonl(config.activation_shard_path(shard_index, num_shards))
     ]
-    observed = [
-        (row["sample_id"], row.get("request_fingerprint")) for row in rows
-    ]
+    observed = [(row["sample_id"], row.get("request_fingerprint")) for row in rows]
     if len(set(observed)) != len(observed):
         raise ValueError("Activation shards contain duplicate current sample keys")
     if set(observed) != set(request_order):
@@ -514,9 +500,7 @@ def merge_activation_shards(config_path: Path, *, num_shards: int) -> Path:
             f"missing={missing}, unexpected={unexpected}"
         )
     rows.sort(
-        key=lambda row: request_order[
-            (row["sample_id"], row["request_fingerprint"])
-        ]
+        key=lambda row: request_order[(row["sample_id"], row["request_fingerprint"])]
     )
     output_path = config.output_dir / "activations.jsonl"
     write_jsonl(output_path, rows)

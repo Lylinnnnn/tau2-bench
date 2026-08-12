@@ -248,14 +248,10 @@ class SuccessDirectionConfig:
 
         return self.results_dir / self.save_name(domain) / "results.json"
 
-    def shard_save_name(
-        self, domain: str, shard_index: int, num_shards: int
-    ) -> str:
+    def shard_save_name(self, domain: str, shard_index: int, num_shards: int) -> str:
         """Return the isolated result-directory name for one task shard."""
 
-        return (
-            f"{self.save_name(domain)}_shard_{shard_index:02d}_of_{num_shards:02d}"
-        )
+        return f"{self.save_name(domain)}_shard_{shard_index:02d}_of_{num_shards:02d}"
 
     def shard_results_path(
         self, domain: str, shard_index: int, num_shards: int

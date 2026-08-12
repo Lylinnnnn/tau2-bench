@@ -21,12 +21,10 @@ def test_task_shards_balance_combined_domains_without_overlap(monkeypatch) -> No
     )
 
     shard_zero = {
-        domain: task_ids_for_shard(config, domain, 0, 2)
-        for domain in config.domains
+        domain: task_ids_for_shard(config, domain, 0, 2) for domain in config.domains
     }
     shard_one = {
-        domain: task_ids_for_shard(config, domain, 1, 2)
-        for domain in config.domains
+        domain: task_ids_for_shard(config, domain, 1, 2) for domain in config.domains
     }
 
     assert shard_zero == {"airline": ["a0", "a2"], "retail": ["r1"]}
@@ -57,9 +55,10 @@ def test_activation_shards_keep_all_moments_of_one_decision_together() -> None:
         for shard_index in range(2)
     ]
 
-    assert [
-        {row["decision_id"] for row in shard} for shard in shards
-    ] == [{"d0", "d2"}, {"d1"}]
+    assert [{row["decision_id"] for row in shard} for shard in shards] == [
+        {"d0", "d2"},
+        {"d1"},
+    ]
     assert all(
         {row["moment"] for row in shard if row["decision_id"] == decision_id}
         == {"before", "action", "result"}

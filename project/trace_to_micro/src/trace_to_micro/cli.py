@@ -155,9 +155,7 @@ def _parser() -> argparse.ArgumentParser:
     success_trajectory_shard.add_argument(
         "--force", action=argparse.BooleanOptionalAction
     )
-    success_merge_trajectories = subparsers.add_parser(
-        "success-merge-trajectories"
-    )
+    success_merge_trajectories = subparsers.add_parser("success-merge-trajectories")
     success_merge_trajectories.add_argument("--config", type=Path, required=True)
     success_merge_trajectories.add_argument("--num-shards", type=int, required=True)
     success_activation_shard = subparsers.add_parser("success-activation-shard")
