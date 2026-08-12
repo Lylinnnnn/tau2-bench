@@ -50,7 +50,7 @@ def test_success_direction_stages_reuse_or_validate_existing_servers() -> None:
     assert "with_managed_qwen3_32b_hidden_vllm.sh" in launcher
     assert "hidden_export_responds" in hidden_manager
     assert "Reusing the existing hidden-state model server" in hidden_manager
-    assert "Port 8000 has a healthy generation server" in hidden_manager
+    assert "has a healthy generation server" in hidden_manager
     assert "--enforce-eager" in hidden_server
     assert "--no-enable-chunked-prefill" in hidden_server
     assert "/dev/shm/trace_to_micro_hidden_states" in hidden_server
@@ -74,12 +74,26 @@ def test_success_direction_8gpu_uses_isolated_single_gpu_workers() -> None:
 
     assert 'num_shards="${NUM_SHARDS:-8}"' in launcher
     assert 'base_port="${BASE_PORT:-8100}"' in launcher
+    assert 'internal_base_port="${INTERNAL_BASE_PORT:-20000}"' in launcher
+    assert (
+        'internal_port_stride="${INTERNAL_PORT_STRIDE:-1000}"' in launcher
+    )
+    assert 'master_base_port="${MASTER_BASE_PORT:-40000}"' in launcher
     assert 'export CUDA_VISIBLE_DEVICES="${gpu}"' in launcher
+    assert 'export QWEN3_32B_HTTP_PORT="${port}"' in launcher
+    assert 'export VLLM_PORT="${internal_port}"' in launcher
+    assert "export VLLM_RPC_BASE_PATH=" in launcher
+    assert 'export MASTER_PORT="${master_port}"' in launcher
+    assert "validate_port_layout" in launcher
     assert "export TENSOR_PARALLEL_SIZE=1" in launcher
     assert "success-trajectory-shard" in launcher
     assert "success-merge-trajectories" in launcher
     assert "success-activation-shard" in launcher
     assert "success-merge-activations" in launcher
     assert "ensure_target_ports_are_free" in launcher
-    assert 'port="${VLLM_PORT:-8000}"' in generation_server
-    assert 'port="${VLLM_PORT:-8000}"' in hidden_server
+    assert (
+        'http_port="${QWEN3_32B_HTTP_PORT:-8000}"' in generation_server
+    )
+    assert 'http_port="${QWEN3_32B_HTTP_PORT:-8000}"' in hidden_server
+    assert 'port="${VLLM_PORT:-8000}"' not in generation_server
+    assert 'port="${VLLM_PORT:-8000}"' not in hidden_server

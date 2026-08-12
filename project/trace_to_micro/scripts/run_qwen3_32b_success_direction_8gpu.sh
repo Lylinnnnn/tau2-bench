@@ -13,6 +13,9 @@ config="${project_dir}/configs/qwen3_32b_success_direction.toml"
 num_shards="${NUM_SHARDS:-8}"
 first_gpu="${FIRST_GPU:-0}"
 base_port="${BASE_PORT:-8100}"
+internal_base_port="${INTERNAL_BASE_PORT:-20000}"
+internal_port_stride="${INTERNAL_PORT_STRIDE:-1000}"
+master_base_port="${MASTER_BASE_PORT:-40000}"
 force_overwrite="${FORCE_OVERWRITE:-1}"
 run_log_dir="${project_dir}/outputs/run_logs/success_direction_8gpu"
 vllm_log_dir="${project_dir}/outputs/vllm_logs/success_direction_8gpu"
@@ -24,6 +27,28 @@ export TAU2_NL_ASSERTIONS_LLM="${TAU2_NL_ASSERTIONS_LLM:-openai/qwen3-32b}"
 
 mkdir -p "${run_log_dir}" "${vllm_log_dir}"
 cd "${repo_dir}"
+
+validate_port_layout() {
+  if ((num_shards <= 0 || internal_port_stride < 2)); then
+    echo "NUM_SHARDS must be positive and INTERNAL_PORT_STRIDE must be at least 2." >&2
+    return 1
+  fi
+  local last_http_port=$((base_port + num_shards - 1))
+  local last_internal_port=$((internal_base_port + num_shards * internal_port_stride - 1))
+  local last_master_port=$((master_base_port + num_shards - 1))
+  if ((base_port <= 0 || last_http_port > 65535)); then
+    echo "HTTP port range is outside 1..65535: ${base_port}..${last_http_port}" >&2
+    return 1
+  fi
+  if ((internal_base_port <= 0 || last_internal_port > 65535)); then
+    echo "Internal port range is outside 1..65535: ${internal_base_port}..${last_internal_port}" >&2
+    return 1
+  fi
+  if ((master_base_port <= 0 || last_master_port > 65535)); then
+    echo "Master port range is outside 1..65535: ${master_base_port}..${last_master_port}" >&2
+    return 1
+  fi
+}
 
 run_checks() {
   uv run --no-sync pytest -c project/trace_to_micro/pyproject.toml \
@@ -54,12 +79,19 @@ run_workers() {
   for ((shard = 0; shard < num_shards; shard++)); do
     local gpu=$((first_gpu + shard))
     local port=$((base_port + shard))
+    local internal_port=$((internal_base_port + shard * internal_port_stride))
+    local master_port=$((master_base_port + shard))
     local base_url="http://127.0.0.1:${port}/v1"
     local worker_log="${run_log_dir}/${mode}_shard_${shard}.log"
     local server_log="${vllm_log_dir}/${mode}_gpu_${gpu}_port_${port}.log"
     (
       export CUDA_VISIBLE_DEVICES="${gpu}"
-      export VLLM_PORT="${port}"
+      export QWEN3_32B_HTTP_PORT="${port}"
+      export VLLM_HOST_IP="127.0.0.1"
+      export VLLM_PORT="${internal_port}"
+      export VLLM_RPC_BASE_PATH="/tmp/trace_to_micro_vllm_rpc_${mode}_${shard}_${BASHPID}"
+      export MASTER_ADDR="127.0.0.1"
+      export MASTER_PORT="${master_port}"
       export TENSOR_PARALLEL_SIZE=1
       export OPENAI_API_BASE="${base_url}"
       export OPENAI_BASE_URL="${base_url}"
@@ -83,7 +115,7 @@ run_workers() {
       "${manager}" "${args[@]}"
     ) >"${worker_log}" 2>&1 &
     pids+=("$!")
-    echo "Started ${mode} shard ${shard}: GPU ${gpu}, port ${port}, log ${worker_log}"
+    echo "Started ${mode} shard ${shard}: GPU ${gpu}, HTTP ${port}, internal ${internal_port}, master ${master_port}, log ${worker_log}"
   done
 
   local failed=0
@@ -133,6 +165,7 @@ run_evaluate() {
     --config "${config}"
 }
 
+validate_port_layout
 run_checks
 case "${stage}" in
   trajectories)
