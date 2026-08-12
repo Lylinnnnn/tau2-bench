@@ -10,6 +10,7 @@ from tau2.data_model.message import (
 )
 from tau2.data_model.simulation import SimulationRun, TerminationReason
 from trace_to_micro.replay.consequence import (
+    InvalidReferenceTargetError,
     replay_local_consequences,
     target_snapshot,
 )
@@ -120,10 +121,14 @@ def test_target_snapshot_exposes_failed_mutating_reference_action(
     )
 
     with pytest.raises(
-        RuntimeError,
+        InvalidReferenceTargetError,
         match="Mutating reference action failed for retail/task-with-bad-write",
-    ):
+    ) as raised:
         target_snapshot("retail", task)
+
+    assert raised.value.action_id == "failed-gold-write"
+    assert raised.value.action_name == "failed_write"
+    assert raised.value.error == "write rejected"
 
 
 def test_replay_local_consequence_uses_real_next_state_and_official_target(

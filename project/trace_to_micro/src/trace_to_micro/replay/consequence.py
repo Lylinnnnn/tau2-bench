@@ -22,6 +22,30 @@ from trace_to_micro.replay.state import (
 )
 
 
+class InvalidReferenceTargetError(RuntimeError):
+    """A task's reference write cannot produce a trustworthy DB target."""
+
+    def __init__(
+        self,
+        *,
+        domain: str,
+        task_id: str,
+        action: Any,
+        error: str,
+    ) -> None:
+        self.domain = domain
+        self.task_id = task_id
+        self.action_id = action.action_id
+        self.requestor = action.requestor
+        self.action_name = action.name
+        self.arguments = action.arguments
+        self.error = error
+        super().__init__(
+            f"Mutating reference action failed for {domain}/{task_id}: "
+            f"{action.name}: {error}"
+        )
+
+
 def _initialize(environment, task: Task) -> None:
     initial_state = task.initial_state
     message_history = (
@@ -63,9 +87,11 @@ def target_snapshot(domain: str, task: Task) -> dict[str, Any]:
             )
         )
         if response.error:
-            raise RuntimeError(
-                f"Mutating reference action failed for {domain}/{task.id}: "
-                f"{action.name}: {response.content}"
+            raise InvalidReferenceTargetError(
+                domain=domain,
+                task_id=str(task.id),
+                action=action,
+                error=response.content,
             )
     return snapshot_environment(environment)
 
@@ -90,12 +116,14 @@ def replay_local_consequences(
     task: Task,
     split: str,
     domain: str,
+    goal: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Replay one logged trace and label each assistant tool decision locally."""
 
     environment = build_environment(domain)
     _initialize(environment, task)
-    goal = target_snapshot(domain, task)
+    if goal is None:
+        goal = target_snapshot(domain, task)
     messages = simulation.get_messages()
     recorded_results = {
         message.id: message for message in messages if isinstance(message, ToolMessage)

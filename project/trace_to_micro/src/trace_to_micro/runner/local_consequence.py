@@ -18,7 +18,11 @@ from trace_to_micro.evaluation.local_consequence import (
     build_local_consequence_report,
 )
 from trace_to_micro.evaluation.success_direction import build_activation_smoke_report
-from trace_to_micro.replay.consequence import replay_local_consequences
+from trace_to_micro.replay.consequence import (
+    InvalidReferenceTargetError,
+    replay_local_consequences,
+    target_snapshot,
+)
 from trace_to_micro.runtime.activations import (
     activation_request_fingerprint,
     extract_request_activation,
@@ -56,7 +60,7 @@ def activation_requests_for_shard(
 def _domain_consequences(
     config: LocalConsequenceConfig,
     domain: str,
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     results = Results.load(config.results_path(domain))
     tasks = {str(task.id): task for task in results.tasks}
     split_map = load_task_splits(domain)
@@ -77,11 +81,37 @@ def _domain_consequences(
         for split in (config.train_split, config.test_split)
         for task_id in split_map[split]
     }
+    simulations_by_task = Counter(
+        str(simulation.task_id) for simulation in results.simulations
+    )
+    goals = {}
+    exclusions = []
+    for task_id in sorted(base_task_ids, key=str):
+        task_id = str(task_id)
+        try:
+            goals[task_id] = target_snapshot(domain, tasks[task_id])
+        except InvalidReferenceTargetError as error:
+            exclusions.append(
+                {
+                    "domain": domain,
+                    "split": split_by_task[task_id],
+                    "task_id": task_id,
+                    "reason": "invalid_reference_target",
+                    "reference_action_id": error.action_id,
+                    "reference_action_name": error.action_name,
+                    "reference_action_requestor": error.requestor,
+                    "reference_action_arguments": error.arguments,
+                    "error": error.error,
+                    "excluded_trajectory_count": simulations_by_task[task_id],
+                }
+            )
     rows = []
     for simulation in results.simulations:
         task_id = str(simulation.task_id)
         split = split_by_task.get(task_id)
         if split is None:
+            continue
+        if task_id not in goals:
             continue
         rows.extend(
             replay_local_consequences(
@@ -89,20 +119,30 @@ def _domain_consequences(
                 task=tasks[task_id],
                 split=split,
                 domain=domain,
+                goal=goals[task_id],
             )
         )
-    return rows
+    return rows, exclusions
 
 
 def _support_report(
-    rows: list[dict[str, Any]], *, splits: tuple[str, str]
+    rows: list[dict[str, Any]],
+    *,
+    exclusions: list[dict[str, Any]],
+    domains: tuple[str, ...],
+    splits: tuple[str, str],
 ) -> dict[str, Any]:
     report = {}
-    for domain in sorted({row["domain"] for row in rows}):
+    for domain in domains:
         report[domain] = {}
         for split in splits:
             selected = [
                 row for row in rows if row["domain"] == domain and row["split"] == split
+            ]
+            excluded = [
+                row
+                for row in exclusions
+                if row["domain"] == domain and row["split"] == split
             ]
             tool_progress = {}
             for tool_name in sorted({row["tool_name"] for row in selected}):
@@ -135,6 +175,11 @@ def _support_report(
                     for tool_name, counts in tool_progress.items()
                     if counts.get("true", 0) and counts.get("false", 0)
                 ),
+                "excluded_task_count": len(excluded),
+                "excluded_trajectory_count": sum(
+                    row["excluded_trajectory_count"] for row in excluded
+                ),
+                "excluded_task_ids": [row["task_id"] for row in excluded],
             }
     return {
         "label_provenance": {
@@ -144,7 +189,18 @@ def _support_report(
                 "for mutating tools only: distance(s_{t+1}, official target) "
                 "< distance(s_t, official target)"
             ),
+            "invalid_reference_target": (
+                "exclude the entire task when a mutating reference action fails; "
+                "never compile labels against a partial target"
+            ),
         },
+        "exclusion_summary": {
+            "task_count": len(exclusions),
+            "trajectory_count": sum(
+                row["excluded_trajectory_count"] for row in exclusions
+            ),
+        },
+        "excluded_tasks": exclusions,
         "domains": report,
     }
 
@@ -153,12 +209,14 @@ def build_local_consequence_requests(config_path: Path) -> Path:
     """Compile every logged assistant tool call into three factual moments."""
 
     config = LocalConsequenceConfig.load(config_path)
-    consequences = [
-        row
-        for domain in config.domains
-        for row in _domain_consequences(config, domain)
-        if row["goal_progress_eligible"]
-    ]
+    consequences = []
+    exclusions = []
+    for domain in config.domains:
+        domain_rows, domain_exclusions = _domain_consequences(config, domain)
+        consequences.extend(
+            row for row in domain_rows if row["goal_progress_eligible"]
+        )
+        exclusions.extend(domain_exclusions)
     by_decision = {row["decision_id"]: row for row in consequences}
     if len(by_decision) != len(consequences):
         raise ValueError("Local consequence decision ids must be unique")
@@ -191,7 +249,12 @@ def build_local_consequence_requests(config_path: Path) -> Path:
     write_jsonl(config.output_dir / "local_consequences.jsonl", consequences)
     write_json(
         config.output_dir / "local_consequence_support.json",
-        _support_report(consequences, splits=(config.train_split, config.test_split)),
+        _support_report(
+            consequences,
+            exclusions=exclusions,
+            domains=config.domains,
+            splits=(config.train_split, config.test_split),
+        ),
     )
     path = config.output_dir / "activation_requests.jsonl"
     write_jsonl(path, requests)
@@ -202,7 +265,7 @@ def build_local_consequence_smoke_requests(config_path: Path) -> Path:
     """Build one real mutating-decision triple without calling the model."""
 
     config = LocalConsequenceConfig.load(config_path)
-    rows = _domain_consequences(config, config.smoke_domain)
+    rows, _ = _domain_consequences(config, config.smoke_domain)
     selected = next(
         row
         for row in rows
