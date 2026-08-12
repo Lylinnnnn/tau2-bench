@@ -255,11 +255,13 @@ def merge_success_trajectory_shards(config_path: Path, *, num_shards: int) -> No
 
 
 def run_success_official_metrics(config_path: Path) -> Path:
-    """Compute the official metrics for each complete configured domain."""
+    """Audit complete trajectories and compute each domain's official metrics."""
 
     config = SuccessDirectionConfig.load(config_path)
-    for domain in config.domains:
-        _require_complete(config, domain)
+    completeness = {
+        domain: _require_complete(config, domain) for domain in config.domains
+    }
+    write_json(config.output_dir / "trajectory_completeness.json", completeness)
     path = config.output_dir / "official_metrics.json"
     write_json(
         path,

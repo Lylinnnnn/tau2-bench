@@ -108,11 +108,15 @@ data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_
 正式轨迹阶段还会写：
 
 ```text
+project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/trajectory_completeness.json
 project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/official_metrics.json
+project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/trajectory_shard_manifest.json  # 八卡运行
 ```
 
 其中 `pass^1` 使用仓库官方实现。在每个任务只有一次试验时，它就是成功任务数
-除以任务总数；不是我们另外定义的指标。
+除以任务总数；不是我们另外定义的指标。完整性文件与官方指标由同一个严格审计
+阶段生成；只要缺任务、重复任务、缺 reward、出现基础设施错误或模型配置不一致，
+该阶段就会直接报错，不会写出一份看似完整的新报告。
 
 分析产物：
 
