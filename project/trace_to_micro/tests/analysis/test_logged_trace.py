@@ -41,6 +41,14 @@ def _simulation() -> SimulationRun:
     )
 
 
+def _db_reward(value: float) -> RewardInfo:
+    return RewardInfo(
+        reward=value,
+        reward_basis=[RewardType.DB],
+        reward_breakdown={RewardType.DB: value},
+    )
+
+
 def test_decision_indices_exclude_static_greeting() -> None:
     assert decision_indices(_simulation()) == [2, 4]
 
@@ -171,7 +179,7 @@ def test_tool_decision_records_quarantines_bad_trajectory_atomically(
     monkeypatch, tmp_path
 ) -> None:
     good = _simulation().model_copy(
-        update={"id": "good", "reward_info": RewardInfo(reward=1.0)}
+        update={"id": "good", "reward_info": _db_reward(1.0)}
     )
     bad_messages = [
         message
@@ -182,7 +190,7 @@ def test_tool_decision_records_quarantines_bad_trajectory_atomically(
         update={
             "id": "bad",
             "messages": bad_messages,
-            "reward_info": RewardInfo(reward=0.0),
+            "reward_info": _db_reward(0.0),
         }
     )
     environment = type(
@@ -221,8 +229,13 @@ def test_tool_decision_records_quarantines_bad_trajectory_atomically(
 
     assert {row["simulation_id"] for row in rows} == {"good"}
     assert len(rows) == 3
-    assert errors[0][0] == "bad"
-    assert "Tool-result mismatch" in errors[0][1]
+    assert {row["moment"] for row in rows} == {"before", "action", "result"}
+    assert errors == [
+        (
+            "bad",
+            "Tool-result mismatch at bad:2: expected {'a1'}, got set()",
+        )
+    ]
 
 
 def test_completeness_rejects_results_from_another_model(monkeypatch, tmp_path) -> None:
