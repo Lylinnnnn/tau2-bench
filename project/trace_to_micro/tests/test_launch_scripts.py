@@ -65,3 +65,21 @@ def test_success_direction_smoke_is_two_strict_stages() -> None:
     assert "success-smoke-activations" in launcher
     assert "with_managed_qwen3_32b_vllm.sh" in launcher
     assert "with_managed_qwen3_32b_hidden_vllm.sh" in launcher
+
+
+def test_success_direction_8gpu_uses_isolated_single_gpu_workers() -> None:
+    launcher = read_script("run_qwen3_32b_success_direction_8gpu.sh")
+    generation_server = read_script("start_qwen3_32b_vllm.sh")
+    hidden_server = read_script("start_qwen3_32b_hidden_vllm.sh")
+
+    assert 'num_shards="${NUM_SHARDS:-8}"' in launcher
+    assert 'base_port="${BASE_PORT:-8100}"' in launcher
+    assert 'export CUDA_VISIBLE_DEVICES="${gpu}"' in launcher
+    assert "export TENSOR_PARALLEL_SIZE=1" in launcher
+    assert "success-trajectory-shard" in launcher
+    assert "success-merge-trajectories" in launcher
+    assert "success-activation-shard" in launcher
+    assert "success-merge-activations" in launcher
+    assert "ensure_target_ports_are_free" in launcher
+    assert 'port="${VLLM_PORT:-8000}"' in generation_server
+    assert 'port="${VLLM_PORT:-8000}"' in hidden_server

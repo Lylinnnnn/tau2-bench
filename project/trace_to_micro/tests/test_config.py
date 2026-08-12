@@ -118,5 +118,7 @@ def test_success_direction_config_preregisters_primary_layer() -> None:
     assert config.smoke_task_id == "2"
     assert config.smoke_results_path().name == "results.json"
     assert config.smoke_output_dir().name == "smoke"
+    assert "shard_00_of_08" in config.shard_save_name("airline", 0, 8)
+    assert config.activation_shard_path(7, 8).name == "shard_07_of_08.jsonl"
     assert config.bootstrap_samples == 2000
     assert config.permutation_samples == 5000

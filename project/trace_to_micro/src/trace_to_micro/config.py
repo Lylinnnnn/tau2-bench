@@ -248,6 +248,35 @@ class SuccessDirectionConfig:
 
         return self.results_dir / self.save_name(domain) / "results.json"
 
+    def shard_save_name(
+        self, domain: str, shard_index: int, num_shards: int
+    ) -> str:
+        """Return the isolated result-directory name for one task shard."""
+
+        return (
+            f"{self.save_name(domain)}_shard_{shard_index:02d}_of_{num_shards:02d}"
+        )
+
+    def shard_results_path(
+        self, domain: str, shard_index: int, num_shards: int
+    ) -> Path:
+        """Return the result file written by one trajectory worker."""
+
+        return (
+            self.results_dir
+            / self.shard_save_name(domain, shard_index, num_shards)
+            / "results.json"
+        )
+
+    def activation_shard_path(self, shard_index: int, num_shards: int) -> Path:
+        """Return the compact hidden-vector file for one activation worker."""
+
+        return (
+            self.output_dir
+            / "activation_shards"
+            / f"shard_{shard_index:02d}_of_{num_shards:02d}.jsonl"
+        )
+
     def smoke_save_name(self) -> str:
         """Return the isolated one-task smoke result-directory name."""
 

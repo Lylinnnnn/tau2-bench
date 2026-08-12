@@ -22,12 +22,16 @@ from trace_to_micro.runner.model_experiment import (
 from trace_to_micro.runner.success_direction import (
     build_activation_requests,
     build_success_smoke_activation_requests,
+    merge_activation_shards,
+    merge_success_trajectory_shards,
     run_activation_extraction,
+    run_activation_extraction_shard,
     run_success_direction_evaluation,
     run_success_official_metrics,
     run_success_smoke_activations,
     run_success_smoke_trajectory,
     run_success_trajectories,
+    run_success_trajectory_shard,
 )
 from trace_to_micro.utils.io import write_events_jsonl, write_json
 
@@ -143,6 +147,27 @@ def _parser() -> argparse.ArgumentParser:
     success_trajectories = subparsers.add_parser("success-trajectories")
     success_trajectories.add_argument("--config", type=Path, required=True)
     success_trajectories.add_argument("--force", action=argparse.BooleanOptionalAction)
+    success_trajectory_shard = subparsers.add_parser("success-trajectory-shard")
+    success_trajectory_shard.add_argument("--config", type=Path, required=True)
+    success_trajectory_shard.add_argument("--shard-index", type=int, required=True)
+    success_trajectory_shard.add_argument("--num-shards", type=int, required=True)
+    success_trajectory_shard.add_argument("--base-url", required=True)
+    success_trajectory_shard.add_argument(
+        "--force", action=argparse.BooleanOptionalAction
+    )
+    success_merge_trajectories = subparsers.add_parser(
+        "success-merge-trajectories"
+    )
+    success_merge_trajectories.add_argument("--config", type=Path, required=True)
+    success_merge_trajectories.add_argument("--num-shards", type=int, required=True)
+    success_activation_shard = subparsers.add_parser("success-activation-shard")
+    success_activation_shard.add_argument("--config", type=Path, required=True)
+    success_activation_shard.add_argument("--shard-index", type=int, required=True)
+    success_activation_shard.add_argument("--num-shards", type=int, required=True)
+    success_activation_shard.add_argument("--base-url", required=True)
+    success_merge_activations = subparsers.add_parser("success-merge-activations")
+    success_merge_activations.add_argument("--config", type=Path, required=True)
+    success_merge_activations.add_argument("--num-shards", type=int, required=True)
     for command in (
         "success-official-metrics",
         "success-activation-requests",
@@ -206,6 +231,18 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "success-trajectories":
         run_success_trajectories(args.config, force=args.force)
         return
+    elif args.command == "success-trajectory-shard":
+        run_success_trajectory_shard(
+            args.config,
+            shard_index=args.shard_index,
+            num_shards=args.num_shards,
+            base_url=args.base_url,
+            force=args.force,
+        )
+        return
+    elif args.command == "success-merge-trajectories":
+        merge_success_trajectory_shards(args.config, num_shards=args.num_shards)
+        return
     elif args.command == "success-activation-requests":
         print(build_activation_requests(args.config))
         return
@@ -214,6 +251,19 @@ def main(argv: list[str] | None = None) -> None:
         return
     elif args.command == "success-activations":
         print(run_activation_extraction(args.config))
+        return
+    elif args.command == "success-activation-shard":
+        print(
+            run_activation_extraction_shard(
+                args.config,
+                shard_index=args.shard_index,
+                num_shards=args.num_shards,
+                base_url=args.base_url,
+            )
+        )
+        return
+    elif args.command == "success-merge-activations":
+        print(merge_activation_shards(args.config, num_shards=args.num_shards))
         return
     elif args.command == "success-evaluate":
         print(run_success_direction_evaluation(args.config))

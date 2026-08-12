@@ -51,7 +51,7 @@ if server_responds; then
   if hidden_export_responds; then
     echo "Reusing the existing hidden-state model server at ${base_url}"
   else
-    echo "Port 8000 has a healthy generation server, but it was not started with hidden-state export." >&2
+    echo "${base_url} has a healthy generation server, but it was not started with hidden-state export." >&2
     echo "Stop that server after trajectory generation, then rerun the activation stage." >&2
     exit 1
   fi

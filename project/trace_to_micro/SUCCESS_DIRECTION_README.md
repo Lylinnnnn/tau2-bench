@@ -132,6 +132,44 @@ project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/
 
 ## 运行阶段
 
+### 八卡完整实验（推荐）
+
+服务器有 8 张大显存 GPU 时，使用专用入口让每张卡运行一个单卡
+Qwen3-32B 服务。默认对应 GPU `0..7` 和端口 `8100..8107`：
+
+```text
+GPU 0 -> 127.0.0.1:8100 -> shard 0
+GPU 1 -> 127.0.0.1:8101 -> shard 1
+...
+GPU 7 -> 127.0.0.1:8107 -> shard 7
+```
+
+Airline 和 Retail 的 164 个官方 `base` 任务先合成一个固定列表，再按
+位置轮流分配给 8 个工作进程。每个进程写独立的轨迹文件，全部成功后
+才严格合并；缺任务、重复任务、模型不一致或基础设施错误都会直接中止。
+
+隐藏状态也按 8 个独立文件提取；同一工具决策的
+`before/action/result` 三个时刻一定由同一个工作进程处理。合并时会
+检查请求指纹，不允许遗漏、重复或混入旧向量。为避免把未知服务错当成实验
+模型，八卡入口要求目标端口在启动前全部空闲，不复用已有服务。
+
+三个阶段可分别运行：
+
+```bash
+project/trace_to_micro/scripts/run_qwen3_32b_success_direction_8gpu.sh trajectories
+project/trace_to_micro/scripts/run_qwen3_32b_success_direction_8gpu.sh activations
+project/trace_to_micro/scripts/run_qwen3_32b_success_direction_8gpu.sh evaluate
+```
+
+也可使用 `all` 串行执行三个阶段。“串行”只指阶段顺序；每个 GPU
+阶段内仍然是 8 个工作进程并行。启动器仅关闭自己创建的 vLLM 进程。
+
+不要在 8 张卡上已有其他模型服务时运行该入口。端口可用 `BASE_PORT`
+修改，GPU 起始编号可用 `FIRST_GPU` 修改。轨迹默认强制覆盖分片旧数据；
+要从合法检查点继续时，显式设置 `FORCE_OVERWRITE=0`。
+
+### 单服务运行方式
+
 以下命令都从仓库根目录执行。先创建日志目录并记录当前仓库绝对路径：
 
 ```bash

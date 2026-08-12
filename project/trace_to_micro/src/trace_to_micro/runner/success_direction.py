@@ -11,7 +11,7 @@ from typing import Any
 
 from tau2.data_model.simulation import Results
 from tau2.metrics.agent_metrics import is_successful
-from tau2.runner import load_task_splits
+from tau2.runner import load_task_splits, load_tasks
 from trace_to_micro.analysis.logged_trace import (
     audit_results_completeness,
     tool_decision_records,
@@ -35,7 +35,17 @@ from trace_to_micro.utils.io import (
 )
 
 
-def _trajectory_config(config: SuccessDirectionConfig, domain: str) -> TrajectoryConfig:
+def _trajectory_config(
+    config: SuccessDirectionConfig,
+    domain: str,
+    *,
+    base_url: str | None = None,
+) -> TrajectoryConfig:
+    agent_llm_args = dict(config.agent_llm_args)
+    user_llm_args = dict(config.user_llm_args)
+    if base_url is not None:
+        agent_llm_args["api_base"] = base_url
+        user_llm_args["api_base"] = base_url
     return TrajectoryConfig(
         domain=domain,
         task_set=domain,
@@ -44,8 +54,8 @@ def _trajectory_config(config: SuccessDirectionConfig, domain: str) -> Trajector
         user=config.user,
         agent_llm=config.agent_llm,
         user_llm=config.user_llm,
-        agent_llm_args=config.agent_llm_args,
-        user_llm_args=config.user_llm_args,
+        agent_llm_args=agent_llm_args,
+        user_llm_args=user_llm_args,
         num_trials=config.num_trials,
         max_steps=config.max_steps,
         max_errors=config.max_errors,
@@ -54,6 +64,61 @@ def _trajectory_config(config: SuccessDirectionConfig, domain: str) -> Trajector
         timeout_seconds=config.timeout_seconds,
         save_to=config.save_name(domain),
     )
+
+
+def _validate_shard(shard_index: int, num_shards: int) -> None:
+    if num_shards <= 0:
+        raise ValueError("num_shards must be positive")
+    if shard_index < 0 or shard_index >= num_shards:
+        raise ValueError(
+            f"shard_index must be in [0, {num_shards}), got {shard_index}"
+        )
+
+
+def task_ids_for_shard(
+    config: SuccessDirectionConfig,
+    domain: str,
+    shard_index: int,
+    num_shards: int,
+) -> list[str]:
+    """Assign the global Airline/Retail task list round-robin to one worker."""
+
+    _validate_shard(shard_index, num_shards)
+    if domain not in config.domains:
+        raise ValueError(f"Domain {domain!r} is not configured")
+    ordered_tasks: list[tuple[str, str]] = []
+    for configured_domain in config.domains:
+        split_map = load_task_splits(configured_domain)
+        if split_map is None or config.task_split not in split_map:
+            raise ValueError(
+                f"Domain {configured_domain!r} has no {config.task_split!r} split"
+            )
+        ordered_tasks.extend(
+            (configured_domain, str(task_id))
+            for task_id in split_map[config.task_split]
+        )
+    return [
+        task_id
+        for position, (task_domain, task_id) in enumerate(ordered_tasks)
+        if position % num_shards == shard_index and task_domain == domain
+    ]
+
+
+def activation_requests_for_shard(
+    requests: list[dict[str, Any]],
+    shard_index: int,
+    num_shards: int,
+) -> list[dict[str, Any]]:
+    """Keep every three-moment decision group on exactly one worker."""
+
+    _validate_shard(shard_index, num_shards)
+    decision_ids = sorted({row["decision_id"] for row in requests})
+    assigned = {
+        decision_id
+        for position, decision_id in enumerate(decision_ids)
+        if position % num_shards == shard_index
+    }
+    return [row for row in requests if row["decision_id"] in assigned]
 
 
 def _require_complete(config: SuccessDirectionConfig, domain: str) -> dict[str, Any]:
@@ -82,6 +147,114 @@ def run_success_trajectories(config_path: Path, *, force: bool | None = None) ->
             auto_resume=not overwrite,
         )
         _require_complete(config, domain)
+    run_success_official_metrics(config_path)
+
+
+def run_success_trajectory_shard(
+    config_path: Path,
+    *,
+    shard_index: int,
+    num_shards: int,
+    base_url: str,
+    force: bool | None = None,
+) -> None:
+    """Generate one disjoint task shard against one model endpoint."""
+
+    config = SuccessDirectionConfig.load(config_path)
+    overwrite = config.force_overwrite if force is None else force
+    for domain in config.domains:
+        task_ids = task_ids_for_shard(config, domain, shard_index, num_shards)
+        if not task_ids:
+            continue
+        results_path = config.shard_results_path(domain, shard_index, num_shards)
+        if overwrite:
+            remove_existing_run(results_path)
+        run_complete_trajectories(
+            _trajectory_config(config, domain, base_url=base_url),
+            task_ids=task_ids,
+            save_to=config.shard_save_name(domain, shard_index, num_shards),
+            auto_resume=not overwrite,
+        )
+        audit_results_completeness(
+            results_path,
+            expected_task_ids=set(task_ids),
+            expected_num_trials=config.num_trials,
+            expected_agent_model=config.agent_llm,
+            expected_user_model=config.user_llm,
+        )
+
+
+def merge_success_trajectory_shards(config_path: Path, *, num_shards: int) -> None:
+    """Strictly merge disjoint trajectory shards into the canonical result files."""
+
+    _validate_shard(0, num_shards)
+    config = SuccessDirectionConfig.load(config_path)
+    manifest: dict[str, Any] = {
+        "num_shards": num_shards,
+        "assignment": "round-robin over the combined Airline/Retail base task list",
+        "domains": {},
+    }
+    for domain in config.domains:
+        shard_results = []
+        domain_shards = []
+        for shard_index in range(num_shards):
+            expected_task_ids = task_ids_for_shard(
+                config, domain, shard_index, num_shards
+            )
+            if not expected_task_ids:
+                continue
+            path = config.shard_results_path(domain, shard_index, num_shards)
+            audit = audit_results_completeness(
+                path,
+                expected_task_ids=set(expected_task_ids),
+                expected_num_trials=config.num_trials,
+                expected_agent_model=config.agent_llm,
+                expected_user_model=config.user_llm,
+            )
+            result = Results.load(path)
+            shard_results.append(result)
+            domain_shards.append(
+                {
+                    "shard_index": shard_index,
+                    "task_ids": expected_task_ids,
+                    "results_path": str(path),
+                    "api_base": result.info.agent_info.llm_args.get("api_base"),
+                    "complete": audit["complete"],
+                }
+            )
+        if not shard_results:
+            raise ValueError(f"No trajectory shards found for domain {domain!r}")
+        task_order = {
+            str(task.id): position
+            for position, task in enumerate(load_tasks(domain, config.task_split))
+        }
+        simulations = [
+            simulation
+            for result in shard_results
+            for simulation in result.simulations
+        ]
+        simulations.sort(
+            key=lambda simulation: (
+                task_order[str(simulation.task_id)],
+                simulation.trial,
+            )
+        )
+        merged_info = shard_results[0].info.model_copy(deep=True)
+        for model_info in (merged_info.agent_info, merged_info.user_info):
+            llm_args = dict(model_info.llm_args or {})
+            llm_args["api_base"] = (
+                "sharded endpoints; see trajectory_shard_manifest.json"
+            )
+            model_info.llm_args = llm_args
+        merged = Results(
+            info=merged_info,
+            tasks=load_tasks(domain, config.task_split),
+            simulations=simulations,
+        )
+        merged.save(config.results_path(domain))
+        _require_complete(config, domain)
+        manifest["domains"][domain] = domain_shards
+    write_json(config.output_dir / "trajectory_shard_manifest.json", manifest)
     run_success_official_metrics(config_path)
 
 
@@ -248,6 +421,105 @@ def run_activation_extraction(config_path: Path) -> Path:
             layer_ids=config.hidden_layer_ids,
         )
         append_jsonl(output_path, row)
+    return output_path
+
+
+def run_activation_extraction_shard(
+    config_path: Path,
+    *,
+    shard_index: int,
+    num_shards: int,
+    base_url: str,
+) -> Path:
+    """Export one disjoint set of decision triples to one isolated JSONL file."""
+
+    _validate_shard(shard_index, num_shards)
+    config = SuccessDirectionConfig.load(config_path)
+    request_path = config.output_dir / "activation_requests.jsonl"
+    if not request_path.is_file():
+        raise FileNotFoundError(
+            "Build activation requests before starting sharded extraction"
+        )
+    all_requests = read_jsonl(request_path)
+    requests = activation_requests_for_shard(
+        all_requests, shard_index, num_shards
+    )
+    if not requests:
+        raise ValueError(f"Activation shard {shard_index} has no requests")
+    output_path = config.activation_shard_path(shard_index, num_shards)
+    current = {
+        (request["sample_id"], request["request_fingerprint"])
+        for request in requests
+    }
+    retained = [
+        row
+        for row in read_jsonl(output_path)
+        if (row["sample_id"], row.get("request_fingerprint")) in current
+    ]
+    write_jsonl(output_path, retained)
+    completed = {
+        (row["sample_id"], row.get("request_fingerprint"))
+        for row in retained
+    }
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY must be non-empty")
+    for request in requests:
+        sample_key = (request["sample_id"], request["request_fingerprint"])
+        if sample_key in completed:
+            continue
+        append_jsonl(
+            output_path,
+            extract_request_activation(
+                request,
+                base_url=base_url,
+                api_key=api_key,
+                model=config.hidden_model,
+                layer_ids=config.hidden_layer_ids,
+            ),
+        )
+    return output_path
+
+
+def merge_activation_shards(config_path: Path, *, num_shards: int) -> Path:
+    """Merge current activation shards and reject missing, duplicate, or stale rows."""
+
+    _validate_shard(0, num_shards)
+    config = SuccessDirectionConfig.load(config_path)
+    request_path = config.output_dir / "activation_requests.jsonl"
+    if not request_path.is_file():
+        raise FileNotFoundError(f"Activation requests are missing: {request_path}")
+    requests = read_jsonl(request_path)
+    request_order = {
+        (row["sample_id"], row["request_fingerprint"]): position
+        for position, row in enumerate(requests)
+    }
+    rows = [
+        row
+        for shard_index in range(num_shards)
+        for row in read_jsonl(
+            config.activation_shard_path(shard_index, num_shards)
+        )
+    ]
+    observed = [
+        (row["sample_id"], row.get("request_fingerprint")) for row in rows
+    ]
+    if len(set(observed)) != len(observed):
+        raise ValueError("Activation shards contain duplicate current sample keys")
+    if set(observed) != set(request_order):
+        missing = sorted(set(request_order) - set(observed))
+        unexpected = sorted(set(observed) - set(request_order))
+        raise ValueError(
+            "Activation shards do not match current requests: "
+            f"missing={missing}, unexpected={unexpected}"
+        )
+    rows.sort(
+        key=lambda row: request_order[
+            (row["sample_id"], row["request_fingerprint"])
+        ]
+    )
+    output_path = config.output_dir / "activations.jsonl"
+    write_jsonl(output_path, rows)
     return output_path
 
 

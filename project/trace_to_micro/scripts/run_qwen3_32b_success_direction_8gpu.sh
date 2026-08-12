@@ -1,0 +1,159 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "$#" -ne 1 ]]; then
+  echo "Usage: $0 <trajectories|activations|evaluate|all>" >&2
+  exit 2
+fi
+
+stage="$1"
+project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repo_dir="$(cd "${project_dir}/../.." && pwd)"
+config="${project_dir}/configs/qwen3_32b_success_direction.toml"
+num_shards="${NUM_SHARDS:-8}"
+first_gpu="${FIRST_GPU:-0}"
+base_port="${BASE_PORT:-8100}"
+force_overwrite="${FORCE_OVERWRITE:-1}"
+run_log_dir="${project_dir}/outputs/run_logs/success_direction_8gpu"
+vllm_log_dir="${project_dir}/outputs/vllm_logs/success_direction_8gpu"
+
+export PYTHONPATH="${project_dir}/src${PYTHONPATH:+:${PYTHONPATH}}"
+export OPENAI_API_KEY="${OPENAI_API_KEY:-local-vllm}"
+export PYTHONUNBUFFERED=1
+export TAU2_NL_ASSERTIONS_LLM="${TAU2_NL_ASSERTIONS_LLM:-openai/qwen3-32b}"
+
+mkdir -p "${run_log_dir}" "${vllm_log_dir}"
+cd "${repo_dir}"
+
+run_checks() {
+  uv run --no-sync pytest -c project/trace_to_micro/pyproject.toml \
+    project/trace_to_micro/tests
+  uv run --no-sync ruff check --config project/trace_to_micro/pyproject.toml \
+    project/trace_to_micro/src project/trace_to_micro/tests \
+    project/trace_to_micro/scripts
+  uv run --no-sync ruff format --check \
+    --config project/trace_to_micro/pyproject.toml \
+    project/trace_to_micro/src project/trace_to_micro/tests \
+    project/trace_to_micro/scripts
+}
+
+run_workers() {
+  local mode="$1"
+  local manager
+  local command
+  if [[ "${mode}" == "trajectories" ]]; then
+    manager="${project_dir}/scripts/with_managed_qwen3_32b_vllm.sh"
+    command="success-trajectory-shard"
+  else
+    manager="${project_dir}/scripts/with_managed_qwen3_32b_hidden_vllm.sh"
+    command="success-activation-shard"
+  fi
+
+  local pids=()
+  local shard
+  for ((shard = 0; shard < num_shards; shard++)); do
+    local gpu=$((first_gpu + shard))
+    local port=$((base_port + shard))
+    local base_url="http://127.0.0.1:${port}/v1"
+    local worker_log="${run_log_dir}/${mode}_shard_${shard}.log"
+    local server_log="${vllm_log_dir}/${mode}_gpu_${gpu}_port_${port}.log"
+    (
+      export CUDA_VISIBLE_DEVICES="${gpu}"
+      export VLLM_PORT="${port}"
+      export TENSOR_PARALLEL_SIZE=1
+      export OPENAI_API_BASE="${base_url}"
+      export OPENAI_BASE_URL="${base_url}"
+      export VLLM_LOG_PATH="${server_log}"
+      export TRACE_TO_MICRO_HIDDEN_TMP_DIR="/dev/shm/trace_to_micro_hidden_states_gpu_${gpu}"
+      export TAU2_NL_ASSERTIONS_LLM_ARGS="{\"temperature\":0,\"max_tokens\":1024,\"api_base\":\"${base_url}\",\"api_key\":\"EMPTY\",\"timeout\":180,\"num_retries\":0,\"extra_body\":{\"chat_template_kwargs\":{\"enable_thinking\":false}}}"
+      local force_flag="--force"
+      if [[ "${force_overwrite}" == "0" ]]; then
+        force_flag="--no-force"
+      fi
+      local args=(
+        uv run --no-sync python -m trace_to_micro.cli "${command}"
+        --config "${config}"
+        --shard-index "${shard}"
+        --num-shards "${num_shards}"
+        --base-url "${base_url}"
+      )
+      if [[ "${mode}" == "trajectories" ]]; then
+        args+=("${force_flag}")
+      fi
+      "${manager}" "${args[@]}"
+    ) >"${worker_log}" 2>&1 &
+    pids+=("$!")
+    echo "Started ${mode} shard ${shard}: GPU ${gpu}, port ${port}, log ${worker_log}"
+  done
+
+  local failed=0
+  for shard in "${!pids[@]}"; do
+    if ! wait "${pids[shard]}"; then
+      echo "${mode} shard ${shard} failed; inspect ${run_log_dir}/${mode}_shard_${shard}.log" >&2
+      failed=1
+    fi
+  done
+  if [[ "${failed}" -ne 0 ]]; then
+    return 1
+  fi
+}
+
+ensure_target_ports_are_free() {
+  local occupied=0
+  local shard
+  for ((shard = 0; shard < num_shards; shard++)); do
+    local port=$((base_port + shard))
+    if curl --fail --silent --show-error --max-time 2 \
+      "http://127.0.0.1:${port}/v1/models" >/dev/null 2>&1; then
+      echo "Port ${port} is already serving a model; stop it or choose another BASE_PORT." >&2
+      occupied=1
+    fi
+  done
+  if [[ "${occupied}" -ne 0 ]]; then
+    return 1
+  fi
+}
+
+run_trajectories() {
+  run_workers trajectories
+  uv run --no-sync python -m trace_to_micro.cli success-merge-trajectories \
+    --config "${config}" --num-shards "${num_shards}"
+}
+
+run_activations() {
+  uv run --no-sync python -m trace_to_micro.cli success-activation-requests \
+    --config "${config}"
+  run_workers activations
+  uv run --no-sync python -m trace_to_micro.cli success-merge-activations \
+    --config "${config}" --num-shards "${num_shards}"
+}
+
+run_evaluate() {
+  uv run --no-sync python -m trace_to_micro.cli success-evaluate \
+    --config "${config}"
+}
+
+run_checks
+case "${stage}" in
+  trajectories)
+    ensure_target_ports_are_free
+    run_trajectories
+    ;;
+  activations)
+    ensure_target_ports_are_free
+    run_activations
+    ;;
+  evaluate)
+    run_evaluate
+    ;;
+  all)
+    ensure_target_ports_are_free
+    run_trajectories
+    run_activations
+    run_evaluate
+    ;;
+  *)
+    echo "Unknown stage: ${stage}" >&2
+    exit 2
+    ;;
+esac
