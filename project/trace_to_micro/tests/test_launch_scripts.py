@@ -104,3 +104,13 @@ def test_hidden_server_allows_slow_parallel_startup() -> None:
     manager = read_script("with_managed_qwen3_32b_hidden_vllm.sh")
 
     assert 'wait_seconds="${TRACE_TO_MICRO_SERVER_WAIT_SECONDS:-1800}"' in manager
+
+
+def test_merge_stage_skips_model_run_checks() -> None:
+    launcher = read_script("run_qwen3_32b_success_direction_8gpu.sh")
+    prefix, stage_gate, dispatch = launcher.split('\ncase "${stage}" in\n')
+
+    assert "merge-trajectories | evaluate" in stage_gate
+    assert "run_checks" in prefix
+    assert "run_checks" in stage_gate
+    assert "run_checks" not in dispatch

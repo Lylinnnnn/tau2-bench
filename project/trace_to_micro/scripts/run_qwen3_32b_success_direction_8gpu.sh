@@ -202,9 +202,20 @@ run_evaluate() {
     --config "${config}"
 }
 
-validate_port_layout
-initialize_selected_shards
-run_checks
+case "${stage}" in
+  trajectories | trajectory-shards | activations | all)
+    validate_port_layout
+    initialize_selected_shards
+    run_checks
+    ;;
+  merge-trajectories | evaluate)
+    ;;
+  *)
+    echo "Unknown stage: ${stage}" >&2
+    exit 2
+    ;;
+esac
+
 case "${stage}" in
   trajectories)
     ensure_target_ports_are_free
@@ -231,9 +242,5 @@ case "${stage}" in
     run_trajectories
     run_activations
     run_evaluate
-    ;;
-  *)
-    echo "Unknown stage: ${stage}" >&2
-    exit 2
     ;;
 esac
