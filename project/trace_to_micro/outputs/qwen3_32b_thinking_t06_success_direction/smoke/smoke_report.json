@@ -1,0 +1,156 @@
+{
+  "hypothesis_evaluable": false,
+  "hypothesis_evaluable_reason": "one trajectory validates extraction and metrics, but cannot fit or evaluate a success direction",
+  "task": {
+    "domain": "retail",
+    "task_id": "2",
+    "official_split": "train",
+    "simulation_id": "a3065f30-7721-4f41-b02a-cef7ac1027b8",
+    "termination_reason": "TerminationReason.USER_STOP",
+    "official_reward": 0.0,
+    "official_success": false,
+    "logged_action": {
+      "kind": "tool",
+      "calls": [
+        {
+          "requestor": "assistant",
+          "name": "find_user_id_by_name_zip",
+          "arguments": {
+            "first_name": "Yusuf",
+            "last_name": "Rossi",
+            "zip": "19122"
+          }
+        }
+      ]
+    }
+  },
+  "official_metrics": {
+    "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+    "task_aggregation": "per-task pass^k, then mean across tasks",
+    "configured_num_trials": 1,
+    "total_tasks": 1,
+    "total_simulations": 1,
+    "infrastructure_errors_excluded_by_official_metric": 0,
+    "average_reward": 0.0,
+    "pass^1": 0.0,
+    "pass^k": {
+      "1": 0.0
+    }
+  },
+  "pipeline_valid": true,
+  "context_chain": {
+    "moments": [
+      "before",
+      "action",
+      "result"
+    ],
+    "message_counts": {
+      "before": 3,
+      "action": 4,
+      "result": 5
+    },
+    "prompt_token_counts": {
+      "before": 4969,
+      "action": 5019,
+      "result": 5038
+    },
+    "exported_token_ids_matched_submitted_prompt": true,
+    "prompt_token_sha256": {
+      "before": "01ac47eb3d6a3c9191762ab0e3d0de0ece3d6b9f6741950b07e53a226bf0b422",
+      "action": "72e9cd3a188c1bb9005cc53e183825573fdd6b86c1126efff11c43ad43e68c34",
+      "result": "34f94e9b18e48654d935ddc24abc4463538bdae780d7ab2f82f71aa70fcf27c6"
+    },
+    "last_token_ids": {
+      "before": 198,
+      "action": 198,
+      "result": 198
+    },
+    "readout_definition": {
+      "before": "last token of the next-assistant generation prompt",
+      "action": "last token of the logged assistant tool-call message",
+      "result": "last token of the next-assistant generation prompt"
+    }
+  },
+  "hidden_states": {
+    "model": "qwen3-32b",
+    "layers": [
+      31,
+      47
+    ],
+    "expected_dimension": 5120,
+    "vectors": {
+      "before": {
+        "31": {
+          "dimension": 5120,
+          "l2_norm": 203.8702392578125,
+          "mean": 0.09808218479156494,
+          "standard_deviation": 2.8474843502044678
+        },
+        "47": {
+          "dimension": 5120,
+          "l2_norm": 270.90899658203125,
+          "mean": 0.05037107318639755,
+          "standard_deviation": 3.785733222961426
+        }
+      },
+      "action": {
+        "31": {
+          "dimension": 5120,
+          "l2_norm": 193.44200134277344,
+          "mean": 0.0288929995149374,
+          "standard_deviation": 2.703279733657837
+        },
+        "47": {
+          "dimension": 5120,
+          "l2_norm": 256.3966369628906,
+          "mean": 0.05154680088162422,
+          "standard_deviation": 3.5828816890716553
+        }
+      },
+      "result": {
+        "31": {
+          "dimension": 5120,
+          "l2_norm": 194.9167022705078,
+          "mean": 0.0797928124666214,
+          "standard_deviation": 2.7228751182556152
+        },
+        "47": {
+          "dimension": 5120,
+          "l2_norm": 255.41323852539062,
+          "mean": 0.07335881143808365,
+          "standard_deviation": 3.5687546730041504
+        }
+      }
+    },
+    "pairwise_diagnostics": {
+      "31": {
+        "before_vs_action": {
+          "cosine_similarity": 0.7254325151443481,
+          "l2_distance": 147.52967834472656
+        },
+        "action_vs_result": {
+          "cosine_similarity": 0.727766752243042,
+          "l2_distance": 143.28759765625
+        },
+        "before_vs_result": {
+          "cosine_similarity": 0.9116567373275757,
+          "l2_distance": 84.26911163330078
+        }
+      },
+      "47": {
+        "before_vs_action": {
+          "cosine_similarity": 0.667724609375,
+          "l2_distance": 215.33790588378906
+        },
+        "action_vs_result": {
+          "cosine_similarity": 0.6625524163246155,
+          "l2_distance": 210.23300170898438
+        },
+        "before_vs_result": {
+          "cosine_similarity": 0.8472872972488403,
+          "l2_distance": 146.1971893310547
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,117 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.0.1, pluggy-1.6.0
+rootdir: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro
+configfile: pyproject.toml
+plugins: anyio-4.11.0, xdist-3.8.0
+collected 79 items
+
+project/trace_to_micro/tests/analysis/test_logged_trace.py ......        [  7%]
+project/trace_to_micro/tests/analysis/test_logged_transitions.py .       [  8%]
+project/trace_to_micro/tests/analysis/test_results.py ..                 [ 11%]
+project/trace_to_micro/tests/analysis/test_task_inventory.py ...         [ 15%]
+project/trace_to_micro/tests/analysis/test_trajectory.py ..              [ 17%]
+project/trace_to_micro/tests/clean/test_audit.py ..                      [ 20%]
+project/trace_to_micro/tests/clean/test_contract.py .....                [ 26%]
+project/trace_to_micro/tests/clean/test_evidence.py ....                 [ 31%]
+project/trace_to_micro/tests/clean/test_report.py .                      [ 32%]
+project/trace_to_micro/tests/clean/test_semantic.py ...                  [ 36%]
+project/trace_to_micro/tests/evaluation/test_paired.py .....             [ 43%]
+project/trace_to_micro/tests/evaluation/test_success_direction.py ....   [ 48%]
+project/trace_to_micro/tests/evaluation/test_support.py ...              [ 51%]
+project/trace_to_micro/tests/replay/test_branching.py .                  [ 53%]
+project/trace_to_micro/tests/replay/test_reference.py ..                 [ 55%]
+project/trace_to_micro/tests/replay/test_state.py ...                    [ 59%]
+project/trace_to_micro/tests/runner/test_context.py ......               [ 67%]
+project/trace_to_micro/tests/runner/test_trajectory_runner.py ...        [ 70%]
+project/trace_to_micro/tests/runtime/test_activations.py ...             [ 74%]
+project/trace_to_micro/tests/runtime/test_server_preflight.py ......     [ 82%]
+project/trace_to_micro/tests/test_architecture.py ....                   [ 87%]
+project/trace_to_micro/tests/test_config.py ....                         [ 92%]
+project/trace_to_micro/tests/test_launch_scripts.py ......               [100%]
+
+=============================== warnings summary ===============================
+src/tau2/voice/utils/audio_preprocessing.py:4
+  /home/liuyanlin.lyl/notebook/lyl/tau2-bench/src/tau2/voice/utils/audio_preprocessing.py:4: DeprecationWarning: 'audioop' is deprecated and slated for removal in Python 3.13
+    import audioop
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 79 passed, 1 warning in 9.48s =========================
+All checks passed!
+64 files already formatted
+2026-08-12 18:43:55.997 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-12 18:43:55.997 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+2026-08-12 18:44:09.158 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-12 18:44:09.357 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-12 18:44:09.369 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-12 18:44:09.369 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/smoke/activation_requests.jsonl
+Starting managed hidden-state Qwen3-32B vLLM; log: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/vllm_logs/qwen3_32b_hidden_20260812_184409.log
+Managed hidden-state Qwen3-32B vLLM is ready at http://127.0.0.1:8000/v1
+2026-08-12 18:47:42.099 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-12 18:47:42.099 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+[92m18:47:47 - LiteLLM:WARNING[0m: get_model_cost_map.py:174 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: _ssl.c:993: The handshake operation timed out. Falling back to local backup.
+2026-08-12 18:47:50.782 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-12 18:47:50.951 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-12 18:47:50.965 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-12 18:47:50.965 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+activations: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/smoke/activations.jsonl
+smoke_report: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/smoke/smoke_report.json
+Stopping managed hidden-state vLLM process 1250525
