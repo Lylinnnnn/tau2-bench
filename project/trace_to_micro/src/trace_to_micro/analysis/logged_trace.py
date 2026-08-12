@@ -1,6 +1,7 @@
 """Completeness audit and decision snapshot extraction from real model traces."""
 
 from collections import Counter
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -32,8 +33,13 @@ def audit_results_completeness(
     expected_num_trials: int | None = None,
     expected_agent_model: str | None = None,
     expected_user_model: str | None = None,
+    raise_on_incomplete: bool = True,
 ) -> dict[str, Any]:
-    """Validate that every configured task/trial has one non-empty trajectory."""
+    """Audit whether each configured task/trial has one non-empty trajectory.
+
+    Strict callers keep the default exception. Dataset-compilation callers can
+    request the complete report and quarantine individual bad trajectories.
+    """
 
     metadata = Results.load_metadata(path)
     simulations = list(Results.iter_simulations(path))
@@ -126,7 +132,7 @@ def audit_results_completeness(
             or user_model_mismatch
         ),
     }
-    if not report["complete"]:
+    if not report["complete"] and raise_on_incomplete:
         raise ValueError(f"Incomplete trajectory results: {report}")
     return report
 
@@ -278,6 +284,7 @@ def tool_decision_records(
     max_per_trajectory: int | None,
     consequences: dict[str, dict[str, Any]] | None = None,
     include_decision_ids: set[str] | None = None,
+    on_simulation_error: Callable[[SimulationRun, Exception], None] | None = None,
 ) -> list[dict[str, Any]]:
     """Build the three factual probe moments around assistant tool calls."""
 
@@ -297,97 +304,134 @@ def tool_decision_records(
     tools = [tool.openai_schema for tool in environment.get_tools()]
     rows: list[dict[str, Any]] = []
     for simulation in Results.iter_simulations(results_path):
-        task_id = str(simulation.task_id)
-        split = split_by_task.get(task_id)
-        if split is None:
+        try:
+            simulation_rows = _tool_decision_records_for_simulation(
+                simulation,
+                domain=domain,
+                split_by_task=split_by_task,
+                system_prompt=system_prompt,
+                tools=tools,
+                max_per_trajectory=max_per_trajectory,
+                consequences=consequences,
+                include_decision_ids=include_decision_ids,
+            )
+        except Exception as error:
+            if on_simulation_error is None:
+                raise
+            on_simulation_error(simulation, error)
             continue
-        reward_info = simulation.reward_info
-        if reward_info is None:
-            raise ValueError(f"Simulation {simulation.id} has no reward")
-        messages = simulation.get_messages()
-        all_tool_indices = [
-            index
-            for index in decision_indices(simulation)
-            if isinstance(messages[index], AssistantMessage)
-            and messages[index].is_tool_call()
-        ]
-        tool_indices = [
-            index
-            for index in all_tool_indices
-            if include_decision_ids is None
-            or f"{simulation.id}:{index}" in include_decision_ids
-        ]
-        selected = (
-            tool_indices
-            if max_per_trajectory is None
-            else tool_indices[:max_per_trajectory]
+        rows.extend(simulation_rows)
+    return rows
+
+
+def _tool_decision_records_for_simulation(
+    simulation: SimulationRun,
+    *,
+    domain: str,
+    split_by_task: dict[str, str],
+    system_prompt: str,
+    tools: list[dict[str, Any]],
+    max_per_trajectory: int | None,
+    consequences: dict[str, dict[str, Any]] | None,
+    include_decision_ids: set[str] | None,
+) -> list[dict[str, Any]]:
+    """Atomically build all activation requests for one trajectory."""
+
+    task_id = str(simulation.task_id)
+    split = split_by_task.get(task_id)
+    if split is None:
+        return []
+    if include_decision_ids is not None and not any(
+        decision_id.startswith(f"{simulation.id}:")
+        for decision_id in include_decision_ids
+    ):
+        return []
+    reward_info = simulation.reward_info
+    if reward_info is None:
+        raise ValueError(f"Simulation {simulation.id} has no reward")
+    messages = simulation.get_messages()
+    all_tool_indices = [
+        index
+        for index in decision_indices(simulation)
+        if isinstance(messages[index], AssistantMessage)
+        and messages[index].is_tool_call()
+    ]
+    tool_indices = [
+        index
+        for index in all_tool_indices
+        if include_decision_ids is None
+        or f"{simulation.id}:{index}" in include_decision_ids
+    ]
+    selected = (
+        tool_indices
+        if max_per_trajectory is None
+        else tool_indices[:max_per_trajectory]
+    )
+    if not selected:
+        return []
+    rows = []
+    for message_index in selected:
+        decision_position = all_tool_indices.index(message_index)
+        action = messages[message_index]
+        assert isinstance(action, AssistantMessage)
+        decision_id = f"{simulation.id}:{message_index}"
+        consequence = consequences.get(decision_id) if consequences else None
+        if consequences is not None and consequence is None:
+            raise ValueError(f"Missing local consequence for {decision_id}")
+        result_index = message_index + 1
+        while result_index < len(messages) and isinstance(
+            messages[result_index], ToolMessage
+        ):
+            result_index += 1
+        result_end = result_index - 1
+        expected_result_ids = {call.id for call in action.tool_calls or []}
+        observed_result_ids = {
+            message.id
+            for message in messages[message_index + 1 : result_index]
+            if isinstance(message, ToolMessage) and message.requestor == "assistant"
+        }
+        if expected_result_ids != observed_result_ids:
+            raise ValueError(
+                f"Tool-result mismatch at {simulation.id}:{message_index}: "
+                f"expected {expected_result_ids}, got {observed_result_ids}"
+            )
+        prior_tool_errors = sum(
+            isinstance(message, ToolMessage)
+            and message.requestor == "assistant"
+            and message.error
+            for message in messages[:message_index]
         )
-        for message_index in selected:
-            decision_position = all_tool_indices.index(message_index)
-            action = messages[message_index]
-            assert isinstance(action, AssistantMessage)
-            decision_id = f"{simulation.id}:{message_index}"
-            consequence = consequences.get(decision_id) if consequences else None
-            if consequences is not None and consequence is None:
-                raise ValueError(f"Missing local consequence for {decision_id}")
-            result_index = message_index + 1
-            while result_index < len(messages) and isinstance(
-                messages[result_index], ToolMessage
-            ):
-                result_index += 1
-            result_end = result_index - 1
-            expected_result_ids = {call.id for call in action.tool_calls or []}
-            observed_result_ids = {
-                message.id
-                for message in messages[message_index + 1 : result_index]
-                if isinstance(message, ToolMessage) and message.requestor == "assistant"
-            }
-            if expected_result_ids != observed_result_ids:
-                raise ValueError(
-                    f"Tool-result mismatch at {simulation.id}:{message_index}: "
-                    f"expected {expected_result_ids}, got {observed_result_ids}"
-                )
-            prior_tool_errors = sum(
-                isinstance(message, ToolMessage)
-                and message.requestor == "assistant"
-                and message.error
-                for message in messages[:message_index]
+        moments = {
+            "before": messages[:message_index],
+            "action": messages[: message_index + 1],
+            "result": messages[: result_end + 1],
+        }
+        before_messages = to_openai_messages(messages[:message_index], system_prompt)
+        for moment, history in moments.items():
+            rows.append(
+                {
+                    "sample_id": f"{simulation.id}:{message_index}:{moment}",
+                    "decision_id": decision_id,
+                    "simulation_id": simulation.id,
+                    "domain": domain,
+                    "split": split,
+                    "task_id": task_id,
+                    "trial": simulation.trial,
+                    "message_index": message_index,
+                    "decision_position": decision_position,
+                    "prefix_message_count": len(before_messages) - 1,
+                    "prefix_char_count": len(transcript_json(messages[:message_index])),
+                    "prior_tool_errors": prior_tool_errors,
+                    "moment": moment,
+                    "messages": to_openai_messages(history, system_prompt),
+                    "tools": tools,
+                    "chat_template_kwargs": {"enable_thinking": True},
+                    "logged_action": action_record(action),
+                    "overall_success": is_successful(reward_info.reward),
+                    "db_success": _component_success(reward_info, RewardType.DB),
+                    "language_success": _language_success(reward_info),
+                    "termination_reason": str(simulation.termination_reason),
+                    **(consequence or {}),
+                }
             )
-            moments = {
-                "before": messages[:message_index],
-                "action": messages[: message_index + 1],
-                "result": messages[: result_end + 1],
-            }
-            before_messages = to_openai_messages(
-                messages[:message_index], system_prompt
-            )
-            for moment, history in moments.items():
-                rows.append(
-                    {
-                        "sample_id": f"{simulation.id}:{message_index}:{moment}",
-                        "decision_id": decision_id,
-                        "simulation_id": simulation.id,
-                        "domain": domain,
-                        "split": split,
-                        "task_id": task_id,
-                        "trial": simulation.trial,
-                        "message_index": message_index,
-                        "decision_position": decision_position,
-                        "prefix_message_count": len(before_messages) - 1,
-                        "prefix_char_count": len(
-                            transcript_json(messages[:message_index])
-                        ),
-                        "prior_tool_errors": prior_tool_errors,
-                        "moment": moment,
-                        "messages": to_openai_messages(history, system_prompt),
-                        "tools": tools,
-                        "chat_template_kwargs": {"enable_thinking": True},
-                        "logged_action": action_record(action),
-                        "overall_success": is_successful(reward_info.reward),
-                        "db_success": _component_success(reward_info, RewardType.DB),
-                        "language_success": _language_success(reward_info),
-                        "termination_reason": str(simulation.termination_reason),
-                        **(consequence or {}),
-                    }
-                )
     return rows

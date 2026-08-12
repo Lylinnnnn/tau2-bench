@@ -14,6 +14,7 @@ from trace_to_micro.analysis.logged_trace import (
     audit_results_completeness,
     decision_indices,
     stratified_indices,
+    tool_decision_records,
 )
 
 
@@ -122,6 +123,106 @@ def test_completeness_rejects_results_missing_configured_tasks(
             expected_task_ids={"task-1", "task-2"},
             expected_num_trials=1,
         )
+
+
+def test_completeness_can_report_without_raising(monkeypatch, tmp_path) -> None:
+    metadata = type(
+        "Metadata",
+        (),
+        {
+            "tasks": [type("Task", (), {"id": "task-1"})()],
+            "info": type(
+                "Info",
+                (),
+                {
+                    "num_trials": 1,
+                    "agent_info": type(
+                        "AgentInfo", (), {"llm": "agent", "llm_args": {}}
+                    )(),
+                    "user_info": type(
+                        "UserInfo", (), {"llm": "user", "llm_args": {}}
+                    )(),
+                },
+            )(),
+        },
+    )()
+    simulation = _simulation()
+    simulation.reward_info = RewardInfo(reward=1.0)
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.logged_trace.Results.load_metadata", lambda _: metadata
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.logged_trace.Results.iter_simulations",
+        lambda _: iter([simulation]),
+    )
+
+    report = audit_results_completeness(
+        tmp_path / "results.json",
+        expected_task_ids={"task-1", "task-2"},
+        expected_num_trials=1,
+        raise_on_incomplete=False,
+    )
+
+    assert report["complete"] is False
+    assert report["missing_task_trials"] == [("task-2", 0)]
+
+
+def test_tool_decision_records_quarantines_bad_trajectory_atomically(
+    monkeypatch, tmp_path
+) -> None:
+    good = _simulation().model_copy(
+        update={"id": "good", "reward_info": RewardInfo(reward=1.0)}
+    )
+    bad_messages = [
+        message
+        for message in _simulation().messages
+        if not isinstance(message, ToolMessage)
+    ]
+    bad = _simulation().model_copy(
+        update={
+            "id": "bad",
+            "messages": bad_messages,
+            "reward_info": RewardInfo(reward=0.0),
+        }
+    )
+    environment = type(
+        "Environment",
+        (),
+        {
+            "get_policy": lambda self: "policy",
+            "get_tools": lambda self: [],
+        },
+    )()
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.logged_trace.load_task_splits",
+        lambda _: {"train": ["task-1"], "test": []},
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.logged_trace.build_environment",
+        lambda _: environment,
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.logged_trace.Results.iter_simulations",
+        lambda _: iter([bad, good]),
+    )
+    errors = []
+
+    rows = tool_decision_records(
+        tmp_path / "results.json",
+        domain="retail",
+        task_set="retail",
+        train_split="train",
+        test_split="test",
+        max_per_trajectory=None,
+        on_simulation_error=lambda simulation, error: errors.append(
+            (simulation.id, str(error))
+        ),
+    )
+
+    assert {row["simulation_id"] for row in rows} == {"good"}
+    assert len(rows) == 3
+    assert errors[0][0] == "bad"
+    assert "Tool-result mismatch" in errors[0][1]
 
 
 def test_completeness_rejects_results_from_another_model(monkeypatch, tmp_path) -> None:

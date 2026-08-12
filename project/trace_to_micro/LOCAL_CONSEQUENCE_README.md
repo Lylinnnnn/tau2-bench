@@ -27,7 +27,9 @@ data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_
 构造；这也避免旧任务中已经失效的只读查询参数（例如 Retail 任务 2 中不存在的
 商品编号）影响目标。如果会修改状态的参考动作失败，代码不会使用残缺目标继续
 打标签，而是排除这个任务的全部轨迹，在支持度报告中记录任务号、动作、参数和
-原始错误，然后继续审计其他任务。随后按原顺序重放日志中的全部工具调用以恢复
+原始错误，然后继续审计其他任务。真实轨迹缺少结果、重放不一致或某条轨迹处理时
+出现异常，也按整条轨迹隔离并记录异常类型与堆栈，不会中止整批。随后按原顺序
+重放日志中的全部工具调用以恢复
 真实状态，但只把代码明确声明为会修改状态的 Agent 调用保留为学习样本。每个
 保留样本得到三类标签：
 
@@ -75,14 +77,16 @@ smoke。smoke 从 Retail 任务 0 中自动找到一个真实写操作，验证�
 - 第 31/47 层维度都是 5120、有限且非零。
 
 smoke 通过后再跑完整 8 卡隐藏表示导出。完整阶段首先在 CPU 上重放和审计所有
-离线写操作。参考目标无效会按任务排除并集中报告；已经落盘的真实轨迹若出现结果
-缺失或确定性重放不一致，仍会直接报错，不会静默落下错误标签。
+离线写操作。所有任务级和轨迹级问题都会集中记录，成功的轨迹正常产出；单条失败
+不会留下半条样本，也不会导致整批退出。只有结果文件无法读取、配置无效或产物
+无法写入等无法继续处理任何样本的全局故障才会终止。
 
 ## 产物
 
 ```text
 project/trace_to_micro/outputs/qwen3_32b_thinking_t06_local_consequence/
 ├── local_consequences.jsonl
+├── local_consequence_exclusions.jsonl
 ├── local_consequence_support.json
 ├── activation_requests.jsonl
 ├── activation_shards/
@@ -94,8 +98,9 @@ project/trace_to_micro/outputs/qwen3_32b_thinking_t06_local_consequence/
     └── smoke_report.json
 ```
 
-`local_consequence_support.json` 是完整实验前最重要的人工审核文件：它按领域和
-Train/Test 报告可用写操作数量、三个标签的正负支持度，以及哪些工具同时存在
-正负例。如果某一领域的 `goal_progress` 在 Train 或 Test 只有一个类别，正式
-报告会明确标记不可评测，
-不会用别的标签偷偷替代主问题。
+`local_consequence_support.json` 是完整实验前最重要的人工审核文件：
+`audit_completed=true` 表示批处理已经扫描完所有可读输入，不表示原始数据没有
+问题。它按领域和 Train/Test 报告可用写操作数量、三个标签的正负支持度、排除
+数量，以及哪些工具同时存在正负例；`local_consequence_exclusions.jsonl` 则逐项
+记录被隔离的问题。如果某一领域的 `goal_progress` 在 Train 或 Test 只有一个
+类别，正式报告会明确标记不可评测，不会用别的标签偷偷替代主问题。
