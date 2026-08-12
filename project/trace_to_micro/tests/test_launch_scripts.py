@@ -79,7 +79,7 @@ def test_success_direction_8gpu_uses_isolated_single_gpu_workers() -> None:
     assert 'internal_port_stride="${INTERNAL_PORT_STRIDE:-1000}"' in launcher
     assert 'master_base_port="${MASTER_BASE_PORT:-40000}"' in launcher
     assert 'shard_ids_raw="${SHARD_IDS:-}"' in launcher
-    assert "for shard in \"${selected_shards[@]}\"" in launcher
+    assert 'for shard in "${selected_shards[@]}"' in launcher
     assert "trajectory-shards" in launcher
     assert "require_explicit_shards" in launcher
     assert 'export CUDA_VISIBLE_DEVICES="${gpu}"' in launcher
