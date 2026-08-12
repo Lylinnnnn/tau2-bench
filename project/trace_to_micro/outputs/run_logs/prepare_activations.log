@@ -1,0 +1,37 @@
+2026-08-12 23:07:20.593 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-12 23:07:20.594 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+[92m23:07:27 - LiteLLM:WARNING[0m: get_model_cost_map.py:174 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: _ssl.c:993: The handshake operation timed out. Falling back to local backup.
+2026-08-12 23:07:30.241 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-12 23:07:30.436 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-12 23:07:30.452 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-12 23:07:30.452 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/activation_requests.jsonl

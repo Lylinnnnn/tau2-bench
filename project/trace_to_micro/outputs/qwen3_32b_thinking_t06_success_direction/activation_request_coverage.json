@@ -1,0 +1,62 @@
+{
+  "selection": "first assistant tool decision in each trajectory",
+  "moments_per_decision": 3,
+  "domains": {
+    "airline": {
+      "train": {
+        "official_trajectories": 30,
+        "with_assistant_tool_decision": 30,
+        "omitted_without_assistant_tool_decision": 0,
+        "official_outcomes": {
+          "failure": 17,
+          "success": 13
+        },
+        "covered_outcomes": {
+          "failure": 17,
+          "success": 13
+        }
+      },
+      "test": {
+        "official_trajectories": 20,
+        "with_assistant_tool_decision": 20,
+        "omitted_without_assistant_tool_decision": 0,
+        "official_outcomes": {
+          "failure": 13,
+          "success": 7
+        },
+        "covered_outcomes": {
+          "failure": 13,
+          "success": 7
+        }
+      }
+    },
+    "retail": {
+      "train": {
+        "official_trajectories": 74,
+        "with_assistant_tool_decision": 70,
+        "omitted_without_assistant_tool_decision": 4,
+        "official_outcomes": {
+          "failure": 56,
+          "success": 18
+        },
+        "covered_outcomes": {
+          "failure": 52,
+          "success": 18
+        }
+      },
+      "test": {
+        "official_trajectories": 40,
+        "with_assistant_tool_decision": 37,
+        "omitted_without_assistant_tool_decision": 3,
+        "official_outcomes": {
+          "failure": 28,
+          "success": 12
+        },
+        "covered_outcomes": {
+          "failure": 25,
+          "success": 12
+        }
+      }
+    }
+  }
+}
