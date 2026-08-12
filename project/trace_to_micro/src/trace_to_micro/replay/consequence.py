@@ -39,12 +39,21 @@ def _initialize(environment, task: Task) -> None:
 
 
 def target_snapshot(domain: str, task: Task) -> dict[str, Any]:
-    """Build the official task target by replaying its reference actions."""
+    """Build the official DB target from state-mutating reference actions.
+
+    The official evaluator compares final database hashes. Read-only reference
+    actions cannot affect that target and may contain stale lookup arguments, so
+    replaying them only introduces failures that are irrelevant to the target.
+    Mutating reference actions remain strict because ignoring one would silently
+    corrupt the local goal-progress label.
+    """
 
     environment = build_environment(domain)
     _initialize(environment, task)
     actions = task.evaluation_criteria.actions if task.evaluation_criteria else []
     for action in actions or []:
+        if not environment._is_mutating_tool(action.name):
+            continue
         response = environment.get_response(
             ToolCall(
                 id=action.action_id,
@@ -55,7 +64,7 @@ def target_snapshot(domain: str, task: Task) -> dict[str, Any]:
         )
         if response.error:
             raise RuntimeError(
-                f"Reference action failed for {domain}/{task.id}: "
+                f"Mutating reference action failed for {domain}/{task.id}: "
                 f"{action.name}: {response.content}"
             )
     return snapshot_environment(environment)

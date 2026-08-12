@@ -1,5 +1,7 @@
 from types import SimpleNamespace
 
+import pytest
+
 from tau2.data_model.message import (
     AssistantMessage,
     ToolCall,
@@ -7,7 +9,10 @@ from tau2.data_model.message import (
     UserMessage,
 )
 from tau2.data_model.simulation import SimulationRun, TerminationReason
-from trace_to_micro.replay.consequence import replay_local_consequences
+from trace_to_micro.replay.consequence import (
+    replay_local_consequences,
+    target_snapshot,
+)
 
 
 class _DB:
@@ -40,9 +45,18 @@ class _Environment:
         assert kwargs["message_history"] == []
 
     def _is_mutating_tool(self, name: str) -> bool:
-        return name == "increment"
+        return name in {"failed_write", "increment"}
 
     def get_response(self, call: ToolCall) -> ToolMessage:
+        if call.name == "failed_write":
+            return ToolMessage(
+                id=call.id,
+                role="tool",
+                requestor="assistant",
+                content="write rejected",
+                error=True,
+            )
+        assert call.name == "increment"
         self.tools.db.count += 1
         return ToolMessage(
             id=call.id,
@@ -51,6 +65,65 @@ class _Environment:
             content="1",
             error=False,
         )
+
+
+def test_target_snapshot_skips_stale_read_only_reference_action(
+    monkeypatch,
+) -> None:
+    environment = _Environment()
+    monkeypatch.setattr(
+        "trace_to_micro.replay.consequence.build_environment",
+        lambda domain: environment,
+    )
+    actions = [
+        SimpleNamespace(
+            action_id="stale-read",
+            requestor="assistant",
+            name="missing_product_read",
+            arguments={"product_id": "not-in-db"},
+        ),
+        SimpleNamespace(
+            action_id="gold-write",
+            requestor="assistant",
+            name="increment",
+            arguments={},
+        ),
+    ]
+    task = SimpleNamespace(
+        id="task-with-stale-read",
+        initial_state=None,
+        evaluation_criteria=SimpleNamespace(actions=actions),
+    )
+
+    snapshot = target_snapshot("retail", task)
+
+    assert snapshot["assistant"] == {"count": 1}
+
+
+def test_target_snapshot_exposes_failed_mutating_reference_action(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(
+        "trace_to_micro.replay.consequence.build_environment",
+        lambda domain: _Environment(),
+    )
+    action = SimpleNamespace(
+        action_id="failed-gold-write",
+        requestor="assistant",
+        name="failed_write",
+        arguments={},
+    )
+    task = SimpleNamespace(
+        id="task-with-bad-write",
+        initial_state=None,
+        evaluation_criteria=SimpleNamespace(actions=[action]),
+    )
+
+    with pytest.raises(
+        RuntimeError,
+        match="Mutating reference action failed for retail/task-with-bad-write",
+    ):
+        target_snapshot("retail", task)
 
 
 def test_replay_local_consequence_uses_real_next_state_and_official_target(

@@ -22,8 +22,11 @@ data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline
 data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base/results.json
 ```
 
-对每个任务，代码先按 τ²-Bench 官方 evaluator 的方式，在干净环境中重放任务的
-参考动作，得到官方目标数据库。随后按原顺序重放日志中的全部工具调用以恢复
+对每个任务，代码先在干净环境中重放参考动作里代码明确声明会修改状态的操作，
+得到官方用于最终比较的目标数据库。只读参考动作不会改变数据库，因此不参与目标
+构造；这也避免旧任务中已经失效的只读查询参数（例如 Retail 任务 2 中不存在的
+商品编号）影响目标。会修改状态的参考动作仍然严格执行，任何失败都会直接报错，
+不能静默产生错误标签。随后按原顺序重放日志中的全部工具调用以恢复
 真实状态，但只把代码明确声明为会修改状态的 Agent 调用保留为学习样本。每个
 保留样本得到三类标签：
 
