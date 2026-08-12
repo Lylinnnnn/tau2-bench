@@ -197,6 +197,17 @@ def _component_success(reward_info: RewardInfo, reward_type: RewardType) -> bool
     return is_successful(breakdown[reward_type])
 
 
+def _language_success(reward_info: RewardInfo) -> bool | None:
+    """Combine the official language reward components present for one task."""
+
+    values = [
+        value
+        for reward_type in (RewardType.COMMUNICATE, RewardType.NL_ASSERTION)
+        if (value := _component_success(reward_info, reward_type)) is not None
+    ]
+    return all(values) if values else None
+
+
 def extract_decision_snapshots(
     results_path: Path,
     *,
@@ -358,9 +369,7 @@ def tool_decision_records(
                         "logged_action": action_record(action),
                         "overall_success": is_successful(reward_info.reward),
                         "db_success": _component_success(reward_info, RewardType.DB),
-                        "communication_success": _component_success(
-                            reward_info, RewardType.COMMUNICATE
-                        ),
+                        "language_success": _language_success(reward_info),
                         "termination_reason": str(simulation.termination_reason),
                     }
                 )

@@ -16,7 +16,7 @@ def _row(domain: str, split: str, simulation_id: str, success: bool, x: float) -
         "moment": "before",
         "overall_success": success,
         "db_success": success,
-        "communication_success": success,
+        "language_success": success,
         "prefix_char_count": 10,
         "prefix_message_count": 2,
         "decision_position": 0,

@@ -9,7 +9,7 @@ import numpy as np
 
 from trace_to_micro.utils.io import decode_float16_vector
 
-LABELS = ("overall_success", "db_success", "communication_success")
+LABELS = ("overall_success", "db_success", "language_success")
 MOMENTS = ("before", "action", "result")
 
 

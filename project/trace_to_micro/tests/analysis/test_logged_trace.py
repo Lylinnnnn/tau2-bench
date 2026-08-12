@@ -10,6 +10,7 @@ from tau2.data_model.simulation import RewardInfo, SimulationRun, TerminationRea
 from tau2.data_model.tasks import RewardType
 from trace_to_micro.analysis.logged_trace import (
     _component_success,
+    _language_success,
     audit_results_completeness,
     decision_indices,
     stratified_indices,
@@ -58,6 +59,28 @@ def test_component_success_uses_official_reward_breakdown() -> None:
     assert _component_success(reward, RewardType.DB) is True
     assert _component_success(reward, RewardType.COMMUNICATE) is False
     assert _component_success(reward, RewardType.ACTION) is None
+
+
+def test_language_success_uses_official_domain_language_component() -> None:
+    airline_reward = RewardInfo(
+        reward=1.0,
+        reward_basis=[RewardType.DB, RewardType.COMMUNICATE],
+        reward_breakdown={RewardType.DB: 1.0, RewardType.COMMUNICATE: 1.0},
+    )
+    retail_reward = RewardInfo(
+        reward=0.0,
+        reward_basis=[RewardType.DB, RewardType.NL_ASSERTION],
+        reward_breakdown={RewardType.DB: 1.0, RewardType.NL_ASSERTION: 0.0},
+    )
+    state_only_reward = RewardInfo(
+        reward=1.0,
+        reward_basis=[RewardType.DB],
+        reward_breakdown={RewardType.DB: 1.0},
+    )
+
+    assert _language_success(airline_reward) is True
+    assert _language_success(retail_reward) is False
+    assert _language_success(state_only_reward) is None
 
 
 def test_completeness_rejects_results_missing_configured_tasks(
