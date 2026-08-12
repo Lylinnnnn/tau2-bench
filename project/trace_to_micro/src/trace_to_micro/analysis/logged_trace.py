@@ -8,8 +8,14 @@ from tau2.agent.base_agent import is_valid_agent_history_message
 from tau2.agent.llm_agent import AGENT_INSTRUCTION, SYSTEM_PROMPT
 from tau2.config import DEFAULT_LLM_NL_ASSERTIONS, DEFAULT_LLM_NL_ASSERTIONS_ARGS
 from tau2.data_model.message import AssistantMessage, Message, ToolMessage, UserMessage
-from tau2.data_model.simulation import Results, RewardInfo, SimulationRun
+from tau2.data_model.simulation import (
+    Results,
+    RewardInfo,
+    SimulationRun,
+    TerminationReason,
+)
 from tau2.data_model.tasks import RewardType
+from tau2.metrics.agent_metrics import is_successful
 from tau2.runner import build_environment, load_task_splits
 from trace_to_micro.utils.messages import (
     action_record,
@@ -32,8 +38,18 @@ def audit_results_completeness(
     metadata = Results.load_metadata(path)
     simulations = list(Results.iter_simulations(path))
     metadata_task_ids = {str(task.id) for task in metadata.tasks}
-    required_task_ids = expected_task_ids or metadata_task_ids
-    required_num_trials = expected_num_trials or metadata.info.num_trials
+    required_task_ids = (
+        expected_task_ids if expected_task_ids is not None else metadata_task_ids
+    )
+    required_num_trials = (
+        expected_num_trials
+        if expected_num_trials is not None
+        else metadata.info.num_trials
+    )
+    if not required_task_ids:
+        raise ValueError("Trajectory audit requires at least one expected task")
+    if required_num_trials <= 0:
+        raise ValueError("Trajectory audit requires a positive number of trials")
     expected = {
         (task_id, trial)
         for task_id in required_task_ids
@@ -45,6 +61,12 @@ def audit_results_completeness(
     missing = sorted(expected - set(observed))
     unexpected = sorted(set(observed) - expected)
     empty = sorted(sim.id for sim in simulations if not sim.get_messages())
+    missing_rewards = sorted(sim.id for sim in simulations if sim.reward_info is None)
+    infrastructure_errors = sorted(
+        sim.id
+        for sim in simulations
+        if sim.termination_reason == TerminationReason.INFRASTRUCTURE_ERROR
+    )
     missing_metadata_tasks = sorted(required_task_ids - metadata_task_ids)
     unexpected_metadata_tasks = sorted(metadata_task_ids - required_task_ids)
     num_trials_mismatch = metadata.info.num_trials != required_num_trials
@@ -82,6 +104,8 @@ def audit_results_completeness(
         "duplicate_task_trials": duplicates,
         "unexpected_task_trials": unexpected,
         "empty_simulation_ids": empty,
+        "missing_reward_simulation_ids": missing_rewards,
+        "infrastructure_error_simulation_ids": infrastructure_errors,
         "missing_metadata_tasks": missing_metadata_tasks,
         "unexpected_metadata_tasks": unexpected_metadata_tasks,
         "num_trials_mismatch": num_trials_mismatch,
@@ -93,6 +117,8 @@ def audit_results_completeness(
             or duplicates
             or unexpected
             or empty
+            or missing_rewards
+            or infrastructure_errors
             or missing_metadata_tasks
             or unexpected_metadata_tasks
             or num_trials_mismatch
@@ -168,7 +194,7 @@ def _component_success(reward_info: RewardInfo, reward_type: RewardType) -> bool
     breakdown = reward_info.reward_breakdown
     if breakdown is None or reward_type not in breakdown:
         raise ValueError(f"Reward breakdown omitted required {reward_type.value!r}")
-    return breakdown[reward_type] == 1.0
+    return is_successful(breakdown[reward_type])
 
 
 def extract_decision_snapshots(
@@ -330,7 +356,7 @@ def tool_decision_records(
                         "tools": tools,
                         "chat_template_kwargs": {"enable_thinking": True},
                         "logged_action": action_record(action),
-                        "overall_success": reward_info.reward == 1.0,
+                        "overall_success": is_successful(reward_info.reward),
                         "db_success": _component_success(reward_info, RewardType.DB),
                         "communication_success": _component_success(
                             reward_info, RewardType.COMMUNICATE

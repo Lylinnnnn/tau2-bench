@@ -7,7 +7,35 @@ from tau2.data_model.message import (
     UserMessage,
 )
 from tau2.data_model.simulation import SimulationRun, TerminationReason
-from trace_to_micro.analysis.results import build_results_audit
+from trace_to_micro.analysis.results import build_official_metrics, build_results_audit
+
+
+def test_official_metrics_use_tau2_compute_metrics(monkeypatch, tmp_path) -> None:
+    results = SimpleNamespace(
+        simulations=[
+            SimpleNamespace(id="sim-1", reward_info=SimpleNamespace(reward=1.0))
+        ],
+        info=SimpleNamespace(num_trials=1),
+    )
+    metrics = SimpleNamespace(
+        total_tasks=1,
+        total_simulations=1,
+        infra_error_count=0,
+        avg_reward=1.0,
+        pass_hat_ks={1: 1.0},
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.results.Results.load", lambda _: results
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.results.compute_metrics", lambda _: metrics
+    )
+
+    report = build_official_metrics(tmp_path / "results.json")
+
+    assert report["implementation"] == "tau2.metrics.agent_metrics.compute_metrics"
+    assert report["pass^1"] == 1.0
+    assert report["pass^k"] == {"1": 1.0}
 
 
 def test_cross_role_call_is_behavior_error_not_structural_corruption(

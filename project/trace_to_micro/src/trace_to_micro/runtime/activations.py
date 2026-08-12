@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 import struct
@@ -40,6 +41,10 @@ def _load_tensor(path: Path, name: str) -> np.ndarray:
     elif dtype == "BF16":
         bits = np.frombuffer(data, dtype="<u2").astype(np.uint32) << 16
         value = bits.view(np.float32)
+    elif dtype == "I64":
+        value = np.frombuffer(data, dtype="<i8")
+    elif dtype == "I32":
+        value = np.frombuffer(data, dtype="<i4")
     else:
         raise ValueError(f"Unsupported safetensors dtype {dtype!r}")
     return value.reshape(spec["shape"])
@@ -61,6 +66,24 @@ def load_last_token_vectors(
     }
 
 
+def load_hidden_state_export(
+    path: Path,
+    layer_ids: tuple[int, ...],
+    expected_token_ids: list[int],
+) -> dict[int, np.ndarray]:
+    """Load an export and prove that it belongs to the submitted prompt."""
+
+    exported_token_ids = _load_tensor(path, "token_ids")
+    if exported_token_ids.ndim != 1:
+        raise ValueError(
+            f"Expected one-dimensional token_ids, got {exported_token_ids.shape}"
+        )
+    expected = np.asarray(expected_token_ids, dtype=np.int64)
+    if not np.array_equal(exported_token_ids.astype(np.int64), expected):
+        raise ValueError("Exported token_ids do not match the submitted prompt")
+    return load_last_token_vectors(path, layer_ids)
+
+
 def _hidden_state_path(response: dict[str, Any]) -> Path:
     params = response.get("kv_transfer_params") or {}
     value = params.get("hidden_states_path")
@@ -70,8 +93,8 @@ def _hidden_state_path(response: dict[str, Any]) -> Path:
 
 
 def _cleanup_hidden_state_file(path: Path) -> None:
-    path.unlink(missing_ok=True)
-    Path(f"{path}.lock").unlink(missing_ok=True)
+    path.unlink()
+    Path(f"{path}.lock").unlink()
 
 
 def extract_request_activation(
@@ -98,6 +121,8 @@ def extract_request_activation(
         timeout_seconds=180.0,
     )
     token_ids = rendered["tokens"]
+    if not token_ids:
+        raise ValueError("Tokenizer returned an empty prompt")
     response = request_json(
         f"{base_url.rstrip('/')}/completions",
         api_key=api_key,
@@ -111,7 +136,7 @@ def extract_request_activation(
     )
     hidden_path = _hidden_state_path(response)
     try:
-        vectors = load_last_token_vectors(hidden_path, layer_ids)
+        vectors = load_hidden_state_export(hidden_path, layer_ids, token_ids)
     finally:
         _cleanup_hidden_state_file(hidden_path)
     return {
@@ -120,6 +145,10 @@ def extract_request_activation(
         if key not in {"messages", "tools", "chat_template_kwargs"}
     } | {
         "prompt_tokens": len(token_ids),
+        "last_token_id": token_ids[-1],
+        "prompt_token_sha256": hashlib.sha256(
+            np.asarray(token_ids, dtype="<i8").tobytes()
+        ).hexdigest(),
         "vector_encoding": "base64_float16",
         "activations": {
             str(layer_id): encode_float16_vector(vector)

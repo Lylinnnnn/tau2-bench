@@ -10,19 +10,29 @@ from pathlib import Path
 from typing import Any
 
 from tau2.data_model.simulation import Results
+from tau2.metrics.agent_metrics import is_successful
 from tau2.runner import load_task_splits
 from trace_to_micro.analysis.logged_trace import (
     audit_results_completeness,
     tool_decision_records,
 )
+from trace_to_micro.analysis.results import build_official_metrics
 from trace_to_micro.config import SuccessDirectionConfig, TrajectoryConfig
-from trace_to_micro.evaluation.success_direction import build_success_direction_report
+from trace_to_micro.evaluation.success_direction import (
+    build_activation_smoke_report,
+    build_success_direction_report,
+)
 from trace_to_micro.runner.trajectory import (
     remove_existing_run,
     run_complete_trajectories,
 )
 from trace_to_micro.runtime.activations import extract_request_activation
-from trace_to_micro.utils.io import append_jsonl, read_jsonl, write_json, write_jsonl
+from trace_to_micro.utils.io import (
+    append_jsonl,
+    read_jsonl,
+    write_json,
+    write_jsonl,
+)
 
 
 def _trajectory_config(config: SuccessDirectionConfig, domain: str) -> TrajectoryConfig:
@@ -72,6 +82,24 @@ def run_success_trajectories(config_path: Path, *, force: bool | None = None) ->
             auto_resume=not overwrite,
         )
         _require_complete(config, domain)
+    run_success_official_metrics(config_path)
+
+
+def run_success_official_metrics(config_path: Path) -> Path:
+    """Compute the official metrics for each complete configured domain."""
+
+    config = SuccessDirectionConfig.load(config_path)
+    for domain in config.domains:
+        _require_complete(config, domain)
+    path = config.output_dir / "official_metrics.json"
+    write_json(
+        path,
+        {
+            domain: build_official_metrics(config.results_path(domain))
+            for domain in config.domains
+        },
+    )
+    return path
 
 
 def _request_fingerprint(row: dict[str, Any], config: SuccessDirectionConfig) -> str:
@@ -115,18 +143,19 @@ def _request_coverage(
                 for simulation in simulations
                 if (domain, simulation.id) in selected
             ]
+            missing_rewards = [
+                simulation.id
+                for simulation in simulations
+                if simulation.reward_info is None
+            ]
+            if missing_rewards:
+                raise ValueError(f"Coverage requires rewards: {missing_rewards}")
             outcomes = Counter(
-                "success"
-                if simulation.reward_info is not None
-                and simulation.reward_info.reward == 1.0
-                else "failure"
+                "success" if is_successful(simulation.reward_info.reward) else "failure"
                 for simulation in simulations
             )
             covered_outcomes = Counter(
-                "success"
-                if simulation.reward_info is not None
-                and simulation.reward_info.reward == 1.0
-                else "failure"
+                "success" if is_successful(simulation.reward_info.reward) else "failure"
                 for simulation in covered
             )
             domain_report[split] = {
@@ -166,6 +195,10 @@ def build_activation_requests(config_path: Path) -> Path:
         )
     for row in rows:
         row["request_fingerprint"] = _request_fingerprint(row, config)
+    if not rows:
+        raise ValueError(
+            "No assistant tool decisions were found in complete trajectories"
+        )
     request_path = config.output_dir / "activation_requests.jsonl"
     write_jsonl(request_path, rows)
     activation_path = config.output_dir / "activations.jsonl"
@@ -192,6 +225,9 @@ def run_activation_extraction(config_path: Path) -> Path:
     request_path = config.output_dir / "activation_requests.jsonl"
     if not request_path.exists():
         request_path = build_activation_requests(config_path)
+    requests = read_jsonl(request_path)
+    if not requests:
+        raise ValueError(f"Activation request file is empty: {request_path}")
     output_path = config.output_dir / "activations.jsonl"
     completed = {
         (row["sample_id"], row.get("request_fingerprint"))
@@ -200,7 +236,7 @@ def run_activation_extraction(config_path: Path) -> Path:
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("OPENAI_API_KEY must be non-empty")
-    for request in read_jsonl(request_path):
+    for request in requests:
         sample_key = (request["sample_id"], request["request_fingerprint"])
         if sample_key in completed:
             continue
@@ -219,8 +255,17 @@ def run_success_direction_evaluation(config_path: Path) -> Path:
     """Evaluate held-out within-domain and cross-domain success directions."""
 
     config = SuccessDirectionConfig.load(config_path)
-    rows = read_jsonl(config.output_dir / "activations.jsonl")
-    expected = read_jsonl(config.output_dir / "activation_requests.jsonl")
+    activation_path = config.output_dir / "activations.jsonl"
+    request_path = config.output_dir / "activation_requests.jsonl"
+    if not activation_path.is_file() or not request_path.is_file():
+        raise FileNotFoundError(
+            "Run the activation stage before evaluation: "
+            f"{request_path}, {activation_path}"
+        )
+    rows = read_jsonl(activation_path)
+    expected = read_jsonl(request_path)
+    if not rows or not expected:
+        raise ValueError("Activation evaluation inputs must be non-empty")
     observed_keys = {(row["sample_id"], row.get("request_fingerprint")) for row in rows}
     expected_keys = {(row["sample_id"], row["request_fingerprint"]) for row in expected}
     if observed_keys != expected_keys or len(rows) != len(expected):
@@ -242,3 +287,170 @@ def run_success_direction_evaluation(config_path: Path) -> Path:
     path = config.output_dir / "success_direction_report.json"
     write_json(path, report)
     return path
+
+
+def _require_smoke_complete(config: SuccessDirectionConfig) -> dict[str, Any]:
+    return audit_results_completeness(
+        config.smoke_results_path(),
+        expected_task_ids={config.smoke_task_id},
+        expected_num_trials=config.num_trials,
+        expected_agent_model=config.agent_llm,
+        expected_user_model=config.user_llm,
+    )
+
+
+def run_success_smoke_trajectory(config_path: Path) -> dict[str, Path]:
+    """Force one isolated official task through generation and official scoring."""
+
+    config = SuccessDirectionConfig.load(config_path)
+    split_map = load_task_splits(config.smoke_domain)
+    if split_map is None or config.smoke_task_id not in split_map[config.task_split]:
+        raise ValueError(
+            f"Smoke task {config.smoke_task_id!r} is not in "
+            f"{config.smoke_domain}/{config.task_split}"
+        )
+    remove_existing_run(config.smoke_results_path())
+    for filename in (
+        "trajectory_completeness.json",
+        "official_metrics.json",
+        "activation_requests.jsonl",
+        "activations.jsonl",
+        "smoke_report.json",
+    ):
+        path = config.smoke_output_dir() / filename
+        if path.exists():
+            path.unlink()
+    run_complete_trajectories(
+        _trajectory_config(config, config.smoke_domain),
+        task_ids=[config.smoke_task_id],
+        save_to=config.smoke_save_name(),
+        auto_resume=False,
+    )
+    completeness = _require_smoke_complete(config)
+    metrics = build_official_metrics(config.smoke_results_path())
+    completeness_path = config.smoke_output_dir() / "trajectory_completeness.json"
+    metrics_path = config.smoke_output_dir() / "official_metrics.json"
+    write_json(completeness_path, completeness)
+    write_json(metrics_path, metrics)
+    return {
+        "results": config.smoke_results_path(),
+        "trajectory_completeness": completeness_path,
+        "official_metrics": metrics_path,
+    }
+
+
+def build_success_smoke_activation_requests(config_path: Path) -> Path:
+    """Build exactly three factual moments from the one smoke trajectory."""
+
+    config = SuccessDirectionConfig.load(config_path)
+    _require_smoke_complete(config)
+    rows = tool_decision_records(
+        config.smoke_results_path(),
+        domain=config.smoke_domain,
+        task_set=config.smoke_domain,
+        train_split=config.train_split,
+        test_split=config.test_split,
+        max_per_trajectory=1,
+    )
+    if len(rows) != 3 or {row["moment"] for row in rows} != {
+        "before",
+        "action",
+        "result",
+    }:
+        raise ValueError(
+            "Smoke task must contain one assistant tool decision and exactly three "
+            f"probe moments; got {len(rows)} rows"
+        )
+    if len({row["decision_id"] for row in rows}) != 1:
+        raise ValueError("Smoke moments do not come from the same tool decision")
+    for row in rows:
+        row["request_fingerprint"] = _request_fingerprint(row, config)
+    request_path = config.smoke_output_dir() / "activation_requests.jsonl"
+    write_jsonl(request_path, rows)
+    write_jsonl(config.smoke_output_dir() / "activations.jsonl", [])
+    report_path = config.smoke_output_dir() / "smoke_report.json"
+    if report_path.exists():
+        report_path.unlink()
+    return request_path
+
+
+def build_success_smoke_report(config_path: Path) -> Path:
+    """Fail fast on mismatched exports and summarize the real one-task pipeline."""
+
+    config = SuccessDirectionConfig.load(config_path)
+    output_dir = config.smoke_output_dir()
+    request_path = output_dir / "activation_requests.jsonl"
+    activation_path = output_dir / "activations.jsonl"
+    if not request_path.is_file() or not activation_path.is_file():
+        raise FileNotFoundError(
+            f"Smoke activation inputs are missing: {request_path}, {activation_path}"
+        )
+    requests = read_jsonl(request_path)
+    activations = read_jsonl(activation_path)
+    request_by_moment = {row["moment"]: row for row in requests}
+    activation_report = build_activation_smoke_report(
+        requests,
+        activations,
+        layer_ids=config.hidden_layer_ids,
+        hidden_size=config.hidden_size,
+        hidden_model=config.hidden_model,
+    )
+    results = Results.load(config.smoke_results_path())
+    simulation = results.simulations[0]
+    metrics = build_official_metrics(config.smoke_results_path())
+    report = {
+        "hypothesis_evaluable": False,
+        "hypothesis_evaluable_reason": (
+            "one trajectory validates extraction and metrics, but cannot fit or "
+            "evaluate a success direction"
+        ),
+        "task": {
+            "domain": config.smoke_domain,
+            "task_id": config.smoke_task_id,
+            "official_split": request_by_moment["before"]["split"],
+            "simulation_id": simulation.id,
+            "termination_reason": str(simulation.termination_reason),
+            "official_reward": simulation.reward_info.reward,
+            "official_success": is_successful(simulation.reward_info.reward),
+            "logged_action": request_by_moment["before"]["logged_action"],
+        },
+        "official_metrics": metrics,
+        **activation_report,
+    }
+    report_path = output_dir / "smoke_report.json"
+    write_json(report_path, report)
+    return report_path
+
+
+def run_success_smoke_activations(config_path: Path) -> dict[str, Path]:
+    """Extract all smoke activations and immediately run strict validation."""
+
+    config = SuccessDirectionConfig.load(config_path)
+    request_path = config.smoke_output_dir() / "activation_requests.jsonl"
+    if not request_path.is_file():
+        raise FileNotFoundError(
+            "Build smoke activation requests before starting hidden extraction"
+        )
+    requests = read_jsonl(request_path)
+    if len(requests) != 3:
+        raise ValueError(
+            f"Smoke activation request count must be 3, got {len(requests)}"
+        )
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY must be non-empty")
+    activation_path = config.smoke_output_dir() / "activations.jsonl"
+    write_jsonl(activation_path, [])
+    for request in requests:
+        append_jsonl(
+            activation_path,
+            extract_request_activation(
+                request,
+                base_url=config.hidden_base_url,
+                api_key=api_key,
+                model=config.hidden_model,
+                layer_ids=config.hidden_layer_ids,
+            ),
+        )
+    report_path = build_success_smoke_report(config_path)
+    return {"activations": activation_path, "smoke_report": report_path}

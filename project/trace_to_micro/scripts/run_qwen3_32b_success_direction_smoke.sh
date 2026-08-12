@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ "$#" -ne 1 ]]; then
-  echo "Usage: $0 <trajectories|metrics|activations|evaluate>" >&2
+  echo "Usage: $0 <trajectories|activations>" >&2
   exit 2
 fi
 
@@ -36,23 +36,15 @@ uv run --no-sync ruff format --check \
 case "${stage}" in
   trajectories)
     exec "${project_dir}/scripts/with_managed_qwen3_32b_vllm.sh" \
-      uv run --no-sync python -m trace_to_micro.cli success-trajectories \
-        --config "${config}" --force
+      uv run --no-sync python -m trace_to_micro.cli \
+        success-smoke-trajectories --config "${config}"
     ;;
   activations)
-    uv run --no-sync python -m trace_to_micro.cli success-activation-requests \
-      --config "${config}"
+    uv run --no-sync python -m trace_to_micro.cli \
+      success-smoke-activation-requests --config "${config}"
     exec "${project_dir}/scripts/with_managed_qwen3_32b_hidden_vllm.sh" \
-      uv run --no-sync python -m trace_to_micro.cli success-activations \
-        --config "${config}"
-    ;;
-  metrics)
-    exec uv run --no-sync python -m trace_to_micro.cli \
-      success-official-metrics --config "${config}"
-    ;;
-  evaluate)
-    exec uv run --no-sync python -m trace_to_micro.cli success-evaluate \
-      --config "${config}"
+      uv run --no-sync python -m trace_to_micro.cli \
+        success-smoke-activations --config "${config}"
     ;;
   *)
     echo "Unknown stage: ${stage}" >&2

@@ -84,6 +84,7 @@ def test_completeness_rejects_results_missing_configured_tasks(
         },
     )()
     simulation = _simulation()
+    simulation.reward_info = RewardInfo(reward=1.0)
     monkeypatch.setattr(
         "trace_to_micro.analysis.logged_trace.Results.load_metadata", lambda _: metadata
     )
@@ -126,7 +127,9 @@ def test_completeness_rejects_results_from_another_model(monkeypatch, tmp_path) 
     )
     monkeypatch.setattr(
         "trace_to_micro.analysis.logged_trace.Results.iter_simulations",
-        lambda _: iter([_simulation()]),
+        lambda _: iter(
+            [_simulation().model_copy(update={"reward_info": RewardInfo(reward=1.0)})]
+        ),
     )
 
     with pytest.raises(ValueError, match="agent_model_mismatch.*True"):
@@ -136,4 +139,41 @@ def test_completeness_rejects_results_from_another_model(monkeypatch, tmp_path) 
             expected_num_trials=1,
             expected_agent_model="new-agent",
             expected_user_model="new-user",
+        )
+
+
+def test_completeness_rejects_missing_official_reward(monkeypatch, tmp_path) -> None:
+    metadata = type(
+        "Metadata",
+        (),
+        {
+            "tasks": [type("Task", (), {"id": "task-1"})()],
+            "info": type(
+                "Info",
+                (),
+                {
+                    "num_trials": 1,
+                    "agent_info": type(
+                        "AgentInfo", (), {"llm": "agent", "llm_args": {}}
+                    )(),
+                    "user_info": type(
+                        "UserInfo", (), {"llm": "user", "llm_args": {}}
+                    )(),
+                },
+            )(),
+        },
+    )()
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.logged_trace.Results.load_metadata", lambda _: metadata
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.analysis.logged_trace.Results.iter_simulations",
+        lambda _: iter([_simulation()]),
+    )
+
+    with pytest.raises(ValueError, match="missing_reward_simulation_ids"):
+        audit_results_completeness(
+            tmp_path / "results.json",
+            expected_task_ids={"task-1"},
+            expected_num_trials=1,
         )

@@ -170,11 +170,14 @@ class SuccessDirectionConfig:
     hidden_base_url: str
     hidden_model: str
     hidden_layer_ids: tuple[int, ...]
+    hidden_size: int
     primary_layer_id: int
     max_tool_decisions_per_trajectory: int
     bootstrap_samples: int
     permutation_samples: int
     force_overwrite: bool
+    smoke_domain: str
+    smoke_task_id: str
 
     @classmethod
     def load(cls, path: Path) -> "SuccessDirectionConfig":
@@ -192,6 +195,10 @@ class SuccessDirectionConfig:
             raise ValueError("Success-direction train/test splits must differ")
         if values["primary_layer_id"] not in layer_ids:
             raise ValueError("primary_layer_id must be included in hidden_layer_ids")
+        if values["hidden_size"] <= 0:
+            raise ValueError("hidden_size must be positive")
+        if values["smoke_domain"] not in domains:
+            raise ValueError("smoke_domain must be one of the configured domains")
         if values["max_tool_decisions_per_trajectory"] <= 0:
             raise ValueError("max_tool_decisions_per_trajectory must be positive")
         if values["bootstrap_samples"] <= 0 or values["permutation_samples"] <= 0:
@@ -219,6 +226,7 @@ class SuccessDirectionConfig:
             hidden_base_url=values["hidden_base_url"],
             hidden_model=values["hidden_model"],
             hidden_layer_ids=layer_ids,
+            hidden_size=values["hidden_size"],
             primary_layer_id=values["primary_layer_id"],
             max_tool_decisions_per_trajectory=values[
                 "max_tool_decisions_per_trajectory"
@@ -226,6 +234,8 @@ class SuccessDirectionConfig:
             bootstrap_samples=values["bootstrap_samples"],
             permutation_samples=values["permutation_samples"],
             force_overwrite=values["force_overwrite"],
+            smoke_domain=values["smoke_domain"],
+            smoke_task_id=str(values["smoke_task_id"]),
         )
 
     def save_name(self, domain: str) -> str:
@@ -237,3 +247,20 @@ class SuccessDirectionConfig:
         """Return the expected τ² results file for one domain."""
 
         return self.results_dir / self.save_name(domain) / "results.json"
+
+    def smoke_save_name(self) -> str:
+        """Return the isolated one-task smoke result-directory name."""
+
+        return (
+            f"{self.save_to_prefix}_smoke_{self.smoke_domain}_task_{self.smoke_task_id}"
+        )
+
+    def smoke_results_path(self) -> Path:
+        """Return the isolated one-task smoke results file."""
+
+        return self.results_dir / self.smoke_save_name() / "results.json"
+
+    def smoke_output_dir(self) -> Path:
+        """Return the directory for smoke-only audit artifacts."""
+
+        return self.output_dir / "smoke"

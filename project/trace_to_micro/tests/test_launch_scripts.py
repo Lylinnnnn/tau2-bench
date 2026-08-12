@@ -55,3 +55,13 @@ def test_success_direction_stages_reuse_or_validate_existing_servers() -> None:
     assert "--no-enable-chunked-prefill" in hidden_server
     assert "/dev/shm/trace_to_micro_hidden_states" in hidden_server
     assert "VLLM_USE_V2_MODEL_RUNNER=0" in hidden_server
+
+
+def test_success_direction_smoke_is_two_strict_stages() -> None:
+    launcher = read_script("run_qwen3_32b_success_direction_smoke.sh")
+
+    assert "success-smoke-trajectories" in launcher
+    assert "success-smoke-activation-requests" in launcher
+    assert "success-smoke-activations" in launcher
+    assert "with_managed_qwen3_32b_vllm.sh" in launcher
+    assert "with_managed_qwen3_32b_hidden_vllm.sh" in launcher

@@ -6,12 +6,37 @@ from typing import Any
 
 from tau2.data_model.message import AssistantMessage, ToolMessage, UserMessage
 from tau2.data_model.simulation import Results
-from tau2.metrics.agent_metrics import is_successful
+from tau2.metrics.agent_metrics import compute_metrics, is_successful
 from tau2.runner import build_environment
 from trace_to_micro.analysis.logged_trace import (
     audit_results_completeness,
     decision_indices,
 )
+
+
+def build_official_metrics(results_path: Path) -> dict[str, Any]:
+    """Compute τ²'s own aggregate reward and pass^k metrics."""
+
+    results = Results.load(results_path)
+    missing_rewards = [sim.id for sim in results.simulations if sim.reward_info is None]
+    if missing_rewards:
+        raise ValueError(f"Official metrics require rewards: {missing_rewards}")
+    metrics = compute_metrics(results)
+    if 1 not in metrics.pass_hat_ks:
+        raise ValueError("Official metrics did not produce pass^1")
+    return {
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "task_aggregation": "per-task pass^k, then mean across tasks",
+        "configured_num_trials": results.info.num_trials,
+        "total_tasks": metrics.total_tasks,
+        "total_simulations": metrics.total_simulations,
+        "infrastructure_errors_excluded_by_official_metric": (
+            metrics.infra_error_count
+        ),
+        "average_reward": metrics.avg_reward,
+        "pass^1": metrics.pass_hat_ks[1],
+        "pass^k": {str(k): value for k, value in sorted(metrics.pass_hat_ks.items())},
+    }
 
 
 def _finish_reason(message: AssistantMessage | UserMessage) -> str | None:

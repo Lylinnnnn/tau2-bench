@@ -14,6 +14,24 @@
 - 只取每条轨迹的第一个客服工具决策，避免事后选择“最容易分”的步骤，也避免
   长轨迹因步骤更多获得更大权重。
 
+## 先通过单任务闸门
+
+完整实验之前必须先跑 Retail 官方 `base` 任务 2。这个 smoke 不用于证明
+“成功方向存在”，只验证整条数据链没有接错：
+
+- 只生成任务 2 的一条完整真实轨迹，调用官方 evaluator 得到 reward；
+- 直接调用 `tau2.metrics.agent_metrics.compute_metrics` 落盘官方 `pass^1`；
+- 从轨迹第一个真实客服工具调用构造 `before/action/result` 三个时刻；
+- vLLM 导出文件中的 `token_ids` 必须逐个等于本次提交的 prompt token；
+- 三段上下文必须是严格递增的同一条链，输入词数也必须严格增加；
+- 第 31、47 层必须各有 5120 个有限、非零数值；相邻时刻不能返回完全一样的
+  向量。
+
+向量余弦相似度和欧氏距离会写入报告，但 smoke 不为它们人为设置“合理阈值”。
+三个时刻来自同一语义邻域，相似度本来就可能很高；这里能严格证明的是请求、
+token、层号、维度和时刻链条对应正确。单条数据没有成功与失败两个类别，报告会
+明确写 `hypothesis_evaluable=false`，禁止把 smoke 当作论文结论。
+
 ## 三个内部表示时刻
 
 对同一个已经发生的客服工具调用，构造三个事实前缀：
@@ -87,6 +105,15 @@ data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline
 data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base/results.json
 ```
 
+正式轨迹阶段还会写：
+
+```text
+project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/official_metrics.json
+```
+
+其中 `pass^1` 使用仓库官方实现。在每个任务只有一次试验时，它就是成功任务数
+除以任务总数；不是我们另外定义的指标。
+
 分析产物：
 
 ```text
@@ -111,6 +138,36 @@ project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/
 mkdir -p project/trace_to_micro/outputs/run_logs
 repo_dir="$(pwd)"
 ```
+
+先运行单任务 smoke。第一阶段会复用目前健康的普通 Qwen3-32B 服务：
+
+```bash
+tmux new-session -d -s tau2_success_smoke_traj \
+  "bash -lc 'set -o pipefail; cd \"${repo_dir}\" && project/trace_to_micro/scripts/run_qwen3_32b_success_direction_smoke.sh trajectories 2>&1 | tee project/trace_to_micro/outputs/run_logs/smoke_trajectories.log'"
+```
+
+确认该阶段结束后，停止普通服务，再运行隐藏表示阶段：
+
+```bash
+tmux send-keys -t qwen3-32b-server C-c
+tmux new-session -d -s tau2_success_smoke_hidden \
+  "bash -lc 'set -o pipefail; cd \"${repo_dir}\" && project/trace_to_micro/scripts/run_qwen3_32b_success_direction_smoke.sh activations 2>&1 | tee project/trace_to_micro/outputs/run_logs/smoke_activations.log'"
+```
+
+第二阶段只有在全部严格检查通过后才会产生：
+
+```text
+project/trace_to_micro/outputs/qwen3_32b_thinking_t06_success_direction/smoke/
+├── trajectory_completeness.json
+├── official_metrics.json
+├── activation_requests.jsonl
+├── activations.jsonl
+└── smoke_report.json
+```
+
+`activations.jsonl` 是两个指定层的实际半精度隐藏向量；`smoke_report.json` 是
+便于人工审核的维度、范数、距离、token 数和官方分数摘要。中途失败会保留已经
+成功落盘的前序数据，但不会生成 `smoke_report.json`，因此不能误判为闸门通过。
 
 第一阶段强制覆盖 Airline 和 Retail 旧轨迹。当前 8000 端口的健康 Qwen3-32B
 服务会被自动复用，不会重复启动：

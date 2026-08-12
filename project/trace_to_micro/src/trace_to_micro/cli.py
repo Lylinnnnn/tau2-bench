@@ -21,8 +21,12 @@ from trace_to_micro.runner.model_experiment import (
 )
 from trace_to_micro.runner.success_direction import (
     build_activation_requests,
+    build_success_smoke_activation_requests,
     run_activation_extraction,
     run_success_direction_evaluation,
+    run_success_official_metrics,
+    run_success_smoke_activations,
+    run_success_smoke_trajectory,
     run_success_trajectories,
 )
 from trace_to_micro.utils.io import write_events_jsonl, write_json
@@ -140,9 +144,13 @@ def _parser() -> argparse.ArgumentParser:
     success_trajectories.add_argument("--config", type=Path, required=True)
     success_trajectories.add_argument("--force", action=argparse.BooleanOptionalAction)
     for command in (
+        "success-official-metrics",
         "success-activation-requests",
         "success-activations",
         "success-evaluate",
+        "success-smoke-trajectories",
+        "success-smoke-activation-requests",
+        "success-smoke-activations",
     ):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, required=True)
@@ -201,12 +209,22 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "success-activation-requests":
         print(build_activation_requests(args.config))
         return
+    elif args.command == "success-official-metrics":
+        print(run_success_official_metrics(args.config))
+        return
     elif args.command == "success-activations":
         print(run_activation_extraction(args.config))
         return
     elif args.command == "success-evaluate":
         print(run_success_direction_evaluation(args.config))
         return
+    elif args.command == "success-smoke-trajectories":
+        paths = run_success_smoke_trajectory(args.config)
+    elif args.command == "success-smoke-activation-requests":
+        print(build_success_smoke_activation_requests(args.config))
+        return
+    elif args.command == "success-smoke-activations":
+        paths = run_success_smoke_activations(args.config)
     else:
         paths = run_full_model_preexperiment(args.config)
     for name, path in paths.items():

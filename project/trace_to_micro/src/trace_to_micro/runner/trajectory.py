@@ -10,6 +10,7 @@ from trace_to_micro.config import TrajectoryConfig
 def build_run_config(
     config: TrajectoryConfig,
     *,
+    task_ids: list[str] | None = None,
     num_tasks: int | None = None,
     save_to: str | None = None,
     auto_resume: bool = True,
@@ -20,6 +21,7 @@ def build_run_config(
         domain=config.domain,
         task_set_name=config.task_set,
         task_split_name=config.task_split,
+        task_ids=task_ids,
         agent=config.agent,
         user=config.user,
         llm_agent=config.agent_llm,
@@ -45,6 +47,7 @@ def build_run_config(
 def run_complete_trajectories(
     config: TrajectoryConfig,
     *,
+    task_ids: list[str] | None = None,
     num_tasks: int | None = None,
     save_to: str | None = None,
     auto_resume: bool = True,
@@ -54,6 +57,7 @@ def run_complete_trajectories(
     return run_domain(
         build_run_config(
             config,
+            task_ids=task_ids,
             num_tasks=num_tasks,
             save_to=save_to,
             auto_resume=auto_resume,

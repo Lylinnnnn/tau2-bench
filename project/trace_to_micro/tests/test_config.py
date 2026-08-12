@@ -113,5 +113,10 @@ def test_success_direction_config_preregisters_primary_layer() -> None:
     assert config.force_overwrite is True
     assert config.primary_layer_id == 47
     assert config.primary_layer_id in config.hidden_layer_ids
+    assert config.hidden_size == 5120
+    assert config.smoke_domain == "retail"
+    assert config.smoke_task_id == "2"
+    assert config.smoke_results_path().name == "results.json"
+    assert config.smoke_output_dir().name == "smoke"
     assert config.bootstrap_samples == 2000
     assert config.permutation_samples == 5000

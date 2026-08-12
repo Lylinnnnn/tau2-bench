@@ -13,6 +13,10 @@ LABELS = ("overall_success", "db_success", "communication_success")
 MOMENTS = ("before", "action", "result")
 
 
+class InsufficientClassesError(ValueError):
+    """Raised when a direction cannot be fitted from both outcome classes."""
+
+
 def _auc(labels: list[bool], scores: list[float]) -> float | None:
     positives = [score for label, score in zip(labels, scores) if label]
     negatives = [score for label, score in zip(labels, scores) if not label]
@@ -109,7 +113,7 @@ def _fit_direction(rows: list[dict[str, Any]], layer_id: int, label: str) -> tup
     for simulation_id, vectors in by_trajectory.items():
         groups[trajectory_labels[simulation_id]].append(_unit(np.mean(vectors, axis=0)))
     if not groups[False] or not groups[True]:
-        raise ValueError("Both success and failure examples are required")
+        raise InsufficientClassesError("Both success and failure examples are required")
     failure = np.mean(groups[False], axis=0)
     success = np.mean(groups[True], axis=0)
     direction = _unit(success - failure)
@@ -198,7 +202,7 @@ def _evaluate_transfer(
     ]
     try:
         direction, midpoint = _fit_direction(train, layer_id, label)
-    except ValueError:
+    except InsufficientClassesError:
         return {
             "eligible": False,
             "reason": "training split does not contain both label classes",
@@ -252,6 +256,157 @@ def _evaluate_transfer(
                 "prompt_tokens",
             )
         ],
+    }
+
+
+def _pairwise_hidden_diagnostics(
+    rows_by_moment: dict[str, dict[str, Any]], layer_id: int
+) -> dict[str, dict[str, float]]:
+    vectors = {
+        moment: decode_float16_vector(row["activations"][str(layer_id)])
+        for moment, row in rows_by_moment.items()
+    }
+    diagnostics = {}
+    for left, right in (
+        ("before", "action"),
+        ("action", "result"),
+        ("before", "result"),
+    ):
+        left_vector = vectors[left]
+        right_vector = vectors[right]
+        distance = float(np.linalg.norm(left_vector - right_vector))
+        if distance == 0.0:
+            raise ValueError(
+                f"Layer {layer_id} returned identical {left}/{right} hidden vectors"
+            )
+        diagnostics[f"{left}_vs_{right}"] = {
+            "cosine_similarity": float(
+                left_vector
+                @ right_vector
+                / (np.linalg.norm(left_vector) * np.linalg.norm(right_vector))
+            ),
+            "l2_distance": distance,
+        }
+    return diagnostics
+
+
+def build_activation_smoke_report(
+    requests: list[dict[str, Any]],
+    activations: list[dict[str, Any]],
+    *,
+    layer_ids: tuple[int, ...],
+    hidden_size: int,
+    hidden_model: str,
+) -> dict[str, Any]:
+    """Strictly validate one decision's three exported hidden states."""
+
+    if len(requests) != 3 or len(activations) != 3:
+        raise ValueError(
+            f"Smoke requires 3 requests and 3 activations, got "
+            f"{len(requests)} and {len(activations)}"
+        )
+    expected_keys = {(row["sample_id"], row["request_fingerprint"]) for row in requests}
+    observed_keys = {
+        (row["sample_id"], row.get("request_fingerprint")) for row in activations
+    }
+    if expected_keys != observed_keys:
+        raise ValueError("Smoke activation rows are incomplete, duplicated, or stale")
+    request_by_moment = {row["moment"]: row for row in requests}
+    rows_by_moment = {row["moment"]: row for row in activations}
+    required_moments = set(MOMENTS)
+    if (
+        set(request_by_moment) != required_moments
+        or set(rows_by_moment) != required_moments
+    ):
+        raise ValueError("Smoke moments must be exactly before/action/result")
+    before_messages = request_by_moment["before"]["messages"]
+    action_messages = request_by_moment["action"]["messages"]
+    result_messages = request_by_moment["result"]["messages"]
+    if action_messages[: len(before_messages)] != before_messages:
+        raise ValueError("Action context does not extend the exact before context")
+    if result_messages[: len(action_messages)] != action_messages:
+        raise ValueError("Result context does not extend the exact action context")
+    if len(action_messages) != len(before_messages) + 1:
+        raise ValueError(
+            "Action context must add exactly one assistant tool-call message"
+        )
+    if len(result_messages) <= len(action_messages):
+        raise ValueError("Result context must add at least one tool-result message")
+    prompt_tokens = [rows_by_moment[moment]["prompt_tokens"] for moment in MOMENTS]
+    if not prompt_tokens[0] < prompt_tokens[1] < prompt_tokens[2]:
+        raise ValueError(
+            "Prompt token counts must strictly increase before/action/result: "
+            f"{prompt_tokens}"
+        )
+    last_token_ids = {
+        moment: rows_by_moment[moment]["last_token_id"] for moment in MOMENTS
+    }
+    if last_token_ids["before"] != last_token_ids["result"]:
+        raise ValueError(
+            "Before/result next-decision readouts must end on the same token type: "
+            f"{last_token_ids}"
+        )
+    vector_summaries = {}
+    expected_layers = {str(layer_id) for layer_id in layer_ids}
+    for moment, row in rows_by_moment.items():
+        if set(row["activations"]) != expected_layers:
+            raise ValueError(
+                f"{moment} layers do not match configuration: {set(row['activations'])}"
+            )
+        layer_summaries = {}
+        for layer_id in layer_ids:
+            vector = decode_float16_vector(row["activations"][str(layer_id)])
+            if vector.shape != (hidden_size,):
+                raise ValueError(
+                    f"{moment}/layer {layer_id} expected hidden size "
+                    f"{hidden_size}, got {vector.shape}"
+                )
+            if not np.isfinite(vector).all():
+                raise ValueError(
+                    f"{moment}/layer {layer_id} contains non-finite values"
+                )
+            norm = float(np.linalg.norm(vector))
+            if norm == 0.0:
+                raise ValueError(f"{moment}/layer {layer_id} is a zero vector")
+            layer_summaries[str(layer_id)] = {
+                "dimension": int(vector.size),
+                "l2_norm": norm,
+                "mean": float(np.mean(vector)),
+                "standard_deviation": float(np.std(vector)),
+            }
+        vector_summaries[moment] = layer_summaries
+    return {
+        "pipeline_valid": True,
+        "context_chain": {
+            "moments": list(MOMENTS),
+            "message_counts": {
+                moment: len(request_by_moment[moment]["messages"]) for moment in MOMENTS
+            },
+            "prompt_token_counts": {
+                moment: rows_by_moment[moment]["prompt_tokens"] for moment in MOMENTS
+            },
+            "exported_token_ids_matched_submitted_prompt": True,
+            "prompt_token_sha256": {
+                moment: rows_by_moment[moment]["prompt_token_sha256"]
+                for moment in MOMENTS
+            },
+            "last_token_ids": last_token_ids,
+            "readout_definition": {
+                "before": "last token of the next-assistant generation prompt",
+                "action": "last token of the logged assistant tool-call message",
+                "result": "last token of the next-assistant generation prompt",
+            },
+        },
+        "hidden_states": {
+            "model": hidden_model,
+            "layers": list(layer_ids),
+            "expected_dimension": hidden_size,
+            "vectors": vector_summaries,
+            "pairwise_diagnostics": {
+                str(layer_id): _pairwise_hidden_diagnostics(rows_by_moment, layer_id)
+                for layer_id in layer_ids
+            },
+        },
     }
 
 
