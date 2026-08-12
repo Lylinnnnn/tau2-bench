@@ -2,6 +2,8 @@ from trace_to_micro.replay.state import (
     canonicalize_value,
     diff_snapshots,
     flatten_state,
+    snapshot_distance,
+    snapshot_environment,
 )
 
 
@@ -50,4 +52,28 @@ def test_canonicalize_value_removes_entity_specific_arguments() -> None:
         "customer_id": "<customer_id>",
         "gb_amount": 2.0,
         "line_id": "<line_id>",
+    }
+
+
+def test_snapshot_distance_counts_value_and_presence_mismatches() -> None:
+    left = {"assistant": {"status": "pending", "count": 1}, "user": None}
+    right = {
+        "assistant": {"status": "complete", "count": 1, "receipt": "ok"},
+        "user": None,
+    }
+
+    assert snapshot_distance(left, right) == 2
+
+
+def test_snapshot_environment_supports_domains_without_user_tools() -> None:
+    db = type("DB", (), {"model_dump": lambda self, mode: {"value": 1}})()
+    environment = type(
+        "Environment",
+        (),
+        {"tools": type("Tools", (), {"db": db})(), "user_tools": None},
+    )()
+
+    assert snapshot_environment(environment) == {
+        "assistant": {"value": 1},
+        "user": None,
     }

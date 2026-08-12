@@ -289,3 +289,92 @@ class SuccessDirectionConfig:
         """Return the directory for smoke-only audit artifacts."""
 
         return self.output_dir / "smoke"
+
+
+@dataclass(frozen=True)
+class LocalConsequenceConfig:
+    """Configuration for the offline local-consequence hidden-state probe."""
+
+    domains: tuple[str, ...]
+    train_split: str
+    test_split: str
+    results_dir: Path
+    results_prefix: str
+    expected_agent_model: str
+    expected_user_model: str
+    expected_num_trials: int
+    output_dir: Path
+    hidden_model: str
+    hidden_layer_ids: tuple[int, ...]
+    hidden_size: int
+    primary_layer_id: int
+    primary_moment: str
+    bootstrap_samples: int
+    random_seed: int
+    smoke_domain: str
+    smoke_task_id: str
+
+    @classmethod
+    def load(cls, path: Path) -> "LocalConsequenceConfig":
+        """Load and validate the `[local_consequence]` table."""
+
+        with path.open("rb") as handle:
+            values = tomllib.load(handle)["local_consequence"]
+        domains = tuple(values["domains"])
+        layer_ids = tuple(values["hidden_layer_ids"])
+        if len(domains) != 2 or len(set(domains)) != len(domains):
+            raise ValueError("Local consequence requires two unique domains")
+        if values["train_split"] == values["test_split"]:
+            raise ValueError("Local consequence train/test splits must differ")
+        if values["expected_num_trials"] <= 0:
+            raise ValueError("expected_num_trials must be positive")
+        if values["primary_layer_id"] not in layer_ids:
+            raise ValueError("primary_layer_id must be included in hidden_layer_ids")
+        if values["primary_moment"] != "action":
+            raise ValueError("The (s,a)->consequence primary moment must be action")
+        if values["hidden_size"] <= 0:
+            raise ValueError("hidden_size must be positive")
+        if values["bootstrap_samples"] <= 0:
+            raise ValueError("bootstrap_samples must be positive")
+        if values["smoke_domain"] not in domains:
+            raise ValueError("smoke_domain must be one of the configured domains")
+        return cls(
+            domains=domains,
+            train_split=values["train_split"],
+            test_split=values["test_split"],
+            results_dir=_project_path(path, values["results_dir"]),
+            results_prefix=values["results_prefix"],
+            expected_agent_model=values["expected_agent_model"],
+            expected_user_model=values["expected_user_model"],
+            expected_num_trials=values["expected_num_trials"],
+            output_dir=_project_path(path, values["output_dir"]),
+            hidden_model=values["hidden_model"],
+            hidden_layer_ids=layer_ids,
+            hidden_size=values["hidden_size"],
+            primary_layer_id=values["primary_layer_id"],
+            primary_moment=values["primary_moment"],
+            bootstrap_samples=values["bootstrap_samples"],
+            random_seed=values["random_seed"],
+            smoke_domain=values["smoke_domain"],
+            smoke_task_id=str(values["smoke_task_id"]),
+        )
+
+    def results_path(self, domain: str) -> Path:
+        """Return the complete existing trajectory file for one domain."""
+
+        directory = f"{self.results_prefix}_{domain}_base"
+        return self.results_dir / directory / "results.json"
+
+    def activation_shard_path(self, shard_index: int, num_shards: int) -> Path:
+        """Return one local-consequence activation shard path."""
+
+        return (
+            self.output_dir
+            / "activation_shards"
+            / f"shard_{shard_index:02d}_of_{num_shards:02d}.jsonl"
+        )
+
+    def smoke_output_dir(self) -> Path:
+        """Return the output directory for the one-decision local smoke."""
+
+        return self.output_dir / "smoke"

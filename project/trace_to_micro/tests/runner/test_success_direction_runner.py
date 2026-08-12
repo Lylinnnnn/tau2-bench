@@ -3,6 +3,9 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from trace_to_micro.config import SuccessDirectionConfig
+from trace_to_micro.runner.local_consequence import (
+    activation_requests_for_shard as local_requests_for_shard,
+)
 from trace_to_micro.runner.success_direction import (
     activation_requests_for_shard,
     run_success_official_metrics,
@@ -68,6 +71,18 @@ def test_activation_shards_keep_all_moments_of_one_decision_together() -> None:
         for shard in shards
         for decision_id in {row["decision_id"] for row in shard}
     )
+
+
+def test_local_activation_shards_keep_decision_moments_together() -> None:
+    requests = [
+        {"decision_id": decision_id, "moment": moment}
+        for decision_id in ("d0", "d1", "d2")
+        for moment in ("before", "action", "result")
+    ]
+
+    assert {
+        row["decision_id"] for row in local_requests_for_shard(requests, 0, 2)
+    } == {"d0", "d2"}
 
 
 def test_official_metrics_also_writes_trajectory_completeness(

@@ -22,11 +22,20 @@ PHONE_PATTERN = re.compile(r"^\+?[\d\-() ]{7,}$")
 
 
 def snapshot_environment(environment: Environment) -> dict[str, Any]:
-    """Serialize both sides of a dual-control environment."""
+    """Serialize every stateful side available in an environment."""
 
     return {
-        "assistant": environment.tools.db.model_dump(mode="json"),
-        "user": environment.user_tools.db.model_dump(mode="json"),
+        "assistant": (
+            environment.tools.db.model_dump(mode="json")
+            if environment.tools is not None and environment.tools.db is not None
+            else None
+        ),
+        "user": (
+            environment.user_tools.db.model_dump(mode="json")
+            if environment.user_tools is not None
+            and environment.user_tools.db is not None
+            else None
+        ),
     }
 
 
@@ -99,3 +108,16 @@ def diff_snapshots(
             )
         )
     return tuple(changes)
+
+
+def snapshot_distance(left: dict[str, Any], right: dict[str, Any]) -> int:
+    """Count leaf values or presences that differ between two snapshots."""
+
+    left_flat = flatten_state(left)
+    right_flat = flatten_state(right)
+    return sum(
+        path not in left_flat
+        or path not in right_flat
+        or left_flat[path] != right_flat[path]
+        for path in set(left_flat) | set(right_flat)
+    )

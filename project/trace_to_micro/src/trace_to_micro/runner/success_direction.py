@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
-import json
 import os
 from collections import Counter
 from pathlib import Path
@@ -26,7 +24,10 @@ from trace_to_micro.runner.trajectory import (
     remove_existing_run,
     run_complete_trajectories,
 )
-from trace_to_micro.runtime.activations import extract_request_activation
+from trace_to_micro.runtime.activations import (
+    activation_request_fingerprint,
+    extract_request_activation,
+)
 from trace_to_micro.utils.io import (
     append_jsonl,
     read_jsonl,
@@ -273,21 +274,6 @@ def run_success_official_metrics(config_path: Path) -> Path:
     return path
 
 
-def _request_fingerprint(row: dict[str, Any], config: SuccessDirectionConfig) -> str:
-    payload = {
-        "request_record": row,
-        "hidden_model": config.hidden_model,
-        "hidden_layer_ids": config.hidden_layer_ids,
-    }
-    serialized = json.dumps(
-        payload,
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    )
-    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
-
-
 def _request_coverage(
     config: SuccessDirectionConfig, rows: list[dict[str, Any]]
 ) -> dict[str, Any]:
@@ -365,7 +351,11 @@ def build_activation_requests(config_path: Path) -> Path:
             )
         )
     for row in rows:
-        row["request_fingerprint"] = _request_fingerprint(row, config)
+        row["request_fingerprint"] = activation_request_fingerprint(
+            row,
+            model=config.hidden_model,
+            layer_ids=config.hidden_layer_ids,
+        )
     if not rows:
         raise ValueError(
             "No assistant tool decisions were found in complete trajectories"
@@ -622,7 +612,11 @@ def build_success_smoke_activation_requests(config_path: Path) -> Path:
     if len({row["decision_id"] for row in rows}) != 1:
         raise ValueError("Smoke moments do not come from the same tool decision")
     for row in rows:
-        row["request_fingerprint"] = _request_fingerprint(row, config)
+        row["request_fingerprint"] = activation_request_fingerprint(
+            row,
+            model=config.hidden_model,
+            layer_ids=config.hidden_layer_ids,
+        )
     request_path = config.smoke_output_dir() / "activation_requests.jsonl"
     write_jsonl(request_path, rows)
     write_jsonl(config.smoke_output_dir() / "activations.jsonl", [])

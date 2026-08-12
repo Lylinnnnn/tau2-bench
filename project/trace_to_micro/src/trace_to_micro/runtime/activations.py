@@ -17,6 +17,25 @@ from trace_to_micro.runtime.server_preflight import request_json
 from trace_to_micro.utils.io import encode_float16_vector
 
 
+def activation_request_fingerprint(
+    request: dict[str, Any], *, model: str, layer_ids: tuple[int, ...]
+) -> str:
+    """Fingerprint one factual request together with its export configuration."""
+
+    payload = {
+        "request_record": request,
+        "hidden_model": model,
+        "hidden_layer_ids": layer_ids,
+    }
+    serialized = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
 def _api_root(base_url: str) -> str:
     value = base_url.rstrip("/")
     return value[:-3] if value.endswith("/v1") else value

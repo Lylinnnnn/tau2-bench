@@ -106,6 +106,7 @@ analysis / evaluation / clean / runtime
 | JSON/JSONL 读写 | `utils/io.py` |
 | 对话消息规范化、token 估计或 transcript 序列化 | `utils/messages.py` |
 | 状态规范化与状态差分 | `replay/state.py` |
+| 从离线 `(s,a,s')` 编译局部后果标签 | `replay/consequence.py` |
 | 参考动作重放 | `replay/reference.py` |
 | 在同状态上执行候选动作 | `replay/branching.py` |
 | 已落盘模型轨迹的解析 | `analysis/logged_trace.py` 或 `analysis/trajectory.py` |
@@ -119,7 +120,9 @@ analysis / evaluation / clean / runtime
 | vLLM/OpenAI-compatible endpoint 就绪检查 | `runtime/server_preflight.py` |
 | 隐藏表示导出、紧凑编码与临时文件清理 | `runtime/activations.py` |
 | 成功方向的中心计算、迁移评测与普通信息基线 | `evaluation/success_direction.py` |
+| 局部后果方向与按轨迹聚类的不确定性评测 | `evaluation/local_consequence.py` |
 | 成功方向实验的跨领域阶段编排 | `runner/success_direction.py` |
+| 局部后果请求、隐藏表示分片和评测编排 | `runner/local_consequence.py` |
 
 隐藏表示实验额外遵守以下约束：
 
@@ -132,6 +135,12 @@ analysis / evaluation / clean / runtime
   层或分类阈值后再报告为主结果。
 - 成功方向必须在任务级训练/测试划分上拟合和评测；同一条轨迹的多个决策不得跨
   划分，统计时每条轨迹权重相同。
+- 局部后果标签必须由已落盘动作的确定性环境重放产生，禁止用 LLM 猜测下一
+  状态；主标签只在官方声明为会修改状态的工具上定义。
+- 局部后果主实验固定读取已经生成的 Airline/Retail 完整轨迹，不得为增加正负
+  样本重复 rollout；同一轨迹只能属于一个任务划分，区间估计必须按轨迹聚类。
+- `(s,a)->consequence` 主读出点必须包含已生成动作但不能包含工具结果；动作前和
+  结果后表示只能作为诊断，禁止在测试结果出来后替换主读出点。
 
 只有当需求与这些文件的变化原因确实不同，且满足第 3 节时，才新增模块。
 

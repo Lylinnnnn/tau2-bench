@@ -10,6 +10,14 @@ from trace_to_micro.analysis.task_inventory import build_task_inventory
 from trace_to_micro.config import ExperimentConfig
 from trace_to_micro.evaluation import build_support_report
 from trace_to_micro.replay.reference import replay_reference_tasks
+from trace_to_micro.runner.local_consequence import (
+    build_local_consequence_requests,
+    build_local_consequence_smoke_requests,
+    merge_local_consequence_activations,
+    run_local_consequence_activation_shard,
+    run_local_consequence_evaluation,
+    run_local_consequence_smoke,
+)
 from trace_to_micro.runner.model_experiment import (
     run_full_model_preexperiment,
     run_logged_snapshot_extraction,
@@ -163,6 +171,19 @@ def _parser() -> argparse.ArgumentParser:
     success_activation_shard.add_argument("--shard-index", type=int, required=True)
     success_activation_shard.add_argument("--num-shards", type=int, required=True)
     success_activation_shard.add_argument("--base-url", required=True)
+    local_activation_shard = subparsers.add_parser(
+        "local-consequence-activation-shard"
+    )
+    local_activation_shard.add_argument("--config", type=Path, required=True)
+    local_activation_shard.add_argument("--shard-index", type=int, required=True)
+    local_activation_shard.add_argument("--num-shards", type=int, required=True)
+    local_activation_shard.add_argument("--base-url", required=True)
+    local_merge = subparsers.add_parser("local-consequence-merge-activations")
+    local_merge.add_argument("--config", type=Path, required=True)
+    local_merge.add_argument("--num-shards", type=int, required=True)
+    local_smoke = subparsers.add_parser("local-consequence-smoke")
+    local_smoke.add_argument("--config", type=Path, required=True)
+    local_smoke.add_argument("--base-url", required=True)
     success_merge_activations = subparsers.add_parser("success-merge-activations")
     success_merge_activations.add_argument("--config", type=Path, required=True)
     success_merge_activations.add_argument("--num-shards", type=int, required=True)
@@ -174,6 +195,9 @@ def _parser() -> argparse.ArgumentParser:
         "success-smoke-trajectories",
         "success-smoke-activation-requests",
         "success-smoke-activations",
+        "local-consequence-requests",
+        "local-consequence-smoke-requests",
+        "local-consequence-evaluate",
     ):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, required=True)
@@ -262,6 +286,35 @@ def main(argv: list[str] | None = None) -> None:
         return
     elif args.command == "success-merge-activations":
         print(merge_activation_shards(args.config, num_shards=args.num_shards))
+        return
+    elif args.command == "local-consequence-requests":
+        print(build_local_consequence_requests(args.config))
+        return
+    elif args.command == "local-consequence-smoke-requests":
+        print(build_local_consequence_smoke_requests(args.config))
+        return
+    elif args.command == "local-consequence-smoke":
+        print(run_local_consequence_smoke(args.config, base_url=args.base_url))
+        return
+    elif args.command == "local-consequence-activation-shard":
+        print(
+            run_local_consequence_activation_shard(
+                args.config,
+                shard_index=args.shard_index,
+                num_shards=args.num_shards,
+                base_url=args.base_url,
+            )
+        )
+        return
+    elif args.command == "local-consequence-merge-activations":
+        print(
+            merge_local_consequence_activations(
+                args.config, num_shards=args.num_shards
+            )
+        )
+        return
+    elif args.command == "local-consequence-evaluate":
+        print(run_local_consequence_evaluation(args.config))
         return
     elif args.command == "success-evaluate":
         print(run_success_direction_evaluation(args.config))

@@ -1,0 +1,19 @@
+[local_consequence]
+domains = ["airline", "retail"]
+train_split = "train"
+test_split = "test"
+results_dir = "../../data/simulations"
+results_prefix = "trace_to_micro_qwen3_32b_thinking_t06_success_direction"
+expected_agent_model = "openai/qwen3-32b"
+expected_user_model = "openai/qwen3-32b"
+expected_num_trials = 1
+output_dir = "outputs/qwen3_32b_thinking_t06_local_consequence"
+hidden_model = "qwen3-32b"
+hidden_layer_ids = [31, 47]
+hidden_size = 5120
+primary_layer_id = 47
+primary_moment = "action"
+bootstrap_samples = 2000
+random_seed = 300
+smoke_domain = "retail"
+smoke_task_id = "0"

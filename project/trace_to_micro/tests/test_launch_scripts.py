@@ -114,3 +114,17 @@ def test_merge_stage_skips_model_run_checks() -> None:
     assert "run_checks" in prefix
     assert "run_checks" in stage_gate
     assert "run_checks" not in dispatch
+
+
+def test_local_consequence_launcher_reuses_traces_and_shards_hidden_exports() -> None:
+    launcher = read_script("run_qwen3_32b_local_consequence.sh")
+
+    assert "local-consequence-requests" in launcher
+    assert "local-consequence-smoke" in launcher
+    assert "local-consequence-activation-shard" in launcher
+    assert "local-consequence-merge-activations" in launcher
+    assert "local-consequence-evaluate" in launcher
+    assert "success-trajectory-shard" not in launcher
+    assert 'num_shards="${NUM_SHARDS:-8}"' in launcher
+    assert 'export CUDA_VISIBLE_DEVICES="${gpu}"' in launcher
+    assert "with_managed_qwen3_32b_hidden_vllm.sh" in launcher

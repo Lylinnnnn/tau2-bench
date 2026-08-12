@@ -2,6 +2,7 @@ from pathlib import Path
 
 from trace_to_micro.config import (
     ExperimentConfig,
+    LocalConsequenceConfig,
     ModelExperimentConfig,
     SuccessDirectionConfig,
 )
@@ -122,3 +123,23 @@ def test_success_direction_config_preregisters_primary_layer() -> None:
     assert config.activation_shard_path(7, 8).name == "shard_07_of_08.jsonl"
     assert config.bootstrap_samples == 2000
     assert config.permutation_samples == 5000
+
+
+def test_local_consequence_config_reuses_existing_complete_trajectories() -> None:
+    config_path = (
+        Path(__file__).parents[1] / "configs/qwen3_32b_local_consequence.toml"
+    )
+
+    config = LocalConsequenceConfig.load(config_path)
+
+    assert config.domains == ("airline", "retail")
+    assert config.primary_layer_id == 47
+    assert config.primary_moment == "action"
+    assert config.random_seed == 300
+    assert config.expected_agent_model == "openai/qwen3-32b"
+    assert config.expected_user_model == "openai/qwen3-32b"
+    assert config.expected_num_trials == 1
+    assert config.results_path("airline").name == "results.json"
+    assert "success_direction_airline_base" in str(config.results_path("airline"))
+    assert config.smoke_domain == "retail"
+    assert config.smoke_task_id == "0"

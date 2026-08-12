@@ -275,7 +275,9 @@ def tool_decision_records(
     task_set: str,
     train_split: str,
     test_split: str,
-    max_per_trajectory: int,
+    max_per_trajectory: int | None,
+    consequences: dict[str, dict[str, Any]] | None = None,
+    include_decision_ids: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Build the three factual probe moments around assistant tool calls."""
 
@@ -303,17 +305,31 @@ def tool_decision_records(
         if reward_info is None:
             raise ValueError(f"Simulation {simulation.id} has no reward")
         messages = simulation.get_messages()
-        tool_indices = [
+        all_tool_indices = [
             index
             for index in decision_indices(simulation)
             if isinstance(messages[index], AssistantMessage)
             and messages[index].is_tool_call()
         ]
-        selected = tool_indices[:max_per_trajectory]
+        tool_indices = [
+            index
+            for index in all_tool_indices
+            if include_decision_ids is None
+            or f"{simulation.id}:{index}" in include_decision_ids
+        ]
+        selected = (
+            tool_indices
+            if max_per_trajectory is None
+            else tool_indices[:max_per_trajectory]
+        )
         for message_index in selected:
-            decision_position = tool_indices.index(message_index)
+            decision_position = all_tool_indices.index(message_index)
             action = messages[message_index]
             assert isinstance(action, AssistantMessage)
+            decision_id = f"{simulation.id}:{message_index}"
+            consequence = consequences.get(decision_id) if consequences else None
+            if consequences is not None and consequence is None:
+                raise ValueError(f"Missing local consequence for {decision_id}")
             result_index = message_index + 1
             while result_index < len(messages) and isinstance(
                 messages[result_index], ToolMessage
@@ -349,7 +365,7 @@ def tool_decision_records(
                 rows.append(
                     {
                         "sample_id": f"{simulation.id}:{message_index}:{moment}",
-                        "decision_id": f"{simulation.id}:{message_index}",
+                        "decision_id": decision_id,
                         "simulation_id": simulation.id,
                         "domain": domain,
                         "split": split,
@@ -371,6 +387,7 @@ def tool_decision_records(
                         "db_success": _component_success(reward_info, RewardType.DB),
                         "language_success": _language_success(reward_info),
                         "termination_reason": str(simulation.termination_reason),
+                        **(consequence or {}),
                     }
                 )
     return rows
