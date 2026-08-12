@@ -93,9 +93,7 @@ def test_official_metrics_also_writes_trajectory_completeness(
 
     metrics_path = run_success_official_metrics(tmp_path / "config.toml")
 
-    completeness = json.loads(
-        (tmp_path / "trajectory_completeness.json").read_text()
-    )
+    completeness = json.loads((tmp_path / "trajectory_completeness.json").read_text())
     metrics = json.loads(metrics_path.read_text())
     assert completeness == {
         "airline": {"domain": "airline", "complete": True},
