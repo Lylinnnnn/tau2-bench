@@ -39,6 +39,7 @@ def test_managed_server_waits_for_models_endpoint() -> None:
     assert '"${project_dir}/scripts/start_qwen3_32b_vllm.sh"' in script
     assert "trap cleanup EXIT" in script
     assert '--model-id "${served_model_name}"' in script
+    assert 'wait_seconds="${TRACE_TO_MICRO_SERVER_WAIT_SECONDS:-1800}"' in script
 
 
 def test_success_direction_stages_reuse_or_validate_existing_servers() -> None:
@@ -79,6 +80,10 @@ def test_success_direction_8gpu_uses_isolated_single_gpu_workers() -> None:
         'internal_port_stride="${INTERNAL_PORT_STRIDE:-1000}"' in launcher
     )
     assert 'master_base_port="${MASTER_BASE_PORT:-40000}"' in launcher
+    assert 'shard_ids_raw="${SHARD_IDS:-}"' in launcher
+    assert "for shard in \"${selected_shards[@]}\"" in launcher
+    assert "trajectory-shards" in launcher
+    assert "require_explicit_shards" in launcher
     assert 'export CUDA_VISIBLE_DEVICES="${gpu}"' in launcher
     assert 'export QWEN3_32B_HTTP_PORT="${port}"' in launcher
     assert 'export VLLM_PORT="${internal_port}"' in launcher
@@ -97,3 +102,9 @@ def test_success_direction_8gpu_uses_isolated_single_gpu_workers() -> None:
     assert 'http_port="${QWEN3_32B_HTTP_PORT:-8000}"' in hidden_server
     assert 'port="${VLLM_PORT:-8000}"' not in generation_server
     assert 'port="${VLLM_PORT:-8000}"' not in hidden_server
+
+
+def test_hidden_server_allows_slow_parallel_startup() -> None:
+    manager = read_script("with_managed_qwen3_32b_hidden_vllm.sh")
+
+    assert 'wait_seconds="${TRACE_TO_MICRO_SERVER_WAIT_SECONDS:-1800}"' in manager

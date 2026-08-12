@@ -175,6 +175,25 @@ project/trace_to_micro/scripts/run_qwen3_32b_success_direction_8gpu.sh evaluate
 不要在 8 张卡上已有其他模型服务时运行该入口。端口可用 `BASE_PORT`
 修改，GPU 起始编号可用 `FIRST_GPU` 修改。轨迹默认强制覆盖分片旧数据；
 要从合法检查点继续时，显式设置 `FORCE_OVERWRITE=0`。
+单个 vLLM 服务的默认启动等待为 1800 秒，仍可通过
+`TRACE_TO_MICRO_SERVER_WAIT_SECONDS` 显式覆盖。
+
+如果只有部分 shard 在服务启动阶段失败，不要重跑其他仍在工作的 shard。
+例如只重跑 0、3、5：
+
+```bash
+SHARD_IDS='0 3 5' \
+  project/trace_to_micro/scripts/run_qwen3_32b_success_direction_8gpu.sh \
+  trajectory-shards
+```
+
+`trajectory-shards` 必须显式提供 `SHARD_IDS`，它只运行选中的轨迹分片，不会
+自动合并。所有 shard 都完成后再单独运行：
+
+```bash
+project/trace_to_micro/scripts/run_qwen3_32b_success_direction_8gpu.sh \
+  merge-trajectories
+```
 
 ### 单服务运行方式
 

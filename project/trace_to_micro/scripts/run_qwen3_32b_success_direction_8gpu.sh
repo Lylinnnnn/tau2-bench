@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ "$#" -ne 1 ]]; then
-  echo "Usage: $0 <trajectories|activations|evaluate|all>" >&2
+  echo "Usage: $0 <trajectories|trajectory-shards|merge-trajectories|activations|evaluate|all>" >&2
   exit 2
 fi
 
@@ -17,6 +17,7 @@ internal_base_port="${INTERNAL_BASE_PORT:-20000}"
 internal_port_stride="${INTERNAL_PORT_STRIDE:-1000}"
 master_base_port="${MASTER_BASE_PORT:-40000}"
 force_overwrite="${FORCE_OVERWRITE:-1}"
+shard_ids_raw="${SHARD_IDS:-}"
 run_log_dir="${project_dir}/outputs/run_logs/success_direction_8gpu"
 vllm_log_dir="${project_dir}/outputs/vllm_logs/success_direction_8gpu"
 
@@ -27,6 +28,41 @@ export TAU2_NL_ASSERTIONS_LLM="${TAU2_NL_ASSERTIONS_LLM:-openai/qwen3-32b}"
 
 mkdir -p "${run_log_dir}" "${vllm_log_dir}"
 cd "${repo_dir}"
+
+selected_shards=()
+
+initialize_selected_shards() {
+  local candidates=()
+  if [[ -z "${shard_ids_raw}" ]]; then
+    local shard
+    for ((shard = 0; shard < num_shards; shard++)); do
+      candidates+=("${shard}")
+    done
+  else
+    read -r -a candidates <<<"${shard_ids_raw//,/ }"
+  fi
+  local -A seen=()
+  local shard
+  for shard in "${candidates[@]}"; do
+    if [[ ! "${shard}" =~ ^[0-9]+$ ]] || ((shard >= num_shards)); then
+      echo "Invalid shard ${shard@Q}; expected an integer in [0, ${num_shards})." >&2
+      return 1
+    fi
+    if [[ -n "${seen[${shard}]:-}" ]]; then
+      echo "Duplicate shard ${shard} in SHARD_IDS." >&2
+      return 1
+    fi
+    seen["${shard}"]=1
+    selected_shards+=("${shard}")
+  done
+}
+
+require_explicit_shards() {
+  if [[ -z "${shard_ids_raw}" ]]; then
+    echo "trajectory-shards requires SHARD_IDS, for example SHARD_IDS='0 3 5'." >&2
+    return 1
+  fi
+}
 
 validate_port_layout() {
   if ((num_shards <= 0 || internal_port_stride < 2)); then
@@ -74,9 +110,9 @@ run_workers() {
     command="success-activation-shard"
   fi
 
-  local pids=()
+  local -A pids=()
   local shard
-  for ((shard = 0; shard < num_shards; shard++)); do
+  for shard in "${selected_shards[@]}"; do
     local gpu=$((first_gpu + shard))
     local port=$((base_port + shard))
     local internal_port=$((internal_base_port + shard * internal_port_stride))
@@ -114,13 +150,13 @@ run_workers() {
       fi
       "${manager}" "${args[@]}"
     ) >"${worker_log}" 2>&1 &
-    pids+=("$!")
+    pids["${shard}"]="$!"
     echo "Started ${mode} shard ${shard}: GPU ${gpu}, HTTP ${port}, internal ${internal_port}, master ${master_port}, log ${worker_log}"
   done
 
   local failed=0
-  for shard in "${!pids[@]}"; do
-    if ! wait "${pids[shard]}"; then
+  for shard in "${selected_shards[@]}"; do
+    if ! wait "${pids[${shard}]}"; then
       echo "${mode} shard ${shard} failed; inspect ${run_log_dir}/${mode}_shard_${shard}.log" >&2
       failed=1
     fi
@@ -133,7 +169,7 @@ run_workers() {
 ensure_target_ports_are_free() {
   local occupied=0
   local shard
-  for ((shard = 0; shard < num_shards; shard++)); do
+  for shard in "${selected_shards[@]}"; do
     local port=$((base_port + shard))
     if curl --fail --silent --show-error --max-time 2 \
       "http://127.0.0.1:${port}/v1/models" >/dev/null 2>&1; then
@@ -166,11 +202,21 @@ run_evaluate() {
 }
 
 validate_port_layout
+initialize_selected_shards
 run_checks
 case "${stage}" in
   trajectories)
     ensure_target_ports_are_free
     run_trajectories
+    ;;
+  trajectory-shards)
+    require_explicit_shards
+    ensure_target_ports_are_free
+    run_workers trajectories
+    ;;
+  merge-trajectories)
+    uv run --no-sync python -m trace_to_micro.cli success-merge-trajectories \
+      --config "${config}" --num-shards "${num_shards}"
     ;;
   activations)
     ensure_target_ports_are_free
