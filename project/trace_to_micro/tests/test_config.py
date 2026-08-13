@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from trace_to_micro.config import (
+    ExpectationMatchingConfig,
     ExperimentConfig,
     LocalConsequenceConfig,
     ModelExperimentConfig,
@@ -143,3 +144,21 @@ def test_local_consequence_config_reuses_existing_complete_trajectories() -> Non
     assert "success_direction_airline_base" in str(config.results_path("airline"))
     assert config.smoke_domain == "retail"
     assert config.smoke_task_id == "0"
+
+
+def test_expectation_matching_config_preregisters_target_free_controls() -> None:
+    config_path = (
+        Path(__file__).parents[1] / "configs/qwen3_32b_expectation_matching.toml"
+    )
+
+    config = ExpectationMatchingConfig.load(config_path)
+
+    assert config.domains == ("airline", "retail")
+    assert config.evaluation_split == "test"
+    assert config.candidate_count == 4
+    assert config.minimum_candidate_count == 4
+    assert config.context_variants == ("full", "action_only", "shuffled")
+    assert config.content_variants == ("raw", "identifier_masked")
+    assert config.scoring_model == "qwen3-32b"
+    assert "success_direction_retail_base" in str(config.results_path("retail"))
+    assert config.score_shard_path(7, 8).name == "shard_07_of_08.jsonl"

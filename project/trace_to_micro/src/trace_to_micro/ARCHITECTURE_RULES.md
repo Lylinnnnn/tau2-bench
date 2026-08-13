@@ -119,12 +119,15 @@ analysis / evaluation / clean / runtime
 | 模型实验总编排 | `runner/model_experiment.py` |
 | vLLM/OpenAI-compatible endpoint 就绪检查 | `runtime/server_preflight.py` |
 | 隐藏表示导出、紧凑编码与临时文件清理 | `runtime/activations.py` |
+| 已选动作之后的真实工具返回条件似然 | `runtime/activations.py` |
 | 成功方向的中心计算、迁移评测与普通信息基线 | `evaluation/success_direction.py` |
 | 局部后果方向与按轨迹聚类的不确定性评测 | `evaluation/local_consequence.py` |
 | 目标无关的后果多头探针与结果偏离反馈评测 | `evaluation/consequence_expectation.py` |
+| 不训练探针的真实工具返回候选构造与排序评测 | `evaluation/expectation_matching.py` |
 | 后果探针的普通信息/隐藏特征、闭式拟合与预测 | `evaluation/consequence_probe.py` |
 | 后果头指标、异常偏离和 task 级重采样 | `evaluation/consequence_metrics.py` |
 | 预期后果评测的已有产物读取与落盘 | `runner/consequence_expectation.py` |
+| 真实工具返回期待匹配的数据集、似然分片与评测编排 | `runner/expectation_matching.py` |
 | 成功方向实验的跨领域阶段编排 | `runner/success_direction.py` |
 | 局部后果请求、隐藏表示分片和评测编排 | `runner/local_consequence.py` |
 
@@ -162,6 +165,15 @@ analysis / evaluation / clean / runtime
 - “预期—实际偏离”必须同时报告全后果头和去掉 `execution.success` 后的语义后果
   头结果。只报告包含执行成功头的工具错误检测会把监督定义和结论机械绑定，禁止
   作为单独证据。
+- 无训练的期待匹配实验必须从已落盘的成功工具返回构造候选；负例必须来自同一
+  领域、官方同一划分、同一工具但不同任务。禁止把官方目标、参考动作或最终奖励
+  用于候选选择。主比较固定为完整真实上下文、仅系统说明加当前动作、以及保留
+  当前动作但替换为其他任务历史的错配上下文；同时报告原文和机械遮盖标识符的
+  结果，防止只靠编号复制得到阳性结论。
+- 工具返回似然必须只累加当前工具消息内容及结束标记的新增词元并按词元数归一
+  化，固定工具角色头不计分。聊天模板不
+  满足前缀一致性、服务不返回所选词元的似然、或服务返回的词元与本地渲染不一致
+  时必须直接失败，禁止改用生成文本、字符长度或静默近似。
 
 只有当需求与这些文件的变化原因确实不同，且满足第 3 节时，才新增模块。
 

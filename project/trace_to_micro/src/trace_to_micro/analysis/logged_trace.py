@@ -395,6 +395,14 @@ def _tool_decision_records_for_simulation(
                 f"Tool-result mismatch at {simulation.id}:{message_index}: "
                 f"expected {expected_result_ids}, got {observed_result_ids}"
             )
+        result_messages = [
+            message
+            for message in messages[message_index + 1 : result_index]
+            if isinstance(message, ToolMessage) and message.requestor == "assistant"
+        ]
+        tool_calls = action.tool_calls or []
+        tool_name = tool_calls[0].name if len(tool_calls) == 1 else "__multiple__"
+        tool_success = all(not message.error for message in result_messages)
         prior_tool_errors = sum(
             isinstance(message, ToolMessage)
             and message.requestor == "assistant"
@@ -422,6 +430,11 @@ def _tool_decision_records_for_simulation(
                     "prefix_message_count": len(before_messages) - 1,
                     "prefix_char_count": len(transcript_json(messages[:message_index])),
                     "prior_tool_errors": prior_tool_errors,
+                    "tool_name": tool_name,
+                    "tool_success": tool_success,
+                    "tool_result_contents": [
+                        message.content for message in result_messages
+                    ],
                     "moment": moment,
                     "messages": to_openai_messages(history, system_prompt),
                     "tools": tools,

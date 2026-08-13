@@ -230,6 +230,9 @@ def test_tool_decision_records_quarantines_bad_trajectory_atomically(
     assert {row["simulation_id"] for row in rows} == {"good"}
     assert len(rows) == 3
     assert {row["moment"] for row in rows} == {"before", "action", "result"}
+    assert {row["tool_name"] for row in rows} == {"lookup"}
+    assert {row["tool_success"] for row in rows} == {True}
+    assert {tuple(row["tool_result_contents"]) for row in rows} == {("ok",)}
     assert errors == [
         (
             "bad",

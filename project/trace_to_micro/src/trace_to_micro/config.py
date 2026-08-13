@@ -388,3 +388,105 @@ class LocalConsequenceConfig:
         """Return the output directory for the one-decision local smoke."""
 
         return self.output_dir / "smoke"
+
+
+@dataclass(frozen=True)
+class ExpectationMatchingConfig:
+    """Configuration for target-free matching of expected tool results."""
+
+    domains: tuple[str, ...]
+    evaluation_split: str
+    train_split: str
+    test_split: str
+    results_dir: Path
+    results_prefix: str
+    expected_agent_model: str
+    expected_user_model: str
+    expected_num_trials: int
+    output_dir: Path
+    scoring_model: str
+    candidate_count: int
+    minimum_candidate_count: int
+    context_variants: tuple[str, ...]
+    content_variants: tuple[str, ...]
+    bootstrap_samples: int
+    random_seed: int
+    smoke_domain: str
+    smoke_task_id: str
+
+    @classmethod
+    def load(cls, path: Path) -> "ExpectationMatchingConfig":
+        """Load and validate the `[expectation_matching]` table."""
+
+        with path.open("rb") as handle:
+            values = tomllib.load(handle)["expectation_matching"]
+        domains = tuple(values["domains"])
+        context_variants = tuple(values["context_variants"])
+        content_variants = tuple(values["content_variants"])
+        if len(domains) != 2 or len(set(domains)) != len(domains):
+            raise ValueError("Expectation matching requires two unique domains")
+        if values["train_split"] == values["test_split"]:
+            raise ValueError("Expectation matching Train/Test splits must differ")
+        if values["evaluation_split"] not in {
+            values["train_split"],
+            values["test_split"],
+        }:
+            raise ValueError("evaluation_split must be Train or Test")
+        if values["expected_num_trials"] <= 0:
+            raise ValueError("expected_num_trials must be positive")
+        if values["candidate_count"] < 2:
+            raise ValueError("candidate_count must include at least one negative")
+        if not 2 <= values["minimum_candidate_count"] <= values["candidate_count"]:
+            raise ValueError(
+                "minimum_candidate_count must be between 2 and candidate_count"
+            )
+        required_contexts = {"full", "action_only", "shuffled"}
+        if set(context_variants) != required_contexts:
+            raise ValueError("context_variants must be full, action_only, and shuffled")
+        if set(content_variants) != {"raw", "identifier_masked"}:
+            raise ValueError("content_variants must be raw and identifier_masked")
+        if values["bootstrap_samples"] <= 0:
+            raise ValueError("bootstrap_samples must be positive")
+        if values["smoke_domain"] not in domains:
+            raise ValueError("smoke_domain must be one of the configured domains")
+        return cls(
+            domains=domains,
+            evaluation_split=values["evaluation_split"],
+            train_split=values["train_split"],
+            test_split=values["test_split"],
+            results_dir=_project_path(path, values["results_dir"]),
+            results_prefix=values["results_prefix"],
+            expected_agent_model=values["expected_agent_model"],
+            expected_user_model=values["expected_user_model"],
+            expected_num_trials=values["expected_num_trials"],
+            output_dir=_project_path(path, values["output_dir"]),
+            scoring_model=values["scoring_model"],
+            candidate_count=values["candidate_count"],
+            minimum_candidate_count=values["minimum_candidate_count"],
+            context_variants=context_variants,
+            content_variants=content_variants,
+            bootstrap_samples=values["bootstrap_samples"],
+            random_seed=values["random_seed"],
+            smoke_domain=values["smoke_domain"],
+            smoke_task_id=str(values["smoke_task_id"]),
+        )
+
+    def results_path(self, domain: str) -> Path:
+        """Return the existing complete trajectory file for one domain."""
+
+        directory = f"{self.results_prefix}_{domain}_base"
+        return self.results_dir / directory / "results.json"
+
+    def score_shard_path(self, shard_index: int, num_shards: int) -> Path:
+        """Return one resumable likelihood-score shard path."""
+
+        return (
+            self.output_dir
+            / "score_shards"
+            / f"shard_{shard_index:02d}_of_{num_shards:02d}.jsonl"
+        )
+
+    def smoke_output_dir(self) -> Path:
+        """Return the one-query end-to-end smoke output directory."""
+
+        return self.output_dir / "smoke"

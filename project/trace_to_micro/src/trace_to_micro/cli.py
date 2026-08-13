@@ -13,6 +13,13 @@ from trace_to_micro.replay.reference import replay_reference_tasks
 from trace_to_micro.runner.consequence_expectation import (
     run_consequence_expectation_evaluation,
 )
+from trace_to_micro.runner.expectation_matching import (
+    build_expectation_matching_dataset,
+    merge_expectation_matching_scores,
+    run_expectation_matching_evaluation,
+    run_expectation_matching_score_shard,
+    run_expectation_matching_smoke,
+)
 from trace_to_micro.runner.local_consequence import (
     build_local_consequence_requests,
     build_local_consequence_smoke_requests,
@@ -185,6 +192,17 @@ def _parser() -> argparse.ArgumentParser:
     local_smoke = subparsers.add_parser("local-consequence-smoke")
     local_smoke.add_argument("--config", type=Path, required=True)
     local_smoke.add_argument("--base-url", required=True)
+    matching_score = subparsers.add_parser("expectation-matching-score-shard")
+    matching_score.add_argument("--config", type=Path, required=True)
+    matching_score.add_argument("--shard-index", type=int, required=True)
+    matching_score.add_argument("--num-shards", type=int, required=True)
+    matching_score.add_argument("--base-url", required=True)
+    matching_merge = subparsers.add_parser("expectation-matching-merge")
+    matching_merge.add_argument("--config", type=Path, required=True)
+    matching_merge.add_argument("--num-shards", type=int, required=True)
+    matching_smoke = subparsers.add_parser("expectation-matching-smoke")
+    matching_smoke.add_argument("--config", type=Path, required=True)
+    matching_smoke.add_argument("--base-url", required=True)
     success_merge_activations = subparsers.add_parser("success-merge-activations")
     success_merge_activations.add_argument("--config", type=Path, required=True)
     success_merge_activations.add_argument("--num-shards", type=int, required=True)
@@ -200,6 +218,8 @@ def _parser() -> argparse.ArgumentParser:
         "local-consequence-smoke-requests",
         "local-consequence-evaluate",
         "consequence-expectation-evaluate",
+        "expectation-matching-prepare",
+        "expectation-matching-evaluate",
     ):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, required=True)
@@ -318,6 +338,36 @@ def main(argv: list[str] | None = None) -> None:
         return
     elif args.command == "consequence-expectation-evaluate":
         paths = run_consequence_expectation_evaluation(args.config)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
+    elif args.command == "expectation-matching-prepare":
+        paths = build_expectation_matching_dataset(args.config)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
+    elif args.command == "expectation-matching-score-shard":
+        print(
+            run_expectation_matching_score_shard(
+                args.config,
+                shard_index=args.shard_index,
+                num_shards=args.num_shards,
+                base_url=args.base_url,
+            )
+        )
+        return
+    elif args.command == "expectation-matching-merge":
+        print(
+            merge_expectation_matching_scores(args.config, num_shards=args.num_shards)
+        )
+        return
+    elif args.command == "expectation-matching-smoke":
+        paths = run_expectation_matching_smoke(args.config, base_url=args.base_url)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
+    elif args.command == "expectation-matching-evaluate":
+        paths = run_expectation_matching_evaluation(args.config)
         for name, path in paths.items():
             print(f"{name}: {path}")
         return

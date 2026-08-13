@@ -4,6 +4,9 @@ Airline/Retail 的隐藏表示成功方向预实验见
 [`SUCCESS_DIRECTION_README.md`](SUCCESS_DIRECTION_README.md)。它与下文 Telecom
 轨迹挖掘和同状态上下文实验分开运行。
 
+不训练探针、直接检验模型对真实工具返回是否存在执行前期待信号的实验见
+[`EXPECTATION_MATCHING_README.md`](EXPECTATION_MATCHING_README.md)。
+
 `trace_to_micro` contains training-free pre-experiments for testing whether local,
 state-grounded transitions can be recovered across disjoint τ² Telecom task
 compositions, and whether clean micro-contexts improve a frozen model's local
