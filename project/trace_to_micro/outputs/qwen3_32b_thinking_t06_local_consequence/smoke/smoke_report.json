@@ -1,0 +1,137 @@
+{
+  "pipeline_valid": true,
+  "context_chain": {
+    "moments": [
+      "before",
+      "action",
+      "result"
+    ],
+    "message_counts": {
+      "before": 9,
+      "action": 10,
+      "result": 11
+    },
+    "prompt_token_counts": {
+      "before": 7787,
+      "action": 7897,
+      "result": 8609
+    },
+    "exported_token_ids_matched_submitted_prompt": true,
+    "prompt_token_sha256": {
+      "before": "d380801afa103953333ddbd62f3c9166bace3b4de3154cb025d35ec055942ae9",
+      "action": "bd0fc69e6ecceb5f27890d5d03d1317b5ee08219f806c25be5d2baab0e768abc",
+      "result": "ba6276833be32bd15a96a5af73a4a4449963df8688e26eca7ddad637d596a9b6"
+    },
+    "last_token_ids": {
+      "before": 198,
+      "action": 198,
+      "result": 198
+    },
+    "readout_definition": {
+      "before": "last token of the next-assistant generation prompt",
+      "action": "last token of the logged assistant tool-call message",
+      "result": "last token of the next-assistant generation prompt"
+    }
+  },
+  "hidden_states": {
+    "model": "qwen3-32b",
+    "layers": [
+      31,
+      47
+    ],
+    "expected_dimension": 5120,
+    "vectors": {
+      "before": {
+        "31": {
+          "dimension": 5120,
+          "l2_norm": 187.15170288085938,
+          "mean": 0.07275855541229248,
+          "standard_deviation": 2.6145122051239014
+        },
+        "47": {
+          "dimension": 5120,
+          "l2_norm": 236.95709228515625,
+          "mean": 0.07835356891155243,
+          "standard_deviation": 3.3106491565704346
+        }
+      },
+      "action": {
+        "31": {
+          "dimension": 5120,
+          "l2_norm": 204.63426208496094,
+          "mean": 0.020512128248810768,
+          "standard_deviation": 2.8597769737243652
+        },
+        "47": {
+          "dimension": 5120,
+          "l2_norm": 219.09169006347656,
+          "mean": 0.08293335139751434,
+          "standard_deviation": 3.060776472091675
+        }
+      },
+      "result": {
+        "31": {
+          "dimension": 5120,
+          "l2_norm": 189.9807586669922,
+          "mean": 0.09077102690935135,
+          "standard_deviation": 2.6535098552703857
+        },
+        "47": {
+          "dimension": 5120,
+          "l2_norm": 243.37973022460938,
+          "mean": 0.06829450279474258,
+          "standard_deviation": 3.4006495475769043
+        }
+      }
+    },
+    "pairwise_diagnostics": {
+      "31": {
+        "before_vs_action": {
+          "cosine_similarity": 0.769325852394104,
+          "l2_distance": 134.06787109375
+        },
+        "action_vs_result": {
+          "cosine_similarity": 0.7698631286621094,
+          "l2_distance": 134.56813049316406
+        },
+        "before_vs_result": {
+          "cosine_similarity": 0.9670867323875427,
+          "l2_distance": 48.46094512939453
+        }
+      },
+      "47": {
+        "before_vs_action": {
+          "cosine_similarity": 0.6250157356262207,
+          "l2_distance": 198.12632751464844
+        },
+        "action_vs_result": {
+          "cosine_similarity": 0.6448157429695129,
+          "l2_distance": 196.1339874267578
+        },
+        "before_vs_result": {
+          "cosine_similarity": 0.8359509706497192,
+          "l2_distance": 137.70567321777344
+        }
+      }
+    }
+  },
+  "decision_id": "4be7dee0-5589-477e-8472-9c20540080c4:8",
+  "domain": "retail",
+  "task_id": "0",
+  "tool_name": "exchange_delivered_order_items",
+  "labels": {
+    "tool_success": true,
+    "state_changed": true,
+    "goal_progress": true
+  },
+  "moments": [
+    "before",
+    "action",
+    "result"
+  ],
+  "prompt_tokens": {
+    "before": 7787,
+    "action": 7897,
+    "result": 8609
+  }
+}
