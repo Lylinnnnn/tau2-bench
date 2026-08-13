@@ -1,0 +1,161 @@
+{
+  "completed": true,
+  "controlled_query": {
+    "query_id": "7b0f5173-ade7-494b-818a-74a15fd0a6c2:10",
+    "domain": "retail",
+    "split": "test",
+    "task_id": "26",
+    "simulation_id": "7b0f5173-ade7-494b-818a-74a15fd0a6c2",
+    "trial": 0,
+    "tool_name": "get_order_details",
+    "structure_key": "08404abddd3f52a6",
+    "source_decision_id": "7b0f5173-ade7-494b-818a-74a15fd0a6c2:10",
+    "shuffled_source_decision_id": "9bc04592-f351-4c03-be11-fb87532c4620:14",
+    "variants": [
+      {
+        "severity": 0,
+        "result_content": "{\"order_id\": \"#W5565470\", \"user_id\": \"isabella_johansson_2152\", \"address\": {\"address1\": \"812 Cedar Avenue\", \"address2\": \"Suite 500\", \"city\": \"Houston\", \"country\": \"USA\", \"state\": \"TX\", \"zip\": \"77129\"}, \"items\": [{\"name\": \"Electric Kettle\", \"product_id\": \"1075968781\", \"item_id\": \"7602931732\", \"price\": 153.25, \"options\": {\"capacity\": \"1L\", \"material\": \"stainless steel\", \"color\": \"black\"}}, {\"name\": \"Mechanical Keyboard\", \"product_id\": \"1656367028\", \"item_id\": \"9570044148\", \"price\": 231.37, \"options\": {\"switch type\": \"linear\", \"backlight\": \"none\", \"size\": \"full size\"}}, {\"name\": \"Pet Bed\", \"product_id\": \"2747247837\", \"item_id\": \"6857426243\", \"price\": 196.53, \"options\": {\"size\": \"medium\", \"material\": \"fleece\", \"color\": \"grey\"}}], \"status\": \"delivered\", \"fulfillments\": [{\"tracking_id\": [\"907614527588\"], \"item_ids\": [\"7602931732\", \"9570044148\", \"6857426243\"]}], \"payment_history\": [{\"transaction_type\": \"payment\", \"amount\": 581.15, \"payment_method_id\": \"paypal_3024827\"}], \"cancel_reason\": null, \"exchange_items\": null, \"exchange_new_items\": null, \"exchange_payment_method_id\": null, \"exchange_price_difference\": null, \"return_items\": null, \"return_payment_method_id\": null}",
+        "edits": [],
+        "character_length": 1180,
+        "character_length_delta": 0
+      },
+      {
+        "severity": 1,
+        "result_content": "{\"order_id\": \"#W8277957\", \"user_id\": \"isabella_johansson_2152\", \"address\": {\"address1\": \"812 Cedar Avenue\", \"address2\": \"Suite 500\", \"city\": \"Houston\", \"country\": \"USA\", \"state\": \"TX\", \"zip\": \"77129\"}, \"items\": [{\"name\": \"Electric Kettle\", \"product_id\": \"1075968781\", \"item_id\": \"7602931732\", \"price\": 153.25, \"options\": {\"capacity\": \"1L\", \"material\": \"stainless steel\", \"color\": \"black\"}}, {\"name\": \"Mechanical Keyboard\", \"product_id\": \"1656367028\", \"item_id\": \"9570044148\", \"price\": 231.37, \"options\": {\"switch type\": \"linear\", \"backlight\": \"none\", \"size\": \"full size\"}}, {\"name\": \"Pet Bed\", \"product_id\": \"2747247837\", \"item_id\": \"6857426243\", \"price\": 196.53, \"options\": {\"size\": \"medium\", \"material\": \"fleece\", \"color\": \"grey\"}}], \"status\": \"delivered\", \"fulfillments\": [{\"tracking_id\": [\"907614527588\"], \"item_ids\": [\"7602931732\", \"9570044148\", \"6857426243\"]}], \"payment_history\": [{\"transaction_type\": \"payment\", \"amount\": 581.15, \"payment_method_id\": \"paypal_3024827\"}], \"cancel_reason\": null, \"exchange_items\": null, \"exchange_new_items\": null, \"exchange_payment_method_id\": null, \"exchange_price_difference\": null, \"return_items\": null, \"return_payment_method_id\": null}",
+        "edits": [
+          {
+            "path": [
+              "order_id"
+            ],
+            "path_string": "$.order_id",
+            "old_value": "#W5565470",
+            "new_value": "#W8277957",
+            "donor_decision_id": "f37b1833-c5a3-49df-bdeb-e8ab343fc27c:12",
+            "donor_task_id": "113",
+            "length_gap": 0
+          }
+        ],
+        "character_length": 1180,
+        "character_length_delta": 0
+      },
+      {
+        "severity": 2,
+        "result_content": "{\"order_id\": \"#W8277957\", \"user_id\": \"isabella_johansson_2152\", \"address\": {\"address1\": \"812 Cedar Avenue\", \"address2\": \"Suite 500\", \"city\": \"Houston\", \"country\": \"USA\", \"state\": \"TX\", \"zip\": \"77129\"}, \"items\": [{\"name\": \"Electric Kettle\", \"product_id\": \"1075968781\", \"item_id\": \"7602931732\", \"price\": 153.25, \"options\": {\"capacity\": \"1L\", \"material\": \"stainless steel\", \"color\": \"white\"}}, {\"name\": \"Mechanical Keyboard\", \"product_id\": \"1656367028\", \"item_id\": \"9570044148\", \"price\": 231.37, \"options\": {\"switch type\": \"linear\", \"backlight\": \"none\", \"size\": \"full size\"}}, {\"name\": \"Pet Bed\", \"product_id\": \"2747247837\", \"item_id\": \"6857426243\", \"price\": 196.53, \"options\": {\"size\": \"medium\", \"material\": \"fleece\", \"color\": \"grey\"}}], \"status\": \"delivered\", \"fulfillments\": [{\"tracking_id\": [\"907614527588\"], \"item_ids\": [\"7602931732\", \"9570044148\", \"6857426243\"]}], \"payment_history\": [{\"transaction_type\": \"payment\", \"amount\": 581.15, \"payment_method_id\": \"paypal_3024827\"}], \"cancel_reason\": null, \"exchange_items\": null, \"exchange_new_items\": null, \"exchange_payment_method_id\": null, \"exchange_price_difference\": null, \"return_items\": null, \"return_payment_method_id\": null}",
+        "edits": [
+          {
+            "path": [
+              "order_id"
+            ],
+            "path_string": "$.order_id",
+            "old_value": "#W5565470",
+            "new_value": "#W8277957",
+            "donor_decision_id": "f37b1833-c5a3-49df-bdeb-e8ab343fc27c:12",
+            "donor_task_id": "113",
+            "length_gap": 0
+          },
+          {
+            "path": [
+              "items",
+              0,
+              "options",
+              "color"
+            ],
+            "path_string": "$.items[0].options.color",
+            "old_value": "black",
+            "new_value": "white",
+            "donor_decision_id": "40bea5f7-b833-43dc-b837-7e581740c640:6",
+            "donor_task_id": "59",
+            "length_gap": 0
+          }
+        ],
+        "character_length": 1180,
+        "character_length_delta": 0
+      },
+      {
+        "severity": 3,
+        "result_content": "{\"order_id\": \"#W8277957\", \"user_id\": \"isabella_johansson_2152\", \"address\": {\"address1\": \"812 Cedar Avenue\", \"address2\": \"Suite 500\", \"city\": \"Houston\", \"country\": \"USA\", \"state\": \"TX\", \"zip\": \"77129\"}, \"items\": [{\"name\": \"Electric Kettle\", \"product_id\": \"1075968781\", \"item_id\": \"7602931732\", \"price\": 153.25, \"options\": {\"capacity\": \"1L\", \"material\": \"stainless steel\", \"color\": \"white\"}}, {\"name\": \"Mechanical Keyboard\", \"product_id\": \"1656367028\", \"item_id\": \"9570044148\", \"price\": 231.37, \"options\": {\"switch type\": \"linear\", \"backlight\": \"none\", \"size\": \"full size\"}}, {\"name\": \"Pet Bed\", \"product_id\": \"2747247837\", \"item_id\": \"6857426243\", \"price\": 196.53, \"options\": {\"size\": \"medium\", \"material\": \"fleece\", \"color\": \"grey\"}}], \"status\": \"delivered\", \"fulfillments\": [{\"tracking_id\": [\"907614527588\"], \"item_ids\": [\"7602931732\", \"9570044148\", \"6857426243\"]}], \"payment_history\": [{\"transaction_type\": \"payment\", \"amount\": 581.15, \"payment_method_id\": \"paypal_7529813\"}], \"cancel_reason\": null, \"exchange_items\": null, \"exchange_new_items\": null, \"exchange_payment_method_id\": null, \"exchange_price_difference\": null, \"return_items\": null, \"return_payment_method_id\": null}",
+        "edits": [
+          {
+            "path": [
+              "order_id"
+            ],
+            "path_string": "$.order_id",
+            "old_value": "#W5565470",
+            "new_value": "#W8277957",
+            "donor_decision_id": "f37b1833-c5a3-49df-bdeb-e8ab343fc27c:12",
+            "donor_task_id": "113",
+            "length_gap": 0
+          },
+          {
+            "path": [
+              "items",
+              0,
+              "options",
+              "color"
+            ],
+            "path_string": "$.items[0].options.color",
+            "old_value": "black",
+            "new_value": "white",
+            "donor_decision_id": "40bea5f7-b833-43dc-b837-7e581740c640:6",
+            "donor_task_id": "59",
+            "length_gap": 0
+          },
+          {
+            "path": [
+              "payment_history",
+              0,
+              "payment_method_id"
+            ],
+            "path_string": "$.payment_history[0].payment_method_id",
+            "old_value": "paypal_3024827",
+            "new_value": "paypal_7529813",
+            "donor_decision_id": "58ee32b5-eded-4319-9d62-8844f72b2dfe:10",
+            "donor_task_id": "87",
+            "length_gap": 0
+          }
+        ],
+        "character_length": 1180,
+        "character_length_delta": 0
+      }
+    ],
+    "record_fingerprints": {
+      "7b0f5173-ade7-494b-818a-74a15fd0a6c2:10": "c94b3638c3148b615473fb929e4bcd1b4998f5d27eb8ac592e536f1a6e58a290",
+      "9bc04592-f351-4c03-be11-fb87532c4620:14": "6b023c52558c16af1138ca09c35663ef657a0c8541c20b206bcc296d8ca75df4"
+    },
+    "query_fingerprint": "b9c32a8e31cff623a25ed7ff07a5bba55e3ff998673ea3045a5c084dd310ce61"
+  },
+  "rematch_query": {
+    "query_id": "7b0f5173-ade7-494b-818a-74a15fd0a6c2:10",
+    "domain": "retail",
+    "split": "test",
+    "task_id": "26",
+    "simulation_id": "7b0f5173-ade7-494b-818a-74a15fd0a6c2",
+    "trial": 0,
+    "tool_name": "get_order_details",
+    "positive_decision_id": "7b0f5173-ade7-494b-818a-74a15fd0a6c2:10",
+    "candidate_decision_ids": [
+      "7b0f5173-ade7-494b-818a-74a15fd0a6c2:10",
+      "619f796e-6dd8-46e6-ab98-8014a2d4cf9a:8",
+      "046a47e2-a620-40f6-ba0f-e8abed8af433:6",
+      "52861c0f-9db4-4e84-8349-58100873d2a1:8"
+    ],
+    "shuffled_source_decision_id": "44d0df61-e6f4-4caa-823e-dc69e98a428b:10",
+    "record_fingerprints": {
+      "7b0f5173-ade7-494b-818a-74a15fd0a6c2:10": "c94b3638c3148b615473fb929e4bcd1b4998f5d27eb8ac592e536f1a6e58a290",
+      "44d0df61-e6f4-4caa-823e-dc69e98a428b:10": "ae59f2f043169bacc8396265704bb4c4e03b07d6e755d01a6defa186babde41c",
+      "619f796e-6dd8-46e6-ab98-8014a2d4cf9a:8": "4d628fc99df845a5b87345a7125f6648130a900e5e6b1be26da52c7e4aa956eb",
+      "046a47e2-a620-40f6-ba0f-e8abed8af433:6": "0f19adeaad3bb6b8b04b9e1b52231adc2b89316f9e1aad381567933f0847f6d7",
+      "52861c0f-9db4-4e84-8349-58100873d2a1:8": "3106145af6670610189e9f4221d08a9eeb488e1001b5ca558eea6c545c230ae4"
+    },
+    "query_fingerprint": "b70d65ffa76061837c6078d8fb04bd8fe0903ac8468c0662f0c92f44b9fb2f21"
+  },
+  "calibration_decision_id": "dece9dec-4f83-4a95-9f88-333a038dcc5d:10",
+  "score_row_count": 27,
+  "expected_score_row_count": 27,
+  "calibration_matches_controlled_tool_and_structure": true,
+  "controlled_strictly_monotonic": {
+    "full": false,
+    "action_only": false,
+    "shuffled": false
+  }
+}
