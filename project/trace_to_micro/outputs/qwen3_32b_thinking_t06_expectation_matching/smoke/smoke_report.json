@@ -1,0 +1,116 @@
+{
+  "completed": true,
+  "query": {
+    "query_id": "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+    "domain": "retail",
+    "split": "test",
+    "task_id": "5",
+    "simulation_id": "52861c0f-9db4-4e84-8349-58100873d2a1",
+    "trial": 0,
+    "tool_name": "get_product_details",
+    "positive_decision_id": "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+    "candidate_decision_ids": [
+      "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+      "c563edea-684e-42b7-8478-a75b2ab38802:12",
+      "4863c047-5ef6-4fcf-8429-490d15d9bcde:16",
+      "2119a1cd-3346-4e1f-aa7e-cbb965621512:10"
+    ],
+    "shuffled_source_decision_id": "337bab56-14a6-4e29-82f4-0ee72aacb6a4:16",
+    "record_fingerprints": {
+      "52861c0f-9db4-4e84-8349-58100873d2a1:10": "3220648903321a2e68d442f96c940a7ad2d272c39d98d3172578004733b1648e",
+      "337bab56-14a6-4e29-82f4-0ee72aacb6a4:16": "c98a696fd52bfa7621b47aa1879d99d1f2e297a32aba19c8f6d533746c45dd71",
+      "c563edea-684e-42b7-8478-a75b2ab38802:12": "b39f73a46e7f3038a067adc776f91ae0929926a475e376848f16c223a8ef3f9d",
+      "4863c047-5ef6-4fcf-8429-490d15d9bcde:16": "aa095b96befb530055d9aff12a79ffb0dfb3e68815047c8c24bf59d7394f23dc",
+      "2119a1cd-3346-4e1f-aa7e-cbb965621512:10": "b95048ab20347ee66f09f0b09b0f70525d6fd97eba5941b8682c6faa7e0e23e1"
+    },
+    "query_fingerprint": "ec14c636685efc1dbc21b9112da2235d59c2527fca935e025b625384b78fc422"
+  },
+  "score_row_count": 24,
+  "expected_score_row_count": 24,
+  "conditions": [
+    {
+      "query_id": "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+      "domain": "retail",
+      "task_id": "5",
+      "tool_name": "get_product_details",
+      "context_variant": "action_only",
+      "content_variant": "identifier_masked",
+      "candidate_count": 4,
+      "positive_rank": 1.0,
+      "hit_at_1": 1.0,
+      "reciprocal_rank": 1.0,
+      "pairwise_accuracy": 1.0,
+      "top_margin": 0.09485660558415765
+    },
+    {
+      "query_id": "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+      "domain": "retail",
+      "task_id": "5",
+      "tool_name": "get_product_details",
+      "context_variant": "action_only",
+      "content_variant": "raw",
+      "candidate_count": 4,
+      "positive_rank": 1.0,
+      "hit_at_1": 1.0,
+      "reciprocal_rank": 1.0,
+      "pairwise_accuracy": 1.0,
+      "top_margin": 0.09379560877793025
+    },
+    {
+      "query_id": "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+      "domain": "retail",
+      "task_id": "5",
+      "tool_name": "get_product_details",
+      "context_variant": "full",
+      "content_variant": "identifier_masked",
+      "candidate_count": 4,
+      "positive_rank": 1.0,
+      "hit_at_1": 1.0,
+      "reciprocal_rank": 1.0,
+      "pairwise_accuracy": 1.0,
+      "top_margin": 0.09639067007889113
+    },
+    {
+      "query_id": "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+      "domain": "retail",
+      "task_id": "5",
+      "tool_name": "get_product_details",
+      "context_variant": "full",
+      "content_variant": "raw",
+      "candidate_count": 4,
+      "positive_rank": 1.0,
+      "hit_at_1": 1.0,
+      "reciprocal_rank": 1.0,
+      "pairwise_accuracy": 1.0,
+      "top_margin": 0.13609247885377984
+    },
+    {
+      "query_id": "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+      "domain": "retail",
+      "task_id": "5",
+      "tool_name": "get_product_details",
+      "context_variant": "shuffled",
+      "content_variant": "identifier_masked",
+      "candidate_count": 4,
+      "positive_rank": 1.0,
+      "hit_at_1": 1.0,
+      "reciprocal_rank": 1.0,
+      "pairwise_accuracy": 1.0,
+      "top_margin": 0.07097783652055256
+    },
+    {
+      "query_id": "52861c0f-9db4-4e84-8349-58100873d2a1:10",
+      "domain": "retail",
+      "task_id": "5",
+      "tool_name": "get_product_details",
+      "context_variant": "shuffled",
+      "content_variant": "raw",
+      "candidate_count": 4,
+      "positive_rank": 1.0,
+      "hit_at_1": 1.0,
+      "reciprocal_rank": 1.0,
+      "pairwise_accuracy": 1.0,
+      "top_margin": 0.06388605982118856
+    }
+  ]
+}
