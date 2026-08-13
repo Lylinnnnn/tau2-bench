@@ -1,0 +1,428 @@
+{
+  "audit_completed": true,
+  "label_provenance": {
+    "tool_success": "recorded result checked against deterministic replay",
+    "state_changed": "leaf diff between replayed s_t and s_{t+1}",
+    "goal_progress": "for mutating tools only: distance(s_{t+1}, official target) < distance(s_t, official target)",
+    "invalid_reference_target": "exclude the entire task when target construction fails; never compile labels against a partial target",
+    "invalid_trajectory": "exclude the entire trajectory when completeness, replay, or request construction fails; never retain partial rows"
+  },
+  "exclusion_summary": {
+    "issue_count": 2,
+    "task_count": 2,
+    "trajectory_count": 2,
+    "by_stage": {
+      "target_snapshot": 2
+    },
+    "by_reason": {
+      "target_snapshot_failed": 2
+    }
+  },
+  "source_completeness": {
+    "airline": {
+      "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base/results.json",
+      "behavior_agent_model": "openai/qwen3-32b",
+      "behavior_user_model": "openai/qwen3-32b",
+      "behavior_agent_args": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens": 4096,
+        "api_base": "sharded endpoints; see trajectory_shard_manifest.json",
+        "api_key": "EMPTY",
+        "timeout": 180.0,
+        "num_retries": 0,
+        "extra_body": {
+          "top_k": 20,
+          "min_p": 0.0,
+          "chat_template_kwargs": {
+            "enable_thinking": true
+          }
+        }
+      },
+      "behavior_user_args": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens": 4096,
+        "api_base": "sharded endpoints; see trajectory_shard_manifest.json",
+        "api_key": "EMPTY",
+        "timeout": 180.0,
+        "num_retries": 0,
+        "extra_body": {
+          "top_k": 20,
+          "min_p": 0.0,
+          "chat_template_kwargs": {
+            "enable_thinking": true
+          }
+        }
+      },
+      "nl_assertions_evaluator_model": "openai/qwen3-30b-a3b-instruct-2507",
+      "nl_assertions_evaluator_args": {
+        "temperature": 0.0
+      },
+      "evaluator_provenance": "captured from this audit process; use the checked-in launcher so it matches trajectory generation",
+      "expected_agent_model": "openai/qwen3-32b",
+      "expected_user_model": "openai/qwen3-32b",
+      "agent_model_mismatch": false,
+      "user_model_mismatch": false,
+      "task_count": 50,
+      "num_trials": 1,
+      "required_task_count": 50,
+      "required_num_trials": 1,
+      "expected_simulations": 50,
+      "observed_simulations": 50,
+      "missing_task_trials": [],
+      "duplicate_task_trials": [],
+      "unexpected_task_trials": [],
+      "empty_simulation_ids": [],
+      "missing_reward_simulation_ids": [],
+      "infrastructure_error_simulation_ids": [],
+      "missing_metadata_tasks": [],
+      "unexpected_metadata_tasks": [],
+      "num_trials_mismatch": false,
+      "termination_reasons": {
+        "TerminationReason.USER_STOP": 50
+      },
+      "complete": true
+    },
+    "retail": {
+      "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base/results.json",
+      "behavior_agent_model": "openai/qwen3-32b",
+      "behavior_user_model": "openai/qwen3-32b",
+      "behavior_agent_args": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens": 4096,
+        "api_base": "sharded endpoints; see trajectory_shard_manifest.json",
+        "api_key": "EMPTY",
+        "timeout": 180.0,
+        "num_retries": 0,
+        "extra_body": {
+          "top_k": 20,
+          "min_p": 0.0,
+          "chat_template_kwargs": {
+            "enable_thinking": true
+          }
+        }
+      },
+      "behavior_user_args": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens": 4096,
+        "api_base": "sharded endpoints; see trajectory_shard_manifest.json",
+        "api_key": "EMPTY",
+        "timeout": 180.0,
+        "num_retries": 0,
+        "extra_body": {
+          "top_k": 20,
+          "min_p": 0.0,
+          "chat_template_kwargs": {
+            "enable_thinking": true
+          }
+        }
+      },
+      "nl_assertions_evaluator_model": "openai/qwen3-30b-a3b-instruct-2507",
+      "nl_assertions_evaluator_args": {
+        "temperature": 0.0
+      },
+      "evaluator_provenance": "captured from this audit process; use the checked-in launcher so it matches trajectory generation",
+      "expected_agent_model": "openai/qwen3-32b",
+      "expected_user_model": "openai/qwen3-32b",
+      "agent_model_mismatch": false,
+      "user_model_mismatch": false,
+      "task_count": 114,
+      "num_trials": 1,
+      "required_task_count": 114,
+      "required_num_trials": 1,
+      "expected_simulations": 114,
+      "observed_simulations": 114,
+      "missing_task_trials": [],
+      "duplicate_task_trials": [],
+      "unexpected_task_trials": [],
+      "empty_simulation_ids": [],
+      "missing_reward_simulation_ids": [],
+      "infrastructure_error_simulation_ids": [],
+      "missing_metadata_tasks": [],
+      "unexpected_metadata_tasks": [],
+      "num_trials_mismatch": false,
+      "termination_reasons": {
+        "TerminationReason.USER_STOP": 114
+      },
+      "complete": true
+    }
+  },
+  "exclusions": [
+    {
+      "scope": "task",
+      "domain": "retail",
+      "split": "train",
+      "task_id": "105",
+      "stage": "target_snapshot",
+      "reason": "target_snapshot_failed",
+      "excluded_trajectory_count": 1,
+      "excluded_trajectory_ids": [
+        "c8a110bf-9b65-4a5a-9f0c-d7208ed8bf6b"
+      ],
+      "exception_type": "InvalidReferenceTargetError",
+      "error": "Mutating reference action failed for retail/105: exchange_delivered_order_items: Error: Insufficient gift card balance to pay for the price difference",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/src/trace_to_micro/runner/local_consequence.py\", line 280, in _domain_consequences\n    goals[task_id] = target_snapshot(domain, tasks[task_id])\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/src/trace_to_micro/replay/consequence.py\", line 90, in target_snapshot\n    raise InvalidReferenceTargetError(\ntrace_to_micro.replay.consequence.InvalidReferenceTargetError: Mutating reference action failed for retail/105: exchange_delivered_order_items: Error: Insufficient gift card balance to pay for the price difference\n",
+      "reference_action_id": "106_0",
+      "reference_action_name": "exchange_delivered_order_items",
+      "reference_action_requestor": "assistant",
+      "reference_action_arguments": {
+        "order_id": "#W4316152",
+        "item_ids": [
+          "7292993796",
+          "7292993796"
+        ],
+        "new_item_ids": [
+          "3761330360",
+          "9647374798"
+        ],
+        "payment_method_id": "gift_card_7245904"
+      }
+    },
+    {
+      "scope": "task",
+      "domain": "retail",
+      "split": "test",
+      "task_id": "64",
+      "stage": "target_snapshot",
+      "reason": "target_snapshot_failed",
+      "excluded_trajectory_count": 1,
+      "excluded_trajectory_ids": [
+        "093ea210-d866-4fd2-a1c6-9a68f35ec148"
+      ],
+      "exception_type": "InvalidReferenceTargetError",
+      "error": "Mutating reference action failed for retail/64: exchange_delivered_order_items: Error: Non-delivered order cannot be exchanged",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/src/trace_to_micro/runner/local_consequence.py\", line 280, in _domain_consequences\n    goals[task_id] = target_snapshot(domain, tasks[task_id])\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/src/trace_to_micro/replay/consequence.py\", line 90, in target_snapshot\n    raise InvalidReferenceTargetError(\ntrace_to_micro.replay.consequence.InvalidReferenceTargetError: Mutating reference action failed for retail/64: exchange_delivered_order_items: Error: Non-delivered order cannot be exchanged\n",
+      "reference_action_id": "64_6",
+      "reference_action_name": "exchange_delivered_order_items",
+      "reference_action_requestor": "assistant",
+      "reference_action_arguments": {
+        "order_id": "#W7464385",
+        "item_ids": [
+          "1810466394"
+        ],
+        "new_item_ids": [
+          "6700049080"
+        ],
+        "payment_method_id": "paypal_1261484"
+      }
+    }
+  ],
+  "domains": {
+    "airline": {
+      "train": {
+        "decision_count": 31,
+        "trajectory_count": 16,
+        "tool_success": {
+          "true": 26,
+          "false": 5
+        },
+        "state_changed": {
+          "true": 25,
+          "false": 6
+        },
+        "goal_progress": {
+          "false": 19,
+          "true": 12
+        },
+        "goal_progress_eligible_count": 31,
+        "goal_progress_by_tool": {
+          "book_reservation": {
+            "false": 1,
+            "true": 1
+          },
+          "cancel_reservation": {
+            "false": 6,
+            "true": 7
+          },
+          "send_certificate": {
+            "false": 1
+          },
+          "update_reservation_baggages": {
+            "false": 2
+          },
+          "update_reservation_flights": {
+            "true": 3,
+            "false": 8
+          },
+          "update_reservation_passengers": {
+            "false": 1,
+            "true": 1
+          }
+        },
+        "within_tool_eligible_tools": [
+          "book_reservation",
+          "cancel_reservation",
+          "update_reservation_flights",
+          "update_reservation_passengers"
+        ],
+        "exclusion_count": 0,
+        "excluded_task_count": 0,
+        "excluded_trajectory_count": 0,
+        "excluded_task_ids": []
+      },
+      "test": {
+        "decision_count": 20,
+        "trajectory_count": 13,
+        "tool_success": {
+          "true": 18,
+          "false": 2
+        },
+        "state_changed": {
+          "false": 3,
+          "true": 17
+        },
+        "goal_progress": {
+          "false": 12,
+          "true": 8
+        },
+        "goal_progress_eligible_count": 20,
+        "goal_progress_by_tool": {
+          "book_reservation": {
+            "true": 4,
+            "false": 2
+          },
+          "cancel_reservation": {
+            "false": 4,
+            "true": 1
+          },
+          "update_reservation_baggages": {
+            "false": 2
+          },
+          "update_reservation_flights": {
+            "false": 4,
+            "true": 3
+          }
+        },
+        "within_tool_eligible_tools": [
+          "book_reservation",
+          "cancel_reservation",
+          "update_reservation_flights"
+        ],
+        "exclusion_count": 0,
+        "excluded_task_count": 0,
+        "excluded_trajectory_count": 0,
+        "excluded_task_ids": []
+      }
+    },
+    "retail": {
+      "train": {
+        "decision_count": 64,
+        "trajectory_count": 44,
+        "tool_success": {
+          "true": 59,
+          "false": 5
+        },
+        "state_changed": {
+          "true": 59,
+          "false": 5
+        },
+        "goal_progress": {
+          "true": 49,
+          "false": 15
+        },
+        "goal_progress_eligible_count": 64,
+        "goal_progress_by_tool": {
+          "cancel_pending_order": {
+            "true": 10,
+            "false": 1
+          },
+          "exchange_delivered_order_items": {
+            "true": 12,
+            "false": 3
+          },
+          "modify_pending_order_address": {
+            "true": 3,
+            "false": 1
+          },
+          "modify_pending_order_items": {
+            "true": 8,
+            "false": 1
+          },
+          "modify_user_address": {
+            "false": 2,
+            "true": 2
+          },
+          "return_delivered_order_items": {
+            "false": 7,
+            "true": 14
+          }
+        },
+        "within_tool_eligible_tools": [
+          "cancel_pending_order",
+          "exchange_delivered_order_items",
+          "modify_pending_order_address",
+          "modify_pending_order_items",
+          "modify_user_address",
+          "return_delivered_order_items"
+        ],
+        "exclusion_count": 1,
+        "excluded_task_count": 1,
+        "excluded_trajectory_count": 1,
+        "excluded_task_ids": [
+          "105"
+        ]
+      },
+      "test": {
+        "decision_count": 35,
+        "trajectory_count": 20,
+        "tool_success": {
+          "true": 28,
+          "false": 7
+        },
+        "state_changed": {
+          "true": 27,
+          "false": 8
+        },
+        "goal_progress": {
+          "false": 12,
+          "true": 23
+        },
+        "goal_progress_eligible_count": 35,
+        "goal_progress_by_tool": {
+          "cancel_pending_order": {
+            "false": 1,
+            "true": 4
+          },
+          "exchange_delivered_order_items": {
+            "false": 3,
+            "true": 3
+          },
+          "modify_pending_order_address": {
+            "true": 4
+          },
+          "modify_pending_order_items": {
+            "false": 4,
+            "true": 6
+          },
+          "modify_pending_order_payment": {
+            "true": 1
+          },
+          "modify_user_address": {
+            "true": 1,
+            "false": 1
+          },
+          "return_delivered_order_items": {
+            "false": 3,
+            "true": 4
+          }
+        },
+        "within_tool_eligible_tools": [
+          "cancel_pending_order",
+          "exchange_delivered_order_items",
+          "modify_pending_order_items",
+          "modify_user_address",
+          "return_delivered_order_items"
+        ],
+        "exclusion_count": 1,
+        "excluded_task_count": 1,
+        "excluded_trajectory_count": 1,
+        "excluded_task_ids": [
+          "64"
+        ]
+      }
+    }
+  }
+}
