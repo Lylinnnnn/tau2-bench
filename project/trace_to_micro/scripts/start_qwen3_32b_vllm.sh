@@ -4,7 +4,7 @@ set -euo pipefail
 model_path="${QWEN3_32B_MODEL_PATH:-/data/oss_bucket_0/yanlin/tau2/models/Qwen3-32B}"
 served_model_name="${QWEN3_32B_SERVED_NAME:-qwen3-32b}"
 http_port="${QWEN3_32B_HTTP_PORT:-8000}"
-tensor_parallel_size="${TENSOR_PARALLEL_SIZE:-4}"
+tensor_parallel_size="${TENSOR_PARALLEL_SIZE:-1}"
 max_model_len="${MAX_MODEL_LEN:-32768}"
 gpu_memory_utilization="${GPU_MEMORY_UTILIZATION:-0.90}"
 vllm_bin="${VLLM_BIN:-/home/liuyanlin.lyl/.venvs/tau2-vllm/bin/vllm}"
