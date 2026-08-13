@@ -1,0 +1,1601 @@
+{
+  "experiment": {
+    "hypothesis": "The action-time hidden state predicts a target-free abstract tool consequence beyond tool name and trajectory-position surfaces.",
+    "actual_consequence_source": "deterministic tool result plus leaf diff from logged s_t to s_t+1",
+    "official_goal_used": false,
+    "moment": "action",
+    "layer_id": 47,
+    "probe": "closed-form multi-target linear ridge",
+    "regularization": 1.0,
+    "train_split": "train",
+    "test_split": "test",
+    "uncertainty_cluster": "task_id"
+  },
+  "primary_test": {
+    "metric": "consequence-family-balanced AUROC(surface + hidden) - AUROC(surface)",
+    "evidence_rule": "Both domains require a positive task-bootstrap 95% lower bound.",
+    "evidence_status": "no_reliable_incremental_expectation_signal"
+  },
+  "domains": {
+    "airline": {
+      "training_decision_count": 31,
+      "test_decision_count": 20,
+      "training_task_count": 16,
+      "test_task_count": 13,
+      "trained_target_count": 18,
+      "trained_targets": [
+        "effect.changed",
+        "entity.reservation",
+        "entity.user",
+        "execution.success",
+        "field.itinerary",
+        "field.payment",
+        "field.status",
+        "operation.create",
+        "operation.update",
+        "output.entity.flight",
+        "output.entity.reservation",
+        "output.entity.user",
+        "output.field.itinerary",
+        "output.field.payment",
+        "output.field.status",
+        "output.kind.object",
+        "output.kind.string",
+        "status.cancelled"
+      ],
+      "training_target_support": {
+        "effect.changed": {
+          "positive_count": 25,
+          "negative_count": 6
+        },
+        "entity.reservation": {
+          "positive_count": 24,
+          "negative_count": 7
+        },
+        "entity.user": {
+          "positive_count": 4,
+          "negative_count": 27
+        },
+        "execution.success": {
+          "positive_count": 26,
+          "negative_count": 5
+        },
+        "field.itinerary": {
+          "positive_count": 9,
+          "negative_count": 22
+        },
+        "field.payment": {
+          "positive_count": 23,
+          "negative_count": 8
+        },
+        "field.status": {
+          "positive_count": 14,
+          "negative_count": 17
+        },
+        "operation.create": {
+          "positive_count": 23,
+          "negative_count": 8
+        },
+        "operation.update": {
+          "positive_count": 24,
+          "negative_count": 7
+        },
+        "output.entity.flight": {
+          "positive_count": 25,
+          "negative_count": 6
+        },
+        "output.entity.reservation": {
+          "positive_count": 25,
+          "negative_count": 6
+        },
+        "output.entity.user": {
+          "positive_count": 25,
+          "negative_count": 6
+        },
+        "output.field.itinerary": {
+          "positive_count": 25,
+          "negative_count": 6
+        },
+        "output.field.payment": {
+          "positive_count": 25,
+          "negative_count": 6
+        },
+        "output.field.status": {
+          "positive_count": 25,
+          "negative_count": 6
+        },
+        "output.kind.object": {
+          "positive_count": 25,
+          "negative_count": 6
+        },
+        "output.kind.string": {
+          "positive_count": 6,
+          "negative_count": 25
+        },
+        "status.cancelled": {
+          "positive_count": 13,
+          "negative_count": 18
+        }
+      },
+      "untrained_targets": [
+        "entity.flight",
+        "entity.order",
+        "field.address",
+        "field.items",
+        "operation.delete",
+        "output.entity.order",
+        "output.field.address",
+        "output.field.items",
+        "output.kind.array",
+        "output.kind.boolean",
+        "output.kind.null",
+        "output.kind.number"
+      ],
+      "surface_features": {
+        "tool_vocabulary": [
+          "book_reservation",
+          "cancel_reservation",
+          "send_certificate",
+          "update_reservation_baggages",
+          "update_reservation_flights",
+          "update_reservation_passengers"
+        ],
+        "unseen_test_decisions": 0,
+        "numeric_fields": [
+          "decision_position",
+          "prior_tool_errors",
+          "prompt_tokens",
+          "argument_count"
+        ]
+      },
+      "feature_sets": {
+        "surface": {
+          "feature_dimension": 11,
+          "heads": {
+            "effect.changed": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.7647058823529411,
+              "average_precision": 0.9540226235045031,
+              "brier": 0.1211073011625021
+            },
+            "entity.reservation": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.8627450980392157,
+              "average_precision": 0.9740232351573638,
+              "brier": 0.1255423960503682
+            },
+            "entity.user": {
+              "positive_count": 5,
+              "negative_count": 15,
+              "auroc": 0.8266666666666667,
+              "average_precision": 0.7658119658119658,
+              "brier": 0.15562529303817965
+            },
+            "execution.success": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.9970760233918129,
+              "brier": 0.07958458725635215
+            },
+            "field.itinerary": {
+              "positive_count": 10,
+              "negative_count": 10,
+              "auroc": 0.86,
+              "average_precision": 0.848034188034188,
+              "brier": 0.1812123691422978
+            },
+            "field.payment": {
+              "positive_count": 15,
+              "negative_count": 5,
+              "auroc": 0.7066666666666667,
+              "average_precision": 0.8989132272955804,
+              "brier": 0.1797159588748189
+            },
+            "field.status": {
+              "positive_count": 9,
+              "negative_count": 11,
+              "auroc": 0.8686868686868687,
+              "average_precision": 0.8651385651385652,
+              "brier": 0.16757801519240784
+            },
+            "operation.create": {
+              "positive_count": 15,
+              "negative_count": 5,
+              "auroc": 0.7066666666666667,
+              "average_precision": 0.8989132272955804,
+              "brier": 0.1797159588748189
+            },
+            "operation.update": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.8627450980392157,
+              "average_precision": 0.9740232351573638,
+              "brier": 0.1255423960503682
+            },
+            "output.entity.flight": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.9970760233918129,
+              "brier": 0.08874866872500727
+            },
+            "output.entity.reservation": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.9970760233918129,
+              "brier": 0.08874866872500727
+            },
+            "output.entity.user": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.9970760233918129,
+              "brier": 0.08874866872500727
+            },
+            "output.field.itinerary": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.9970760233918129,
+              "brier": 0.08874866872500727
+            },
+            "output.field.payment": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.9970760233918129,
+              "brier": 0.08874866872500727
+            },
+            "output.field.status": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.9970760233918129,
+              "brier": 0.08874866872500727
+            },
+            "output.kind.object": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.9970760233918129,
+              "brier": 0.08874866872500727
+            },
+            "output.kind.string": {
+              "positive_count": 2,
+              "negative_count": 18,
+              "auroc": 0.9722222222222222,
+              "average_precision": 0.8333333333333333,
+              "brier": 0.08874866872500722
+            },
+            "status.cancelled": {
+              "positive_count": 5,
+              "negative_count": 15,
+              "auroc": 1.0,
+              "average_precision": 1.0,
+              "brier": 0.05082936768034184
+            }
+          },
+          "macro": {
+            "all_heads": {
+              "evaluable_head_count": 18,
+              "macro_auroc": 0.9004934970621244,
+              "macro_average_precision": 0.9438234326590526,
+              "macro_brier": 0.11535794406236187,
+              "consequence_family_balanced_auroc": 0.9244030721154904,
+              "consequence_family_balanced_brier": 0.10377290221845696
+            },
+            "by_consequence_family": {
+              "execution": {
+                "trained_head_count": 1,
+                "evaluable_head_count": 1,
+                "macro_auroc": 0.9722222222222222,
+                "macro_brier": 0.07958458725635215
+              },
+              "state_transition": {
+                "trained_head_count": 9,
+                "evaluable_head_count": 9,
+                "macro_auroc": 0.8287647719020268,
+                "macro_brier": 0.14298545067401147
+              },
+              "tool_output": {
+                "trained_head_count": 8,
+                "evaluable_head_count": 8,
+                "macro_auroc": 0.9722222222222222,
+                "macro_brier": 0.08874866872500725
+              }
+            }
+          },
+          "feedback": {
+            "definition": "mean squared deviation between the pre-result expected consequence and the observed consequence",
+            "all_heads": {
+              "error_count": 2,
+              "non_error_count": 18,
+              "error_detection_auroc": 0.9722222222222222,
+              "error_detection_average_precision": 0.8333333333333333,
+              "within_tool_error_detection_auroc": 0.875,
+              "within_tool_positive_negative_pairs": 8,
+              "mean_surprise_for_error": 0.2713110930644713,
+              "mean_surprise_for_non_error": 0.09802981639546081
+            },
+            "without_execution_success_head": {
+              "error_count": 2,
+              "non_error_count": 18,
+              "error_detection_auroc": 0.9722222222222222,
+              "error_detection_average_precision": 0.8333333333333333,
+              "within_tool_error_detection_auroc": 0.875,
+              "within_tool_positive_negative_pairs": 8,
+              "mean_surprise_for_error": 0.2657276252552926,
+              "mean_surprise_for_non_error": 0.10098832960340944
+            }
+          }
+        },
+        "hidden": {
+          "feature_dimension": 5120,
+          "heads": {
+            "effect.changed": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.9411764705882353,
+              "average_precision": 0.9911764705882353,
+              "brier": 0.11376117224602056
+            },
+            "entity.reservation": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.8823529411764706,
+              "average_precision": 0.9818885448916409,
+              "brier": 0.1207904885000735
+            },
+            "entity.user": {
+              "positive_count": 5,
+              "negative_count": 15,
+              "auroc": 0.8,
+              "average_precision": 0.7514285714285714,
+              "brier": 0.183507253134683
+            },
+            "execution.success": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.8333333333333334,
+              "average_precision": 0.9824236517218974,
+              "brier": 0.08980167767539078
+            },
+            "field.itinerary": {
+              "positive_count": 10,
+              "negative_count": 10,
+              "auroc": 0.82,
+              "average_precision": 0.7723015873015873,
+              "brier": 0.2140874123031006
+            },
+            "field.payment": {
+              "positive_count": 15,
+              "negative_count": 5,
+              "auroc": 0.7466666666666667,
+              "average_precision": 0.8964281636263061,
+              "brier": 0.17193093981864452
+            },
+            "field.status": {
+              "positive_count": 9,
+              "negative_count": 11,
+              "auroc": 0.8181818181818182,
+              "average_precision": 0.8511303511303511,
+              "brier": 0.1896646205708575
+            },
+            "operation.create": {
+              "positive_count": 15,
+              "negative_count": 5,
+              "auroc": 0.7466666666666667,
+              "average_precision": 0.8964281636263061,
+              "brier": 0.17193093981864452
+            },
+            "operation.update": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.8823529411764706,
+              "average_precision": 0.9818885448916409,
+              "brier": 0.1207904885000735
+            },
+            "output.entity.flight": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.8611111111111112,
+              "average_precision": 0.9846178286129267,
+              "brier": 0.09680310565919381
+            },
+            "output.entity.reservation": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.8611111111111112,
+              "average_precision": 0.9846178286129267,
+              "brier": 0.09680310565919381
+            },
+            "output.entity.user": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.8611111111111112,
+              "average_precision": 0.9846178286129267,
+              "brier": 0.09680310565919381
+            },
+            "output.field.itinerary": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.8611111111111112,
+              "average_precision": 0.9846178286129267,
+              "brier": 0.09680310565919381
+            },
+            "output.field.payment": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.8611111111111112,
+              "average_precision": 0.9846178286129267,
+              "brier": 0.09680310565919381
+            },
+            "output.field.status": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.8611111111111112,
+              "average_precision": 0.9846178286129267,
+              "brier": 0.09680310565919381
+            },
+            "output.kind.object": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.8611111111111112,
+              "average_precision": 0.9846178286129267,
+              "brier": 0.09680310565919381
+            },
+            "output.kind.string": {
+              "positive_count": 2,
+              "negative_count": 18,
+              "auroc": 0.8611111111111112,
+              "average_precision": 0.41666666666666663,
+              "brier": 0.09680310565919378
+            },
+            "status.cancelled": {
+              "positive_count": 5,
+              "negative_count": 15,
+              "auroc": 1.0,
+              "average_precision": 1.0,
+              "brier": 0.10308696481872108
+            }
+          },
+          "macro": {
+            "all_heads": {
+              "evaluable_head_count": 18,
+              "macro_auroc": 0.8533122070376972,
+              "macro_average_precision": 0.9118936397868715,
+              "macro_brier": 0.12520982236998668,
+              "consequence_family_balanced_auroc": 0.8476813890539381,
+              "consequence_family_balanced_brier": 0.11366641961933631
+            },
+            "by_consequence_family": {
+              "execution": {
+                "trained_head_count": 1,
+                "evaluable_head_count": 1,
+                "macro_auroc": 0.8333333333333334,
+                "macro_brier": 0.08980167767539078
+              },
+              "state_transition": {
+                "trained_head_count": 9,
+                "evaluable_head_count": 9,
+                "macro_auroc": 0.8485997227173697,
+                "macro_brier": 0.1543944755234243
+              },
+              "tool_output": {
+                "trained_head_count": 8,
+                "evaluable_head_count": 8,
+                "macro_auroc": 0.8611111111111112,
+                "macro_brier": 0.09680310565919381
+              }
+            }
+          },
+          "feedback": {
+            "definition": "mean squared deviation between the pre-result expected consequence and the observed consequence",
+            "all_heads": {
+              "error_count": 2,
+              "non_error_count": 18,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 8,
+              "mean_surprise_for_error": 0.4154399008601821,
+              "mean_surprise_for_non_error": 0.09296203587107604
+            },
+            "without_execution_success_head": {
+              "error_count": 2,
+              "non_error_count": 18,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 8,
+              "mean_surprise_for_error": 0.4062381647959632,
+              "mean_surprise_for_non_error": 0.0962987088124988
+            }
+          }
+        },
+        "surface_plus_hidden": {
+          "feature_dimension": 5131,
+          "heads": {
+            "effect.changed": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.8431372549019608,
+              "average_precision": 0.9709474950574023,
+              "brier": 0.11556691255672251
+            },
+            "entity.reservation": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.8823529411764706,
+              "average_precision": 0.9796740626074992,
+              "brier": 0.1208665001396095
+            },
+            "entity.user": {
+              "positive_count": 5,
+              "negative_count": 15,
+              "auroc": 0.84,
+              "average_precision": 0.7722222222222221,
+              "brier": 0.16053241090197876
+            },
+            "execution.success": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.9939896036387265,
+              "brier": 0.07972180914893615
+            },
+            "field.itinerary": {
+              "positive_count": 10,
+              "negative_count": 10,
+              "auroc": 0.86,
+              "average_precision": 0.856129426129426,
+              "brier": 0.17736412009525307
+            },
+            "field.payment": {
+              "positive_count": 15,
+              "negative_count": 5,
+              "auroc": 0.7333333333333333,
+              "average_precision": 0.9053543300524727,
+              "brier": 0.1738907758892063
+            },
+            "field.status": {
+              "positive_count": 9,
+              "negative_count": 11,
+              "auroc": 0.8080808080808081,
+              "average_precision": 0.8294871794871795,
+              "brier": 0.18753891613493306
+            },
+            "operation.create": {
+              "positive_count": 15,
+              "negative_count": 5,
+              "auroc": 0.7333333333333333,
+              "average_precision": 0.9053543300524727,
+              "brier": 0.1738907758892063
+            },
+            "operation.update": {
+              "positive_count": 17,
+              "negative_count": 3,
+              "auroc": 0.8823529411764706,
+              "average_precision": 0.9796740626074992,
+              "brier": 0.1208665001396095
+            },
+            "output.entity.flight": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.9939896036387265,
+              "brier": 0.08886516317606687
+            },
+            "output.entity.reservation": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.9939896036387265,
+              "brier": 0.08886516317606687
+            },
+            "output.entity.user": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.9939896036387265,
+              "brier": 0.08886516317606687
+            },
+            "output.field.itinerary": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.9939896036387265,
+              "brier": 0.08886516317606687
+            },
+            "output.field.payment": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.9939896036387265,
+              "brier": 0.08886516317606687
+            },
+            "output.field.status": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.9939896036387265,
+              "brier": 0.08886516317606687
+            },
+            "output.kind.object": {
+              "positive_count": 18,
+              "negative_count": 2,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.9939896036387265,
+              "brier": 0.08886516317606687
+            },
+            "output.kind.string": {
+              "positive_count": 2,
+              "negative_count": 18,
+              "auroc": 0.9444444444444444,
+              "average_precision": 0.75,
+              "brier": 0.08886516317606688
+            },
+            "status.cancelled": {
+              "positive_count": 5,
+              "negative_count": 15,
+              "auroc": 1.0,
+              "average_precision": 1.0,
+              "brier": 0.05549640975927195
+            }
+          },
+          "macro": {
+            "all_heads": {
+              "evaluable_head_count": 18,
+              "macro_auroc": 0.8934772562223543,
+              "macro_average_precision": 0.9389311076292215,
+              "macro_brier": 0.11536980200351457,
+              "consequence_family_balanced_auroc": 0.9104663189630511,
+              "consequence_family_balanced_brier": 0.10382578046040068
+            },
+            "by_consequence_family": {
+              "execution": {
+                "trained_head_count": 1,
+                "evaluable_head_count": 1,
+                "macro_auroc": 0.9444444444444444,
+                "macro_brier": 0.07972180914893615
+              },
+              "state_transition": {
+                "trained_head_count": 9,
+                "evaluable_head_count": 9,
+                "macro_auroc": 0.8425100680002642,
+                "macro_brier": 0.142890369056199
+              },
+              "tool_output": {
+                "trained_head_count": 8,
+                "evaluable_head_count": 8,
+                "macro_auroc": 0.9444444444444444,
+                "macro_brier": 0.08886516317606688
+              }
+            }
+          },
+          "feedback": {
+            "definition": "mean squared deviation between the pre-result expected consequence and the observed consequence",
+            "all_heads": {
+              "error_count": 2,
+              "non_error_count": 18,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 8,
+              "mean_surprise_for_error": 0.28633773520644207,
+              "mean_surprise_for_non_error": 0.09637336498096707
+            },
+            "without_execution_success_head": {
+              "error_count": 2,
+              "non_error_count": 18,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 8,
+              "mean_surprise_for_error": 0.27987472197235524,
+              "mean_surprise_for_non_error": 0.09942141173603411
+            }
+          }
+        }
+      },
+      "incremental_hidden_signal": {
+        "consequence_family_balanced_auroc_delta": -0.013936753152439363,
+        "consequence_family_balanced_brier_delta": 5.287824194372126e-05,
+        "auroc_delta_task_bootstrap_95_ci": [
+          -0.0641333068937236,
+          0.08039111351611342
+        ],
+        "brier_delta_task_bootstrap_95_ci": [
+          -0.0022986905808182047,
+          0.00266022949475991
+        ],
+        "semantic_surprise_error_detection_auroc_delta": 0.02777777777777779,
+        "semantic_surprise_within_tool_error_detection_auroc_delta": 0.125
+      }
+    },
+    "retail": {
+      "training_decision_count": 64,
+      "test_decision_count": 35,
+      "training_task_count": 44,
+      "test_task_count": 20,
+      "trained_target_count": 25,
+      "trained_targets": [
+        "effect.changed",
+        "entity.order",
+        "entity.user",
+        "execution.success",
+        "field.address",
+        "field.items",
+        "field.payment",
+        "field.status",
+        "operation.create",
+        "operation.delete",
+        "operation.update",
+        "output.entity.order",
+        "output.entity.user",
+        "output.field.address",
+        "output.field.items",
+        "output.field.payment",
+        "output.field.status",
+        "output.kind.object",
+        "output.kind.string",
+        "status.cancelled",
+        "status.exchange_requested",
+        "status.pending_item_modified",
+        "status.return_requested",
+        "transaction.payment",
+        "transaction.refund"
+      ],
+      "training_target_support": {
+        "effect.changed": {
+          "positive_count": 59,
+          "negative_count": 5
+        },
+        "entity.order": {
+          "positive_count": 55,
+          "negative_count": 9
+        },
+        "entity.user": {
+          "positive_count": 7,
+          "negative_count": 57
+        },
+        "execution.success": {
+          "positive_count": 59,
+          "negative_count": 5
+        },
+        "field.address": {
+          "positive_count": 8,
+          "negative_count": 56
+        },
+        "field.items": {
+          "positive_count": 40,
+          "negative_count": 24
+        },
+        "field.payment": {
+          "positive_count": 51,
+          "negative_count": 13
+        },
+        "field.status": {
+          "positive_count": 51,
+          "negative_count": 13
+        },
+        "operation.create": {
+          "positive_count": 51,
+          "negative_count": 13
+        },
+        "operation.delete": {
+          "positive_count": 33,
+          "negative_count": 31
+        },
+        "operation.update": {
+          "positive_count": 59,
+          "negative_count": 5
+        },
+        "output.entity.order": {
+          "positive_count": 59,
+          "negative_count": 5
+        },
+        "output.entity.user": {
+          "positive_count": 59,
+          "negative_count": 5
+        },
+        "output.field.address": {
+          "positive_count": 59,
+          "negative_count": 5
+        },
+        "output.field.items": {
+          "positive_count": 55,
+          "negative_count": 9
+        },
+        "output.field.payment": {
+          "positive_count": 56,
+          "negative_count": 8
+        },
+        "output.field.status": {
+          "positive_count": 55,
+          "negative_count": 9
+        },
+        "output.kind.object": {
+          "positive_count": 59,
+          "negative_count": 5
+        },
+        "output.kind.string": {
+          "positive_count": 5,
+          "negative_count": 59
+        },
+        "status.cancelled": {
+          "positive_count": 11,
+          "negative_count": 53
+        },
+        "status.exchange_requested": {
+          "positive_count": 14,
+          "negative_count": 50
+        },
+        "status.pending_item_modified": {
+          "positive_count": 8,
+          "negative_count": 56
+        },
+        "status.return_requested": {
+          "positive_count": 18,
+          "negative_count": 46
+        },
+        "transaction.payment": {
+          "positive_count": 2,
+          "negative_count": 62
+        },
+        "transaction.refund": {
+          "positive_count": 17,
+          "negative_count": 47
+        }
+      },
+      "untrained_targets": [
+        "entity.flight",
+        "entity.reservation",
+        "field.itinerary",
+        "output.entity.flight",
+        "output.entity.reservation",
+        "output.field.itinerary",
+        "output.kind.array",
+        "output.kind.boolean",
+        "output.kind.null",
+        "output.kind.number"
+      ],
+      "surface_features": {
+        "tool_vocabulary": [
+          "cancel_pending_order",
+          "exchange_delivered_order_items",
+          "modify_pending_order_address",
+          "modify_pending_order_items",
+          "modify_user_address",
+          "return_delivered_order_items"
+        ],
+        "unseen_test_decisions": 1,
+        "numeric_fields": [
+          "decision_position",
+          "prior_tool_errors",
+          "prompt_tokens",
+          "argument_count"
+        ]
+      },
+      "feature_sets": {
+        "surface": {
+          "feature_dimension": 11,
+          "heads": {
+            "effect.changed": {
+              "positive_count": 27,
+              "negative_count": 8,
+              "auroc": 0.6481481481481481,
+              "average_precision": 0.8731531309038825,
+              "brier": 0.19643792120309694
+            },
+            "entity.order": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6367521367521367,
+              "average_precision": 0.8598135149094245,
+              "brier": 0.17944749413810296
+            },
+            "entity.user": {
+              "positive_count": 3,
+              "negative_count": 32,
+              "auroc": 0.7604166666666666,
+              "average_precision": 0.2893772893772894,
+              "brier": 0.07269328349288175
+            },
+            "execution.success": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7193877551020408,
+              "average_precision": 0.9214141542009247,
+              "brier": 0.16799147196221217
+            },
+            "field.address": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 0.9666666666666667,
+              "average_precision": 0.71,
+              "brier": 0.03202447235341795
+            },
+            "field.items": {
+              "positive_count": 16,
+              "negative_count": 19,
+              "auroc": 0.7631578947368421,
+              "average_precision": 0.6135901393913702,
+              "brier": 0.22176978169769127
+            },
+            "field.payment": {
+              "positive_count": 22,
+              "negative_count": 13,
+              "auroc": 0.7657342657342657,
+              "average_precision": 0.8422005825414467,
+              "brier": 0.16841404259315174
+            },
+            "field.status": {
+              "positive_count": 21,
+              "negative_count": 14,
+              "auroc": 0.7448979591836735,
+              "average_precision": 0.820295510517129,
+              "brier": 0.19152886128032906
+            },
+            "operation.create": {
+              "positive_count": 22,
+              "negative_count": 13,
+              "auroc": 0.7657342657342657,
+              "average_precision": 0.8422005825414467,
+              "brier": 0.16841404259315174
+            },
+            "operation.delete": {
+              "positive_count": 9,
+              "negative_count": 26,
+              "auroc": 0.8888888888888888,
+              "average_precision": 0.6010693010693011,
+              "brier": 0.1418883431358084
+            },
+            "operation.update": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6752136752136753,
+              "average_precision": 0.8692195419779313,
+              "brier": 0.21780989693694708
+            },
+            "output.entity.order": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7193877551020408,
+              "average_precision": 0.9214141542009247,
+              "brier": 0.16799147196221217
+            },
+            "output.entity.user": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7193877551020408,
+              "average_precision": 0.9214141542009247,
+              "brier": 0.16799147196221217
+            },
+            "output.field.address": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7193877551020408,
+              "average_precision": 0.9214141542009247,
+              "brier": 0.16799147196221217
+            },
+            "output.field.items": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6367521367521367,
+              "average_precision": 0.8598135149094245,
+              "brier": 0.17944749413810296
+            },
+            "output.field.payment": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.594017094017094,
+              "average_precision": 0.8222972967498335,
+              "brier": 0.18748820538486216
+            },
+            "output.field.status": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6367521367521367,
+              "average_precision": 0.8598135149094245,
+              "brier": 0.17944749413810296
+            },
+            "output.kind.object": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7193877551020408,
+              "average_precision": 0.9214141542009247,
+              "brier": 0.16799147196221217
+            },
+            "output.kind.string": {
+              "positive_count": 7,
+              "negative_count": 28,
+              "auroc": 0.7193877551020408,
+              "average_precision": 0.3781626685762024,
+              "brier": 0.16799147196221217
+            },
+            "status.cancelled": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 0.98,
+              "average_precision": 0.8766666666666667,
+              "brier": 0.054485863418551835
+            },
+            "status.exchange_requested": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 0.9933333333333333,
+              "average_precision": 0.9666666666666667,
+              "brier": 0.03189215545124372
+            },
+            "status.pending_item_modified": {
+              "positive_count": 7,
+              "negative_count": 28,
+              "auroc": 0.9591836734693877,
+              "average_precision": 0.8010204081632653,
+              "brier": 0.0828778483124239
+            },
+            "status.return_requested": {
+              "positive_count": 4,
+              "negative_count": 31,
+              "auroc": 0.9435483870967742,
+              "average_precision": 0.6845238095238095,
+              "brier": 0.1033145047526356
+            },
+            "transaction.payment": {
+              "positive_count": 2,
+              "negative_count": 33,
+              "auroc": 0.42424242424242425,
+              "average_precision": 0.07125000000000001,
+              "brier": 0.06308899348124661
+            },
+            "transaction.refund": {
+              "positive_count": 12,
+              "negative_count": 23,
+              "auroc": 0.9239130434782609,
+              "average_precision": 0.7483507233507232,
+              "brier": 0.11789641245924788
+            }
+          },
+          "macro": {
+            "all_heads": {
+              "evaluable_head_count": 25,
+              "macro_auroc": 0.7609471730991609,
+              "macro_average_precision": 0.7598622253499944,
+              "macro_brier": 0.1439326377093708,
+              "consequence_family_balanced_auroc": 0.7349782457716918,
+              "consequence_family_balanced_brier": 0.1563443453258246
+            },
+            "by_consequence_family": {
+              "execution": {
+                "trained_head_count": 1,
+                "evaluable_head_count": 1,
+                "macro_auroc": 0.7193877551020408,
+                "macro_brier": 0.16799147196221217
+              },
+              "state_transition": {
+                "trained_head_count": 16,
+                "evaluable_head_count": 16,
+                "macro_auroc": 0.8024894643340881,
+                "macro_brier": 0.12774899483124552
+              },
+              "tool_output": {
+                "trained_head_count": 8,
+                "evaluable_head_count": 8,
+                "macro_auroc": 0.6830575178789464,
+                "macro_brier": 0.17329256918401612
+              }
+            }
+          },
+          "feedback": {
+            "definition": "mean squared deviation between the pre-result expected consequence and the observed consequence",
+            "all_heads": {
+              "error_count": 7,
+              "non_error_count": 28,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 38,
+              "mean_surprise_for_error": 0.547617583921337,
+              "mean_surprise_for_non_error": 0.043011401156379234
+            },
+            "without_execution_success_head": {
+              "error_count": 7,
+              "non_error_count": 28,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 38,
+              "mean_surprise_for_error": 0.5367102091301259,
+              "mean_surprise_for_non_error": 0.044485180570179854
+            }
+          }
+        },
+        "hidden": {
+          "feature_dimension": 5120,
+          "heads": {
+            "effect.changed": {
+              "positive_count": 27,
+              "negative_count": 8,
+              "auroc": 0.6620370370370371,
+              "average_precision": 0.8218142385816893,
+              "brier": 0.1938746392305465
+            },
+            "entity.order": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.7008547008547008,
+              "average_precision": 0.8671295171926615,
+              "brier": 0.1914152326555392
+            },
+            "entity.user": {
+              "positive_count": 3,
+              "negative_count": 32,
+              "auroc": 0.6770833333333334,
+              "average_precision": 0.28703703703703703,
+              "brier": 0.07704503036614439
+            },
+            "execution.success": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.6275510204081632,
+              "average_precision": 0.8275922470355074,
+              "brier": 0.17119419062285246
+            },
+            "field.address": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 0.9866666666666667,
+              "average_precision": 0.9266666666666666,
+              "brier": 0.0854688940035792
+            },
+            "field.items": {
+              "positive_count": 16,
+              "negative_count": 19,
+              "auroc": 0.868421052631579,
+              "average_precision": 0.8559534592822637,
+              "brier": 0.20606740288002037
+            },
+            "field.payment": {
+              "positive_count": 22,
+              "negative_count": 13,
+              "auroc": 0.8111888111888111,
+              "average_precision": 0.8575920996709767,
+              "brier": 0.22576833222437515
+            },
+            "field.status": {
+              "positive_count": 21,
+              "negative_count": 14,
+              "auroc": 0.826530612244898,
+              "average_precision": 0.8569157771888867,
+              "brier": 0.24161074714407513
+            },
+            "operation.create": {
+              "positive_count": 22,
+              "negative_count": 13,
+              "auroc": 0.8111888111888111,
+              "average_precision": 0.8575920996709767,
+              "brier": 0.22576833222437515
+            },
+            "operation.delete": {
+              "positive_count": 9,
+              "negative_count": 26,
+              "auroc": 0.9401709401709402,
+              "average_precision": 0.8093745760412429,
+              "brier": 0.2014653230757531
+            },
+            "operation.update": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6666666666666666,
+              "average_precision": 0.8092275239828992,
+              "brier": 0.21739768294923573
+            },
+            "output.entity.order": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.6275510204081632,
+              "average_precision": 0.8275922470355074,
+              "brier": 0.17119419062285246
+            },
+            "output.entity.user": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.6275510204081632,
+              "average_precision": 0.8275922470355074,
+              "brier": 0.17119419062285246
+            },
+            "output.field.address": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.6275510204081632,
+              "average_precision": 0.8275922470355074,
+              "brier": 0.17119419062285246
+            },
+            "output.field.items": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.7008547008547008,
+              "average_precision": 0.8671295171926615,
+              "brier": 0.1914152326555392
+            },
+            "output.field.payment": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6239316239316239,
+              "average_precision": 0.8224333740998678,
+              "brier": 0.1987961049236084
+            },
+            "output.field.status": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.7008547008547008,
+              "average_precision": 0.8671295171926615,
+              "brier": 0.1914152326555392
+            },
+            "output.kind.object": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.6275510204081632,
+              "average_precision": 0.8275922470355074,
+              "brier": 0.17119419062285246
+            },
+            "output.kind.string": {
+              "positive_count": 7,
+              "negative_count": 28,
+              "auroc": 0.6275510204081632,
+              "average_precision": 0.4382936507936508,
+              "brier": 0.17119419062285246
+            },
+            "status.cancelled": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 1.0,
+              "average_precision": 1.0,
+              "brier": 0.07759279254650851
+            },
+            "status.exchange_requested": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 0.7466666666666667,
+              "average_precision": 0.32322677322677323,
+              "brier": 0.11572512659356946
+            },
+            "status.pending_item_modified": {
+              "positive_count": 7,
+              "negative_count": 28,
+              "auroc": 0.8928571428571429,
+              "average_precision": 0.704112554112554,
+              "brier": 0.13559905730609506
+            },
+            "status.return_requested": {
+              "positive_count": 4,
+              "negative_count": 31,
+              "auroc": 0.8306451612903226,
+              "average_precision": 0.48928571428571427,
+              "brier": 0.1091482296835424
+            },
+            "transaction.payment": {
+              "positive_count": 2,
+              "negative_count": 33,
+              "auroc": 0.9242424242424242,
+              "average_precision": 0.41666666666666663,
+              "brier": 0.05046566234579408
+            },
+            "transaction.refund": {
+              "positive_count": 12,
+              "negative_count": 23,
+              "auroc": 0.8514492753623188,
+              "average_precision": 0.8205738705738707,
+              "brier": 0.18536945963240084
+            }
+          },
+          "macro": {
+            "all_heads": {
+              "evaluable_head_count": 25,
+              "macro_auroc": 0.759504658019693,
+              "macro_average_precision": 0.7534446347454902,
+              "macro_brier": 0.16594294635333426,
+              "consequence_family_balanced_auroc": 0.6992557892561795,
+              "consequence_family_balanced_brier": 0.1698767508651061
+            },
+            "by_consequence_family": {
+              "execution": {
+                "trained_head_count": 1,
+                "evaluable_head_count": 1,
+                "macro_auroc": 0.6275510204081632,
+                "macro_brier": 0.17119419062285246
+              },
+              "state_transition": {
+                "trained_head_count": 16,
+                "evaluable_head_count": 16,
+                "macro_auroc": 0.824791831400145,
+                "macro_brier": 0.15873637155384715
+              },
+              "tool_output": {
+                "trained_head_count": 8,
+                "evaluable_head_count": 8,
+                "macro_auroc": 0.6454245159602303,
+                "macro_brier": 0.17969969041861864
+              }
+            }
+          },
+          "feedback": {
+            "definition": "mean squared deviation between the pre-result expected consequence and the observed consequence",
+            "all_heads": {
+              "error_count": 7,
+              "non_error_count": 28,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 38,
+              "mean_surprise_for_error": 0.4972037274880701,
+              "mean_surprise_for_non_error": 0.08312775106965029
+            },
+            "without_execution_success_head": {
+              "error_count": 7,
+              "non_error_count": 28,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 38,
+              "mean_surprise_for_error": 0.4833351688454607,
+              "mean_surprise_for_non_error": 0.08632138842459854
+            }
+          }
+        },
+        "surface_plus_hidden": {
+          "feature_dimension": 5131,
+          "heads": {
+            "effect.changed": {
+              "positive_count": 27,
+              "negative_count": 8,
+              "auroc": 0.6851851851851852,
+              "average_precision": 0.8988022327119684,
+              "brier": 0.19410413433156798
+            },
+            "entity.order": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6495726495726496,
+              "average_precision": 0.8673501932888631,
+              "brier": 0.1804896103280875
+            },
+            "entity.user": {
+              "positive_count": 3,
+              "negative_count": 32,
+              "auroc": 0.75,
+              "average_precision": 0.2847222222222222,
+              "brier": 0.07489516399907234
+            },
+            "execution.success": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7142857142857143,
+              "average_precision": 0.918668711163161,
+              "brier": 0.16847679800156595
+            },
+            "field.address": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 0.9733333333333334,
+              "average_precision": 0.81,
+              "brier": 0.0341104708471691
+            },
+            "field.items": {
+              "positive_count": 16,
+              "negative_count": 19,
+              "auroc": 0.8026315789473685,
+              "average_precision": 0.6545321320621242,
+              "brier": 0.209838779645239
+            },
+            "field.payment": {
+              "positive_count": 22,
+              "negative_count": 13,
+              "auroc": 0.7622377622377622,
+              "average_precision": 0.8322276640458011,
+              "brier": 0.16681316251662712
+            },
+            "field.status": {
+              "positive_count": 21,
+              "negative_count": 14,
+              "auroc": 0.7414965986394558,
+              "average_precision": 0.8096075124481786,
+              "brier": 0.18866852970911166
+            },
+            "operation.create": {
+              "positive_count": 22,
+              "negative_count": 13,
+              "auroc": 0.7622377622377622,
+              "average_precision": 0.8322276640458011,
+              "brier": 0.16681316251662712
+            },
+            "operation.delete": {
+              "positive_count": 9,
+              "negative_count": 26,
+              "auroc": 0.8974358974358975,
+              "average_precision": 0.6177359677359678,
+              "brier": 0.13979721947325768
+            },
+            "operation.update": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.7094017094017094,
+              "average_precision": 0.8958030007745658,
+              "brier": 0.21613731953318283
+            },
+            "output.entity.order": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7142857142857143,
+              "average_precision": 0.918668711163161,
+              "brier": 0.16847679800156595
+            },
+            "output.entity.user": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7142857142857143,
+              "average_precision": 0.918668711163161,
+              "brier": 0.16847679800156595
+            },
+            "output.field.address": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7142857142857143,
+              "average_precision": 0.918668711163161,
+              "brier": 0.16847679800156595
+            },
+            "output.field.items": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6495726495726496,
+              "average_precision": 0.8673501932888631,
+              "brier": 0.1804896103280875
+            },
+            "output.field.payment": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6196581196581197,
+              "average_precision": 0.8336388100484122,
+              "brier": 0.1883351781100337
+            },
+            "output.field.status": {
+              "positive_count": 26,
+              "negative_count": 9,
+              "auroc": 0.6495726495726496,
+              "average_precision": 0.8673501932888631,
+              "brier": 0.1804896103280875
+            },
+            "output.kind.object": {
+              "positive_count": 28,
+              "negative_count": 7,
+              "auroc": 0.7142857142857143,
+              "average_precision": 0.918668711163161,
+              "brier": 0.16847679800156595
+            },
+            "output.kind.string": {
+              "positive_count": 7,
+              "negative_count": 28,
+              "auroc": 0.7142857142857143,
+              "average_precision": 0.4757238863925017,
+              "brier": 0.16847679800156595
+            },
+            "status.cancelled": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 0.98,
+              "average_precision": 0.8766666666666667,
+              "brier": 0.05501829752788685
+            },
+            "status.exchange_requested": {
+              "positive_count": 5,
+              "negative_count": 30,
+              "auroc": 0.9933333333333333,
+              "average_precision": 0.9666666666666667,
+              "brier": 0.037859445759399424
+            },
+            "status.pending_item_modified": {
+              "positive_count": 7,
+              "negative_count": 28,
+              "auroc": 0.9642857142857143,
+              "average_precision": 0.8486394557823129,
+              "brier": 0.08089002133502515
+            },
+            "status.return_requested": {
+              "positive_count": 4,
+              "negative_count": 31,
+              "auroc": 0.9354838709677419,
+              "average_precision": 0.6428571428571428,
+              "brier": 0.09323498165066967
+            },
+            "transaction.payment": {
+              "positive_count": 2,
+              "negative_count": 33,
+              "auroc": 0.45454545454545453,
+              "average_precision": 0.07472826086956522,
+              "brier": 0.06092314676693446
+            },
+            "transaction.refund": {
+              "positive_count": 12,
+              "negative_count": 23,
+              "auroc": 0.927536231884058,
+              "average_precision": 0.8296999296999297,
+              "brier": 0.11682289432603106
+            }
+          },
+          "macro": {
+            "all_heads": {
+              "evaluable_head_count": 25,
+              "macro_auroc": 0.7677293914610053,
+              "macro_average_precision": 0.7751869340284889,
+              "macro_brier": 0.14306366108165972,
+              "consequence_family_balanced_auroc": 0.7374531768967257,
+              "consequence_family_balanced_brier": 0.15615503928831295
+            },
+            "by_consequence_family": {
+              "execution": {
+                "trained_head_count": 1,
+                "evaluable_head_count": 1,
+                "macro_auroc": 0.7142857142857143,
+                "macro_brier": 0.16847679800156595
+              },
+              "state_transition": {
+                "trained_head_count": 16,
+                "evaluable_head_count": 16,
+                "macro_auroc": 0.8117948176254641,
+                "macro_brier": 0.12602602126661805
+              },
+              "tool_output": {
+                "trained_head_count": 8,
+                "evaluable_head_count": 8,
+                "macro_auroc": 0.6862789987789988,
+                "macro_brier": 0.1739622985967548
+              }
+            }
+          },
+          "feedback": {
+            "definition": "mean squared deviation between the pre-result expected consequence and the observed consequence",
+            "all_heads": {
+              "error_count": 7,
+              "non_error_count": 28,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 38,
+              "mean_surprise_for_error": 0.5302807524712876,
+              "mean_surprise_for_non_error": 0.04625938823425279
+            },
+            "without_execution_success_head": {
+              "error_count": 7,
+              "non_error_count": 28,
+              "error_detection_auroc": 1.0,
+              "error_detection_average_precision": 1.0,
+              "within_tool_error_detection_auroc": 1.0,
+              "within_tool_positive_negative_pairs": 38,
+              "mean_surprise_for_error": 0.5183027308606972,
+              "mean_surprise_for_non_error": 0.04793029275565527
+            }
+          }
+        }
+      },
+      "incremental_hidden_signal": {
+        "consequence_family_balanced_auroc_delta": 0.002474931125033941,
+        "consequence_family_balanced_brier_delta": -0.00018930603751166064,
+        "auroc_delta_task_bootstrap_95_ci": [
+          -0.0778874931752662,
+          0.0855741751377455
+        ],
+        "brier_delta_task_bootstrap_95_ci": [
+          -0.007987583561594996,
+          0.0061280419141741364
+        ],
+        "semantic_surprise_error_detection_auroc_delta": 0.0,
+        "semantic_surprise_within_tool_error_detection_auroc_delta": 0.0
+      }
+    }
+  }
+}
