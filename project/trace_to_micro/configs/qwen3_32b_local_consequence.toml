@@ -15,5 +15,7 @@ primary_layer_id = 47
 primary_moment = "action"
 bootstrap_samples = 2000
 random_seed = 300
+expectation_regularization = 1.0
+expectation_minimum_train_class_count = 2
 smoke_domain = "retail"
 smoke_task_id = "0"

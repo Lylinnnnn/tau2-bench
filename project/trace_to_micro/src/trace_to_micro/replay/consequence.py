@@ -21,6 +21,213 @@ from trace_to_micro.replay.state import (
     snapshot_environment,
 )
 
+FIELD_FAMILIES = {
+    "address": {
+        "address",
+        "address1",
+        "address2",
+        "city",
+        "country",
+        "state",
+        "zip",
+    },
+    "items": {
+        "exchange_items",
+        "exchange_new_items",
+        "item_id",
+        "items",
+        "new_item_ids",
+        "return_items",
+    },
+    "itinerary": {
+        "baggages",
+        "cabin",
+        "date",
+        "destination",
+        "flight_number",
+        "flights",
+        "origin",
+        "passengers",
+    },
+    "payment": {
+        "amount",
+        "balance",
+        "exchange_payment_method_id",
+        "exchange_price_difference",
+        "payment_history",
+        "payment_method_id",
+        "price",
+        "return_payment_method_id",
+        "transaction_type",
+    },
+    "status": {"cancel_reason", "status"},
+}
+
+
+def _category_key(prefix: str, value: str) -> str:
+    normalized = "_".join(value.lower().replace("(", " ").replace(")", " ").split())
+    return f"{prefix}.{normalized}"
+
+
+def _entity_type(path: str) -> str | None:
+    parts = path.split(".")
+    if len(parts) < 2:
+        return None
+    collection = parts[1]
+    aliases = {
+        "flights": "flight",
+        "orders": "order",
+        "reservations": "reservation",
+        "users": "user",
+    }
+    return aliases.get(collection, collection.removesuffix("s"))
+
+
+def _field_families(path: str) -> set[str]:
+    parts = set(path.split("."))
+    return {
+        family for family, field_names in FIELD_FAMILIES.items() if parts & field_names
+    }
+
+
+def _output_facts(content: str | None) -> dict[str, Any]:
+    if content is None:
+        return {
+            "kind": None,
+            "entity_types": [],
+            "field_families": [],
+        }
+    value = _content_value(content)
+    if isinstance(value, dict):
+        kind = "object"
+    elif isinstance(value, list):
+        kind = "array"
+    elif isinstance(value, bool):
+        kind = "boolean"
+    elif isinstance(value, (int, float)):
+        kind = "number"
+    elif value is None:
+        kind = "null"
+    else:
+        kind = "string"
+
+    keys = set()
+
+    def collect_keys(item: Any) -> None:
+        if isinstance(item, dict):
+            keys.update(str(key) for key in item)
+            for child in item.values():
+                collect_keys(child)
+        elif isinstance(item, list):
+            for child in item:
+                collect_keys(child)
+
+    collect_keys(value)
+    entity_markers = {
+        "order": {"order_id", "orders"},
+        "reservation": {"reservation_id", "reservations"},
+        "user": {"user_id", "users"},
+        "flight": {"flight_number", "flights"},
+    }
+    return {
+        "kind": kind,
+        "entity_types": sorted(
+            entity for entity, markers in entity_markers.items() if keys & markers
+        ),
+        "field_families": sorted(
+            family
+            for family, field_names in FIELD_FAMILIES.items()
+            if keys & field_names
+        ),
+    }
+
+
+def compile_abstract_consequence(
+    row: dict[str, Any], *, result_content: str | None = None
+) -> dict[str, Any]:
+    """Compile a tool result and state diff into a target-free consequence.
+
+    The record deliberately excludes distance to the task's official final state.
+    It describes only what actually happened immediately after the logged action,
+    so it can supervise an expectation probe without assuming one golden path.
+    """
+
+    changes = row["changes"]
+    operations = set()
+    entity_types = set()
+    field_families = set()
+    status_values = set()
+    transaction_types = set()
+    for change in changes:
+        if not change["before_present"] and change["after_present"]:
+            operations.add("create")
+        elif change["before_present"] and not change["after_present"]:
+            operations.add("delete")
+        else:
+            operations.add("update")
+        entity_type = _entity_type(change["path"])
+        if entity_type is not None:
+            entity_types.add(entity_type)
+        field_families.update(_field_families(change["path"]))
+        field_name = change["path"].rsplit(".", maxsplit=1)[-1]
+        if field_name == "status" and change["after"] is not None:
+            status_values.add(str(change["after"]))
+        if field_name == "transaction_type" and change["after"] is not None:
+            transaction_types.add(str(change["after"]))
+
+    output = _output_facts(result_content)
+
+    targets = {
+        "execution.success": bool(row["tool_success"]),
+        "effect.changed": bool(row["state_changed"]),
+        **{
+            f"operation.{operation}": operation in operations
+            for operation in ("create", "update", "delete")
+        },
+        **{
+            f"entity.{entity_type}": entity_type in entity_types
+            for entity_type in ("order", "reservation", "user", "flight")
+        },
+        **{
+            f"field.{family}": family in field_families
+            for family in sorted(FIELD_FAMILIES)
+        },
+        **{_category_key("status", value): True for value in status_values},
+        **{_category_key("transaction", value): True for value in transaction_types},
+        **{
+            f"output.kind.{kind}": output["kind"] == kind
+            for kind in ("object", "array", "string", "number", "boolean", "null")
+        },
+        **{
+            f"output.entity.{entity_type}": (entity_type in output["entity_types"])
+            for entity_type in ("order", "reservation", "user", "flight")
+        },
+        **{
+            f"output.field.{family}": family in output["field_families"]
+            for family in sorted(FIELD_FAMILIES)
+        },
+    }
+    return {
+        "schema_version": 1,
+        "decision_id": row["decision_id"],
+        "simulation_id": row["simulation_id"],
+        "domain": row["domain"],
+        "split": row["split"],
+        "task_id": row["task_id"],
+        "trial": row["trial"],
+        "tool_name": row["tool_name"],
+        "execution": "success" if row["tool_success"] else "error",
+        "state_changed": bool(row["state_changed"]),
+        "changed_leaf_count": len(changes),
+        "operations": sorted(operations),
+        "entity_types": sorted(entity_types),
+        "field_families": sorted(field_families),
+        "status_values": sorted(status_values),
+        "transaction_types": sorted(transaction_types),
+        "output": output,
+        "targets": targets,
+    }
+
 
 class InvalidReferenceTargetError(RuntimeError):
     """A task's reference write cannot produce a trustworthy DB target."""

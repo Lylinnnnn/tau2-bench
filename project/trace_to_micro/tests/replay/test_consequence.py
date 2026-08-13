@@ -11,6 +11,7 @@ from tau2.data_model.message import (
 from tau2.data_model.simulation import SimulationRun, TerminationReason
 from trace_to_micro.replay.consequence import (
     InvalidReferenceTargetError,
+    compile_abstract_consequence,
     replay_local_consequences,
     target_snapshot,
 )
@@ -66,6 +67,62 @@ class _Environment:
             content="1",
             error=False,
         )
+
+
+def test_compile_abstract_consequence_uses_only_observed_local_effects() -> None:
+    row = {
+        "decision_id": "sim-1:2",
+        "simulation_id": "sim-1",
+        "domain": "retail",
+        "split": "train",
+        "task_id": "task-1",
+        "trial": 0,
+        "tool_name": "cancel_pending_order",
+        "tool_success": True,
+        "state_changed": True,
+        "goal_progress": False,
+        "target_distance_before": 5,
+        "target_distance_after": 6,
+        "changes": [
+            {
+                "path": "assistant.orders.order-1.status",
+                "before": "pending",
+                "after": "cancelled",
+                "before_present": True,
+                "after_present": True,
+            },
+            {
+                "path": "assistant.orders.order-1.payment_history.1.transaction_type",
+                "before": None,
+                "after": "refund",
+                "before_present": False,
+                "after_present": True,
+            },
+        ],
+    }
+
+    consequence = compile_abstract_consequence(
+        row,
+        result_content=(
+            '{"order_id":"order-1","status":"cancelled","payment_history":[]}'
+        ),
+    )
+
+    assert consequence["execution"] == "success"
+    assert consequence["operations"] == ["create", "update"]
+    assert consequence["entity_types"] == ["order"]
+    assert consequence["field_families"] == ["payment", "status"]
+    assert consequence["targets"]["status.cancelled"] is True
+    assert consequence["targets"]["transaction.refund"] is True
+    assert consequence["output"] == {
+        "kind": "object",
+        "entity_types": ["order"],
+        "field_families": ["payment", "status"],
+    }
+    assert consequence["targets"]["output.kind.object"] is True
+    assert consequence["targets"]["output.entity.order"] is True
+    assert "goal_progress" not in consequence
+    assert all("goal" not in target for target in consequence["targets"])
 
 
 def test_target_snapshot_skips_stale_read_only_reference_action(

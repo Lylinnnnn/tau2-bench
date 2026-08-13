@@ -311,6 +311,8 @@ class LocalConsequenceConfig:
     primary_moment: str
     bootstrap_samples: int
     random_seed: int
+    expectation_regularization: float
+    expectation_minimum_train_class_count: int
     smoke_domain: str
     smoke_task_id: str
 
@@ -336,6 +338,10 @@ class LocalConsequenceConfig:
             raise ValueError("hidden_size must be positive")
         if values["bootstrap_samples"] <= 0:
             raise ValueError("bootstrap_samples must be positive")
+        if values["expectation_regularization"] <= 0:
+            raise ValueError("expectation_regularization must be positive")
+        if values["expectation_minimum_train_class_count"] <= 0:
+            raise ValueError("expectation_minimum_train_class_count must be positive")
         if values["smoke_domain"] not in domains:
             raise ValueError("smoke_domain must be one of the configured domains")
         return cls(
@@ -355,6 +361,10 @@ class LocalConsequenceConfig:
             primary_moment=values["primary_moment"],
             bootstrap_samples=values["bootstrap_samples"],
             random_seed=values["random_seed"],
+            expectation_regularization=values["expectation_regularization"],
+            expectation_minimum_train_class_count=values[
+                "expectation_minimum_train_class_count"
+            ],
             smoke_domain=values["smoke_domain"],
             smoke_task_id=str(values["smoke_task_id"]),
         )

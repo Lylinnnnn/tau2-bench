@@ -134,6 +134,8 @@ def test_local_consequence_config_reuses_existing_complete_trajectories() -> Non
     assert config.primary_layer_id == 47
     assert config.primary_moment == "action"
     assert config.random_seed == 300
+    assert config.expectation_regularization == 1.0
+    assert config.expectation_minimum_train_class_count == 2
     assert config.expected_agent_model == "openai/qwen3-32b"
     assert config.expected_user_model == "openai/qwen3-32b"
     assert config.expected_num_trials == 1

@@ -121,6 +121,10 @@ analysis / evaluation / clean / runtime
 | 隐藏表示导出、紧凑编码与临时文件清理 | `runtime/activations.py` |
 | 成功方向的中心计算、迁移评测与普通信息基线 | `evaluation/success_direction.py` |
 | 局部后果方向与按轨迹聚类的不确定性评测 | `evaluation/local_consequence.py` |
+| 目标无关的后果多头探针与结果偏离反馈评测 | `evaluation/consequence_expectation.py` |
+| 后果探针的普通信息/隐藏特征、闭式拟合与预测 | `evaluation/consequence_probe.py` |
+| 后果头指标、异常偏离和 task 级重采样 | `evaluation/consequence_metrics.py` |
+| 预期后果评测的已有产物读取与落盘 | `runner/consequence_expectation.py` |
 | 成功方向实验的跨领域阶段编排 | `runner/success_direction.py` |
 | 局部后果请求、隐藏表示分片和评测编排 | `runner/local_consequence.py` |
 
@@ -145,6 +149,19 @@ analysis / evaluation / clean / runtime
   样本重复 rollout；同一轨迹只能属于一个任务划分，区间估计必须按轨迹聚类。
 - `(s,a)->consequence` 主读出点必须包含已生成动作但不能包含工具结果；动作前和
   结果后表示只能作为诊断，禁止在测试结果出来后替换主读出点。
+- 预期后果标签只能由实际工具返回值和 `s_t` 到 `s_{t+1}` 的确定性字段差分编译；
+  返回值标签只允许使用类型、实体类别和字段家族等抽象事实，禁止把具体身份、
+  编号、金额等高基数值直接当分类标签。
+  禁止读取官方目标状态、参考动作是否匹配或轨迹最终奖励。主报告必须同时给出
+  工具名、决策位置、此前错误数、上下文长度和参数数量组成的普通信息基线，隐藏
+  表示的主证据是加入隐藏表示以后相对该基线的增量，而不是隐藏表示单独的绝对
+  分数。
+- 后果探针固定在官方 Train 任务上拟合，在官方 Test 任务上评测；正则强度、
+  最小类别支持度、层和读出时刻都必须在配置中预先声明。置信区间按 task id
+  重采样，以便同一任务以后有多条 trial 时仍作为一个统计簇。
+- “预期—实际偏离”必须同时报告全后果头和去掉 `execution.success` 后的语义后果
+  头结果。只报告包含执行成功头的工具错误检测会把监督定义和结论机械绑定，禁止
+  作为单独证据。
 
 只有当需求与这些文件的变化原因确实不同，且满足第 3 节时，才新增模块。
 

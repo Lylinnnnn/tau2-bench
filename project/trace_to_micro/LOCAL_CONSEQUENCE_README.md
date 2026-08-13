@@ -9,9 +9,11 @@
 工具结果 + 真实下一状态 s_{t+1}
 ```
 
-目标是验证一个更局部的问题：模型生成动作以后、工具结果返回以前，其隐藏表示
-里是否已经存在“这一步会把环境推向正确目标”的简单方向。这比用第一步预测整条
-轨迹的最终 reward 更接近后续的 `(s,a) -> consequence` 轻量 verifier。
+实验分为两个问题。第一阶段保留原来的诊断：模型生成动作以后、工具结果返回
+以前，隐藏表示里是否存在“这一步会让数据库更接近官方最终目标”的简单方向。
+第二阶段是当前主实验：隐藏表示能否预测工具执行以后实际会发生什么；结果返回
+后，预期后果与真实后果之间的偏离能否暴露明显异常。第二阶段不读取官方目标，
+因此不假设一个动作只有一条官方正确路径。
 
 ## 标签完全由代码产生
 
@@ -44,6 +46,35 @@ data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_
 不会伪造用户反馈。
 
 ## 主实验与诊断
+
+### 当前主实验：预期后果与偏离反馈
+
+代码把每条真实局部转换自动编译成多组可以同时成立的简单事实：工具是否执行
+成功、数据库是否变化、发生了新增/修改/删除、影响的是订单/预订/用户/航班，
+地址、商品、行程、付款、状态哪一类字段；还会从真实工具结果自动编译返回值是
+对象还是文本、返回值涉及哪类实体和字段，但不保存具体姓名、编号或金额作为
+预测标签。例如，取消订单可能同时得到
+`execution.success=true`、`effect.changed=true`、`entity.order=true`、
+`field.status=true`、`status.cancelled=true`、`output.kind.object=true` 和
+`output.entity.order=true`。这些不是 LLM 标签，也不要求动作和官方参考动作一致。
+
+探针固定读取工具动作已经生成、结果还没返回时的第 47 层最后一个 token。它是
+一次闭式求解的多标签线性岭回归，不做大模型微调，也不在 Test 上挑参数。为了
+确认探针没有只记住工具名或长上下文，报告比较三组输入：
+
+1. `surface`：工具名、决策位置、此前工具错误数、上下文 token 数、参数数量；
+2. `hidden`：动作时刻的隐藏表示；
+3. `surface_plus_hidden`：两者合并。
+
+主指标先分别平均“执行结果、数据库变化、工具输出”三类后果内部的 AUROC，再
+对三类等权平均，最后计算第三组相对第一组的增量。这样不会因为某类标签头更多
+而支配总分。区间按 task id 整体重采样计算；只有 Airline 和 Retail 的 95%
+区间下界都大于 0，才称为稳定的额外隐藏信号。结果返回后，用每个后果头的预测
+值与真实 0/1 结果之间的均方偏差作为 `surprise`。错误检测同时报告全部后果头，
+以及去掉 `execution.success` 之后的语义后果头；后一个口径可以检查结果是否真的
+违反模型预期，而不是机械利用“执行失败”标签。
+
+### 旧诊断：官方目标进展方向
 
 每个真实写操作保留同一上下文链的三个隐藏表示时刻：
 
@@ -92,6 +123,9 @@ project/trace_to_micro/outputs/qwen3_32b_thinking_t06_local_consequence/
 ├── activation_shards/
 ├── activations.jsonl
 ├── local_consequence_report.json
+├── abstract_consequences.jsonl
+├── consequence_expectation_predictions.jsonl
+├── consequence_expectation_report.json
 └── smoke/
     ├── activation_requests.jsonl
     ├── activations.jsonl
@@ -104,3 +138,10 @@ project/trace_to_micro/outputs/qwen3_32b_thinking_t06_local_consequence/
 数量，以及哪些工具同时存在正负例；`local_consequence_exclusions.jsonl` 则逐项
 记录被隔离的问题。如果某一领域的 `goal_progress` 在 Train 或 Test 只有一个
 类别，正式报告会明确标记不可评测，不会用别的标签偷偷替代主问题。
+
+已有 `activations.jsonl` 时，第二阶段只在 CPU 上运行，不会启动 vLLM，也不会
+重新生成轨迹：
+
+```bash
+bash project/trace_to_micro/scripts/run_qwen3_32b_local_consequence.sh expectation
+```

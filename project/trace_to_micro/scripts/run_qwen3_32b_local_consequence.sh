@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ "$#" -ne 1 ]]; then
-  echo "Usage: $0 <audit|smoke|activations|evaluate>" >&2
+  echo "Usage: $0 <audit|smoke|activations|evaluate|expectation>" >&2
   exit 2
 fi
 
@@ -146,6 +146,10 @@ case "${stage}" in
   evaluate)
     uv run --no-sync python -m trace_to_micro.cli \
       local-consequence-evaluate --config "${config}"
+    ;;
+  expectation)
+    uv run --no-sync python -m trace_to_micro.cli \
+      consequence-expectation-evaluate --config "${config}"
     ;;
   *)
     echo "Unknown stage: ${stage}" >&2

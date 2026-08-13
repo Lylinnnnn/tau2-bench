@@ -124,6 +124,8 @@ def test_local_consequence_launcher_reuses_traces_and_shards_hidden_exports() ->
     assert "local-consequence-activation-shard" in launcher
     assert "local-consequence-merge-activations" in launcher
     assert "local-consequence-evaluate" in launcher
+    assert "consequence-expectation-evaluate" in launcher
+    assert "expectation)" in launcher
     assert "success-trajectory-shard" not in launcher
     assert 'num_shards="${NUM_SHARDS:-8}"' in launcher
     assert 'export CUDA_VISIBLE_DEVICES="${gpu}"' in launcher

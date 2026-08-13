@@ -10,6 +10,9 @@ from trace_to_micro.analysis.task_inventory import build_task_inventory
 from trace_to_micro.config import ExperimentConfig
 from trace_to_micro.evaluation import build_support_report
 from trace_to_micro.replay.reference import replay_reference_tasks
+from trace_to_micro.runner.consequence_expectation import (
+    run_consequence_expectation_evaluation,
+)
 from trace_to_micro.runner.local_consequence import (
     build_local_consequence_requests,
     build_local_consequence_smoke_requests,
@@ -196,6 +199,7 @@ def _parser() -> argparse.ArgumentParser:
         "local-consequence-requests",
         "local-consequence-smoke-requests",
         "local-consequence-evaluate",
+        "consequence-expectation-evaluate",
     ):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, required=True)
@@ -311,6 +315,11 @@ def main(argv: list[str] | None = None) -> None:
         return
     elif args.command == "local-consequence-evaluate":
         print(run_local_consequence_evaluation(args.config))
+        return
+    elif args.command == "consequence-expectation-evaluate":
+        paths = run_consequence_expectation_evaluation(args.config)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
         return
     elif args.command == "success-evaluate":
         print(run_success_direction_evaluation(args.config))
