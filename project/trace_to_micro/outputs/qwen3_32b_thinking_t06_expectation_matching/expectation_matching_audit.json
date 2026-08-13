@@ -1,0 +1,505 @@
+{
+  "completed": true,
+  "data_source": "saved behavior-policy trajectories",
+  "new_rollout_used": false,
+  "official_goal_used": false,
+  "reference_action_used": false,
+  "evaluation_split": "test",
+  "source_completeness": {
+    "airline": {
+      "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base/results.json",
+      "behavior_agent_model": "openai/qwen3-32b",
+      "behavior_user_model": "openai/qwen3-32b",
+      "behavior_agent_args": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens": 4096,
+        "api_base": "sharded endpoints; see trajectory_shard_manifest.json",
+        "api_key": "EMPTY",
+        "timeout": 180.0,
+        "num_retries": 0,
+        "extra_body": {
+          "top_k": 20,
+          "min_p": 0.0,
+          "chat_template_kwargs": {
+            "enable_thinking": true
+          }
+        }
+      },
+      "behavior_user_args": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens": 4096,
+        "api_base": "sharded endpoints; see trajectory_shard_manifest.json",
+        "api_key": "EMPTY",
+        "timeout": 180.0,
+        "num_retries": 0,
+        "extra_body": {
+          "top_k": 20,
+          "min_p": 0.0,
+          "chat_template_kwargs": {
+            "enable_thinking": true
+          }
+        }
+      },
+      "nl_assertions_evaluator_model": "openai/qwen3-30b-a3b-instruct-2507",
+      "nl_assertions_evaluator_args": {
+        "temperature": 0.0
+      },
+      "evaluator_provenance": "captured from this audit process; use the checked-in launcher so it matches trajectory generation",
+      "expected_agent_model": "openai/qwen3-32b",
+      "expected_user_model": "openai/qwen3-32b",
+      "agent_model_mismatch": false,
+      "user_model_mismatch": false,
+      "task_count": 50,
+      "num_trials": 1,
+      "required_task_count": 50,
+      "required_num_trials": 1,
+      "expected_simulations": 50,
+      "observed_simulations": 50,
+      "missing_task_trials": [],
+      "duplicate_task_trials": [],
+      "unexpected_task_trials": [],
+      "empty_simulation_ids": [],
+      "missing_reward_simulation_ids": [],
+      "infrastructure_error_simulation_ids": [],
+      "missing_metadata_tasks": [],
+      "unexpected_metadata_tasks": [],
+      "num_trials_mismatch": false,
+      "termination_reasons": {
+        "TerminationReason.USER_STOP": 50
+      },
+      "complete": true
+    },
+    "retail": {
+      "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base/results.json",
+      "behavior_agent_model": "openai/qwen3-32b",
+      "behavior_user_model": "openai/qwen3-32b",
+      "behavior_agent_args": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens": 4096,
+        "api_base": "sharded endpoints; see trajectory_shard_manifest.json",
+        "api_key": "EMPTY",
+        "timeout": 180.0,
+        "num_retries": 0,
+        "extra_body": {
+          "top_k": 20,
+          "min_p": 0.0,
+          "chat_template_kwargs": {
+            "enable_thinking": true
+          }
+        }
+      },
+      "behavior_user_args": {
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens": 4096,
+        "api_base": "sharded endpoints; see trajectory_shard_manifest.json",
+        "api_key": "EMPTY",
+        "timeout": 180.0,
+        "num_retries": 0,
+        "extra_body": {
+          "top_k": 20,
+          "min_p": 0.0,
+          "chat_template_kwargs": {
+            "enable_thinking": true
+          }
+        }
+      },
+      "nl_assertions_evaluator_model": "openai/qwen3-30b-a3b-instruct-2507",
+      "nl_assertions_evaluator_args": {
+        "temperature": 0.0
+      },
+      "evaluator_provenance": "captured from this audit process; use the checked-in launcher so it matches trajectory generation",
+      "expected_agent_model": "openai/qwen3-32b",
+      "expected_user_model": "openai/qwen3-32b",
+      "agent_model_mismatch": false,
+      "user_model_mismatch": false,
+      "task_count": 114,
+      "num_trials": 1,
+      "required_task_count": 114,
+      "required_num_trials": 1,
+      "expected_simulations": 114,
+      "observed_simulations": 114,
+      "missing_task_trials": [],
+      "duplicate_task_trials": [],
+      "unexpected_task_trials": [],
+      "empty_simulation_ids": [],
+      "missing_reward_simulation_ids": [],
+      "infrastructure_error_simulation_ids": [],
+      "missing_metadata_tasks": [],
+      "unexpected_metadata_tasks": [],
+      "num_trials_mismatch": false,
+      "termination_reasons": {
+        "TerminationReason.USER_STOP": 114
+      },
+      "complete": true
+    }
+  },
+  "source_counts": {
+    "airline": {
+      "all_logged_tool_decisions_on_evaluation_split": 87,
+      "successful_single_call_decisions": 85,
+      "tools": {
+        "get_user_details": 14,
+        "get_reservation_details": 23,
+        "transfer_to_human_agents": 12,
+        "update_reservation_flights": 7,
+        "search_direct_flight": 12,
+        "book_reservation": 4,
+        "cancel_reservation": 5,
+        "search_onestop_flight": 1,
+        "get_flight_status": 4,
+        "calculate": 1,
+        "update_reservation_baggages": 2
+      }
+    },
+    "retail": {
+      "all_logged_tool_decisions_on_evaluation_split": 187,
+      "successful_single_call_decisions": 173,
+      "tools": {
+        "find_user_id_by_name_zip": 28,
+        "get_user_details": 29,
+        "get_order_details": 51,
+        "get_product_details": 24,
+        "exchange_delivered_order_items": 5,
+        "find_user_id_by_email": 4,
+        "transfer_to_human_agents": 7,
+        "cancel_pending_order": 5,
+        "modify_pending_order_payment": 1,
+        "modify_user_address": 2,
+        "modify_pending_order_address": 4,
+        "modify_pending_order_items": 7,
+        "return_delivered_order_items": 4,
+        "list_all_product_types": 1,
+        "get_item_details": 1
+      }
+    }
+  },
+  "eligible_query_count": 220,
+  "eligible_task_count": 55,
+  "query_tool_support": {
+    "get_order_details": 51,
+    "find_user_id_by_name_zip": 28,
+    "get_user_details": 43,
+    "get_reservation_details": 23,
+    "cancel_reservation": 5,
+    "search_direct_flight": 12,
+    "get_product_details": 24,
+    "modify_pending_order_items": 7,
+    "update_reservation_flights": 7,
+    "exchange_delivered_order_items": 5,
+    "find_user_id_by_email": 4,
+    "book_reservation": 4,
+    "cancel_pending_order": 5,
+    "return_delivered_order_items": 2
+  },
+  "trajectory_exclusions": [],
+  "candidate_exclusions": [
+    {
+      "decision_id": "009e9305-a4cf-4eaf-a6b2-8b999f6b041b:18",
+      "domain": "retail",
+      "task_id": "38",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "046a47e2-a620-40f6-ba0f-e8abed8af433:8",
+      "domain": "retail",
+      "task_id": "65",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "04de45d8-0cb0-4c3f-a47f-3cbd970cd9ff:6",
+      "domain": "airline",
+      "task_id": "31",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "1184bda2-82e1-4a4e-afad-923bc75cfc2f:12",
+      "domain": "airline",
+      "task_id": "29",
+      "tool_name": "update_reservation_baggages",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 2
+    },
+    {
+      "decision_id": "1fb4c272-2672-4c7d-b8eb-871b135282e1:12",
+      "domain": "retail",
+      "task_id": "101",
+      "tool_name": "modify_pending_order_address",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 3
+    },
+    {
+      "decision_id": "2fa61291-d12f-4bcd-a94b-ce4451b33a52:18",
+      "domain": "retail",
+      "task_id": "42",
+      "tool_name": "modify_user_address",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 2
+    },
+    {
+      "decision_id": "2fa61291-d12f-4bcd-a94b-ce4451b33a52:20",
+      "domain": "retail",
+      "task_id": "42",
+      "tool_name": "modify_pending_order_address",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 2
+    },
+    {
+      "decision_id": "2fa61291-d12f-4bcd-a94b-ce4451b33a52:22",
+      "domain": "retail",
+      "task_id": "42",
+      "tool_name": "modify_pending_order_address",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 2
+    },
+    {
+      "decision_id": "4863c047-5ef6-4fcf-8429-490d15d9bcde:22",
+      "domain": "retail",
+      "task_id": "86",
+      "tool_name": "modify_user_address",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 2
+    },
+    {
+      "decision_id": "4e867f8c-7699-445d-aa94-fa9072272b5d:10",
+      "domain": "airline",
+      "task_id": "25",
+      "tool_name": "get_flight_status",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "4e867f8c-7699-445d-aa94-fa9072272b5d:16",
+      "domain": "airline",
+      "task_id": "25",
+      "tool_name": "get_flight_status",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "4e867f8c-7699-445d-aa94-fa9072272b5d:18",
+      "domain": "airline",
+      "task_id": "25",
+      "tool_name": "calculate",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "4f3a3227-9603-40ec-8b62-8b469edac72f:26",
+      "domain": "retail",
+      "task_id": "55",
+      "tool_name": "return_delivered_order_items",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 3
+    },
+    {
+      "decision_id": "4f3a3227-9603-40ec-8b62-8b469edac72f:28",
+      "domain": "retail",
+      "task_id": "55",
+      "tool_name": "return_delivered_order_items",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 3
+    },
+    {
+      "decision_id": "519da292-3888-4501-8a96-27003c2802b2:12",
+      "domain": "retail",
+      "task_id": "79",
+      "tool_name": "get_item_details",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "5d003aad-386c-4d78-bdee-edb6197a3ff1:8",
+      "domain": "airline",
+      "task_id": "44",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "619f796e-6dd8-46e6-ab98-8014a2d4cf9a:16",
+      "domain": "retail",
+      "task_id": "12",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "619f796e-6dd8-46e6-ab98-8014a2d4cf9a:22",
+      "domain": "retail",
+      "task_id": "12",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "6b1da194-19b9-4c15-a14c-4d68b72101c0:16",
+      "domain": "airline",
+      "task_id": "30",
+      "tool_name": "update_reservation_baggages",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 2
+    },
+    {
+      "decision_id": "6b1da194-19b9-4c15-a14c-4d68b72101c0:8",
+      "domain": "airline",
+      "task_id": "30",
+      "tool_name": "get_flight_status",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "6f459efa-8963-4a2d-9fdd-9edc7449bd23:10",
+      "domain": "retail",
+      "task_id": "40",
+      "tool_name": "modify_pending_order_payment",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "aa259c35-6146-454a-9f0b-c4bdde34946c:12",
+      "domain": "retail",
+      "task_id": "62",
+      "tool_name": "list_all_product_types",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "aa5d37df-b3df-42bd-b783-d87af5fbc563:10",
+      "domain": "airline",
+      "task_id": "2",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "b73734ed-eb50-4248-8f92-37c91721b685:6",
+      "domain": "airline",
+      "task_id": "32",
+      "tool_name": "get_flight_status",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "ba013093-938f-4b8d-87aa-8a1ace8e909e:22",
+      "domain": "retail",
+      "task_id": "18",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "c563edea-684e-42b7-8478-a75b2ab38802:10",
+      "domain": "retail",
+      "task_id": "102",
+      "tool_name": "modify_pending_order_address",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 3
+    },
+    {
+      "decision_id": "c6685837-f09d-405f-92d1-0bcc39f6d64d:10",
+      "domain": "airline",
+      "task_id": "37",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "d70b88da-3a84-473c-8e97-ccb981568797:10",
+      "domain": "airline",
+      "task_id": "45",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "d70b88da-3a84-473c-8e97-ccb981568797:12",
+      "domain": "airline",
+      "task_id": "45",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "d70b88da-3a84-473c-8e97-ccb981568797:14",
+      "domain": "airline",
+      "task_id": "45",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "d70b88da-3a84-473c-8e97-ccb981568797:16",
+      "domain": "airline",
+      "task_id": "45",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "d70b88da-3a84-473c-8e97-ccb981568797:18",
+      "domain": "airline",
+      "task_id": "45",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "d70b88da-3a84-473c-8e97-ccb981568797:26",
+      "domain": "airline",
+      "task_id": "45",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "d70b88da-3a84-473c-8e97-ccb981568797:4",
+      "domain": "airline",
+      "task_id": "45",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "d70b88da-3a84-473c-8e97-ccb981568797:8",
+      "domain": "airline",
+      "task_id": "45",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "e8a7c56d-6fe3-4b5f-a626-48a6afc45766:8",
+      "domain": "retail",
+      "task_id": "68",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "f7bd9aa9-9182-4c95-92e0-fc0631e05811:6",
+      "domain": "retail",
+      "task_id": "56",
+      "tool_name": "transfer_to_human_agents",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    },
+    {
+      "decision_id": "fb8b63ad-5452-45ca-bc88-d894d584ca17:8",
+      "domain": "airline",
+      "task_id": "16",
+      "tool_name": "search_onestop_flight",
+      "reason": "insufficient_distinct_same_tool_cross_task_results",
+      "available_candidate_count": 1
+    }
+  ]
+}

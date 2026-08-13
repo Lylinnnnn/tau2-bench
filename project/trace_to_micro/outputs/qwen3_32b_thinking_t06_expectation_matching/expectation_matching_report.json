@@ -1,0 +1,206 @@
+{
+  "experiment": {
+    "name": "Experiment A: target-free expected-result matching",
+    "hypothesis": "After selecting a tool action but before observing its result, the behavior model assigns higher conditional likelihood to the factual result than to structurally similar same-tool results from other tasks.",
+    "official_goal_used": false,
+    "reference_action_used": false,
+    "trained_probe_used": false,
+    "new_rollout_used": false,
+    "evaluation_split": "test",
+    "negative_source": "successful same-tool results from different tasks in the same domain and official split",
+    "uncertainty_cluster": "task_id"
+  },
+  "primary_test": {
+    "metric": "per-query pairwise ranking accuracy",
+    "chance": 0.5,
+    "evidence_rule": "In both domains, full/raw has a task-bootstrap lower bound > 0.5, exceeds shuffled/raw with a positive lower-bound delta, and full/identifier-masked remains above chance.",
+    "evidence_status": "reliable_contextual_expectation_signal"
+  },
+  "domains": {
+    "airline": {
+      "conditions": {
+        "full:raw": {
+          "query_count": 65,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.9487179487179487,
+          "hit_at_1": 0.8923076923076924,
+          "mean_reciprocal_rank": 0.9397435897435896,
+          "mean_top_margin": 0.1773762581626044,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.9039436515016355,
+            0.9861378205128204
+          ]
+        },
+        "full:identifier_masked": {
+          "query_count": 65,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.8820512820512821,
+          "hit_at_1": 0.8,
+          "mean_reciprocal_rank": 0.8769230769230769,
+          "mean_top_margin": 0.06631567640483504,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.8059399431414357,
+            0.9464393547273982
+          ]
+        },
+        "action_only:raw": {
+          "query_count": 65,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.8769230769230769,
+          "hit_at_1": 0.7538461538461538,
+          "mean_reciprocal_rank": 0.858974358974359,
+          "mean_top_margin": -0.023304110136917886,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.8189224763979666,
+            0.9382763532763533
+          ]
+        },
+        "action_only:identifier_masked": {
+          "query_count": 65,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.6974358974358975,
+          "hit_at_1": 0.47692307692307695,
+          "mean_reciprocal_rank": 0.6833333333333333,
+          "mean_top_margin": -0.09728316112583166,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.6174601392319783,
+            0.7716130604288499
+          ]
+        },
+        "shuffled:raw": {
+          "query_count": 65,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.7538461538461538,
+          "hit_at_1": 0.5076923076923077,
+          "mean_reciprocal_rank": 0.7153846153846154,
+          "mean_top_margin": -0.07348540788918873,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.681372549019608,
+            0.8279569892473118
+          ]
+        },
+        "shuffled:identifier_masked": {
+          "query_count": 65,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.5794871794871795,
+          "hit_at_1": 0.3076923076923077,
+          "mean_reciprocal_rank": 0.5717948717948718,
+          "mean_top_margin": -0.09550278072213698,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.5021666666666667,
+            0.6551724137931033
+          ]
+        }
+      },
+      "full_raw_minus_shuffled_raw_pairwise_accuracy": 0.19487179487179485,
+      "delta_task_bootstrap_95_ci": [
+        0.12429378531073447,
+        0.27083333333333337
+      ],
+      "identifier_masked_above_chance": true,
+      "primary_rule_passed": true,
+      "tool_support": {
+        "get_reservation_details": 23,
+        "cancel_reservation": 5,
+        "search_direct_flight": 12,
+        "get_user_details": 14,
+        "update_reservation_flights": 7,
+        "book_reservation": 4
+      }
+    },
+    "retail": {
+      "conditions": {
+        "full:raw": {
+          "query_count": 155,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.9784946236559139,
+          "hit_at_1": 0.9354838709677419,
+          "mean_reciprocal_rank": 0.967741935483871,
+          "mean_top_margin": 0.42959594795577893,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.9627325787294323,
+            0.9932432432432432
+          ]
+        },
+        "full:identifier_masked": {
+          "query_count": 155,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.8129032258064517,
+          "hit_at_1": 0.6193548387096774,
+          "mean_reciprocal_rank": 0.7777419354838708,
+          "mean_top_margin": 0.08651930224756264,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.778186274509804,
+            0.8406800996110082
+          ]
+        },
+        "action_only:raw": {
+          "query_count": 155,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.9612903225806452,
+          "hit_at_1": 0.9161290322580645,
+          "mean_reciprocal_rank": 0.9526881720430109,
+          "mean_top_margin": 0.2667541609787639,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.9434679465960497,
+            0.9779293759365786
+          ]
+        },
+        "action_only:identifier_masked": {
+          "query_count": 155,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.6064516129032258,
+          "hit_at_1": 0.32903225806451614,
+          "mean_reciprocal_rank": 0.5874193548387097,
+          "mean_top_margin": -0.012658352013307452,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.555205813172043,
+            0.6540088025607449
+          ]
+        },
+        "shuffled:raw": {
+          "query_count": 155,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.8064516129032258,
+          "hit_at_1": 0.6129032258064516,
+          "mean_reciprocal_rank": 0.778494623655914,
+          "mean_top_margin": 0.06951334121546607,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.7638825757575756,
+            0.8472350823045267
+          ]
+        },
+        "shuffled:identifier_masked": {
+          "query_count": 155,
+          "mean_candidate_count": 4.0,
+          "pairwise_accuracy": 0.5311827956989247,
+          "hit_at_1": 0.22580645161290322,
+          "mean_reciprocal_rank": 0.5169892473118279,
+          "mean_top_margin": -0.07801811637548793,
+          "pairwise_accuracy_task_bootstrap_95_ci": [
+            0.47681985417084755,
+            0.5805790300518695
+          ]
+        }
+      },
+      "full_raw_minus_shuffled_raw_pairwise_accuracy": 0.17204301075268813,
+      "delta_task_bootstrap_95_ci": [
+        0.12697044334975371,
+        0.2159386315990089
+      ],
+      "identifier_masked_above_chance": true,
+      "primary_rule_passed": true,
+      "tool_support": {
+        "get_order_details": 51,
+        "find_user_id_by_name_zip": 28,
+        "get_user_details": 29,
+        "get_product_details": 24,
+        "modify_pending_order_items": 7,
+        "exchange_delivered_order_items": 5,
+        "find_user_id_by_email": 4,
+        "cancel_pending_order": 5,
+        "return_delivered_order_items": 2
+      }
+    }
+  }
+}
