@@ -36,10 +36,10 @@ def test_context_controls_keep_current_action() -> None:
     }
     query = {"query_id": "current", "shuffled_source_decision_id": "other"}
 
-    action_only = expectation_matching._messages_for_context(
+    action_only = expectation_matching.messages_for_context(
         query, records, "action_only"
     )
-    shuffled = expectation_matching._messages_for_context(query, records, "shuffled")
+    shuffled = expectation_matching.messages_for_context(query, records, "shuffled")
 
     assert [row["role"] for row in action_only] == ["system", "assistant"]
     assert shuffled[1]["content"] == "other history"

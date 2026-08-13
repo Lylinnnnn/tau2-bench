@@ -124,10 +124,14 @@ analysis / evaluation / clean / runtime
 | 局部后果方向与按轨迹聚类的不确定性评测 | `evaluation/local_consequence.py` |
 | 目标无关的后果多头探针与结果偏离反馈评测 | `evaluation/consequence_expectation.py` |
 | 不训练探针的真实工具返回候选构造与排序评测 | `evaluation/expectation_matching.py` |
+| 实体一致匿名化和受控返回异常构造 | `evaluation/expectation_deviation.py` |
+| Train 分组校准、异常程度指标和一致匿名复核指标 | `evaluation/deviation_metrics.py` |
 | 后果探针的普通信息/隐藏特征、闭式拟合与预测 | `evaluation/consequence_probe.py` |
 | 后果头指标、异常偏离和 task 级重采样 | `evaluation/consequence_metrics.py` |
 | 预期后果评测的已有产物读取与落盘 | `runner/consequence_expectation.py` |
 | 真实工具返回期待匹配的数据集、似然分片与评测编排 | `runner/expectation_matching.py` |
+| 一致匿名后的工具返回条件似然计算 | `runner/deviation_scoring.py` |
+| 受控返回异常的数据集、似然分片、校准与评测编排 | `runner/expectation_deviation.py` |
 | 成功方向实验的跨领域阶段编排 | `runner/success_direction.py` |
 | 局部后果请求、隐藏表示分片和评测编排 | `runner/local_consequence.py` |
 
@@ -175,6 +179,15 @@ analysis / evaluation / clean / runtime
   完整模板的共同前缀定位，不得假设追加工具返回以后动作模板仍严格保持不变。
   无法唯一定位内容边界、服务不返回所选词元的似然、或服务返回的词元与本地渲染
   不一致时必须直接失败，禁止改用生成文本、字符长度或静默近似。
+- 受控异常实验的 Test 异常值只能来自官方 Train 中同领域、同工具、同字段路径且
+  类型相同的真实返回值；被替换的 Test 原值必须已经出现在当前动作前历史或动作
+  中。异常级别固定为累积修改 1、2、3 个不同字段，必须保持 JSON 字段路径和类型
+  完全不变，并在配置规定的长度差范围内。禁止用 LLM 自由生成异常或读取官方目标。
+- 一致匿名化必须在“上文、动作、工具定义和同组所有候选”组成的整体上建立映射；
+  相同原值必须映射为同一带类型占位符，不同原值不得坍缩为同一占位符。
+- 异常分数校准只能由官方 Train 的干净工具返回拟合，官方 Test 只用于最终评测。
+  校准先按领域、上下文、工具和返回结构分组，支持不足时只能显式回退到领域、
+  上下文和工具级，并报告回退比例；禁止在 Test 上选择均值、尺度或阈值。
 
 只有当需求与这些文件的变化原因确实不同，且满足第 3 节时，才新增模块。
 

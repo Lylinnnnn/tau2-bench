@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from trace_to_micro.config import (
+    ExpectationDeviationConfig,
     ExpectationMatchingConfig,
     ExperimentConfig,
     LocalConsequenceConfig,
@@ -161,4 +162,21 @@ def test_expectation_matching_config_preregisters_target_free_controls() -> None
     assert config.content_variants == ("raw", "identifier_masked")
     assert config.scoring_model == "qwen3-32b"
     assert "success_direction_retail_base" in str(config.results_path("retail"))
+    assert config.score_shard_path(7, 8).name == "shard_07_of_08.jsonl"
+
+
+def test_expectation_deviation_config_separates_train_calibration_and_test() -> None:
+    config_path = (
+        Path(__file__).parents[1] / "configs/qwen3_32b_expectation_deviation.toml"
+    )
+
+    config = ExpectationDeviationConfig.load(config_path)
+
+    assert config.domains == ("airline", "retail")
+    assert config.train_split == "train"
+    assert config.test_split == "test"
+    assert config.severity_levels == (1, 2, 3)
+    assert config.max_length_delta_ratio == 0.1
+    assert config.calibration_minimum_count == 5
+    assert config.rematch_candidate_count == 4
     assert config.score_shard_path(7, 8).name == "shard_07_of_08.jsonl"

@@ -490,3 +490,99 @@ class ExpectationMatchingConfig:
         """Return the one-query end-to-end smoke output directory."""
 
         return self.output_dir / "smoke"
+
+
+@dataclass(frozen=True)
+class ExpectationDeviationConfig:
+    """Configuration for controlled expected-result deviation tests."""
+
+    domains: tuple[str, ...]
+    train_split: str
+    test_split: str
+    results_dir: Path
+    results_prefix: str
+    expected_agent_model: str
+    expected_user_model: str
+    expected_num_trials: int
+    output_dir: Path
+    scoring_model: str
+    context_variants: tuple[str, ...]
+    severity_levels: tuple[int, ...]
+    rematch_candidate_count: int
+    max_length_delta_ratio: float
+    calibration_minimum_count: int
+    bootstrap_samples: int
+    random_seed: int
+    smoke_domain: str
+    smoke_task_id: str
+
+    @classmethod
+    def load(cls, path: Path) -> "ExpectationDeviationConfig":
+        """Load and validate the `[expectation_deviation]` table."""
+
+        with path.open("rb") as handle:
+            values = tomllib.load(handle)["expectation_deviation"]
+        domains = tuple(values["domains"])
+        contexts = tuple(values["context_variants"])
+        severities = tuple(values["severity_levels"])
+        if len(domains) != 2 or len(set(domains)) != 2:
+            raise ValueError("Expectation deviation requires two unique domains")
+        if values["train_split"] == values["test_split"]:
+            raise ValueError("Expectation deviation Train/Test splits must differ")
+        if set(contexts) != {"full", "action_only", "shuffled"}:
+            raise ValueError("Context variants must be full, action_only, shuffled")
+        if not severities or severities != tuple(range(1, len(severities) + 1)):
+            raise ValueError("Severity levels must be consecutive and start at one")
+        if values["rematch_candidate_count"] < 2:
+            raise ValueError("Rematch requires at least two candidates")
+        if not 0 <= values["max_length_delta_ratio"] <= 1:
+            raise ValueError("max_length_delta_ratio must be in [0, 1]")
+        if values["calibration_minimum_count"] < 2:
+            raise ValueError("calibration_minimum_count must be at least two")
+        if values["bootstrap_samples"] <= 0:
+            raise ValueError("bootstrap_samples must be positive")
+        if values["expected_num_trials"] <= 0:
+            raise ValueError("expected_num_trials must be positive")
+        if values["smoke_domain"] not in domains:
+            raise ValueError("smoke_domain must be configured")
+        return cls(
+            domains=domains,
+            train_split=values["train_split"],
+            test_split=values["test_split"],
+            results_dir=_project_path(path, values["results_dir"]),
+            results_prefix=values["results_prefix"],
+            expected_agent_model=values["expected_agent_model"],
+            expected_user_model=values["expected_user_model"],
+            expected_num_trials=values["expected_num_trials"],
+            output_dir=_project_path(path, values["output_dir"]),
+            scoring_model=values["scoring_model"],
+            context_variants=contexts,
+            severity_levels=severities,
+            rematch_candidate_count=values["rematch_candidate_count"],
+            max_length_delta_ratio=values["max_length_delta_ratio"],
+            calibration_minimum_count=values["calibration_minimum_count"],
+            bootstrap_samples=values["bootstrap_samples"],
+            random_seed=values["random_seed"],
+            smoke_domain=values["smoke_domain"],
+            smoke_task_id=str(values["smoke_task_id"]),
+        )
+
+    def results_path(self, domain: str) -> Path:
+        """Return one existing complete trajectory file."""
+
+        directory = f"{self.results_prefix}_{domain}_base"
+        return self.results_dir / directory / "results.json"
+
+    def score_shard_path(self, shard_index: int, num_shards: int) -> Path:
+        """Return one resumable controlled-deviation score shard."""
+
+        return (
+            self.output_dir
+            / "score_shards"
+            / f"shard_{shard_index:02d}_of_{num_shards:02d}.jsonl"
+        )
+
+    def smoke_output_dir(self) -> Path:
+        """Return the strict one-query smoke directory."""
+
+        return self.output_dir / "smoke"

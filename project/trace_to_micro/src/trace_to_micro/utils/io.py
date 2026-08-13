@@ -48,6 +48,15 @@ def append_jsonl(path: Path, value: dict[str, Any]) -> None:
         handle.write("\n")
 
 
+def append_jsonl_batch(path: Path, values: list[dict[str, Any]]) -> None:
+    """Append one completed work group with a single buffered write."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = "".join(f"{json.dumps(value, ensure_ascii=False)}\n" for value in values)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(payload)
+
+
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     """Read a JSON Lines artifact, returning an empty list if absent."""
 

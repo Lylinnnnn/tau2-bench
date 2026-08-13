@@ -13,6 +13,13 @@ from trace_to_micro.replay.reference import replay_reference_tasks
 from trace_to_micro.runner.consequence_expectation import (
     run_consequence_expectation_evaluation,
 )
+from trace_to_micro.runner.expectation_deviation import (
+    build_expectation_deviation_dataset,
+    merge_expectation_deviation_scores,
+    run_expectation_deviation_evaluation,
+    run_expectation_deviation_score_shard,
+    run_expectation_deviation_smoke,
+)
 from trace_to_micro.runner.expectation_matching import (
     build_expectation_matching_dataset,
     merge_expectation_matching_scores,
@@ -203,6 +210,17 @@ def _parser() -> argparse.ArgumentParser:
     matching_smoke = subparsers.add_parser("expectation-matching-smoke")
     matching_smoke.add_argument("--config", type=Path, required=True)
     matching_smoke.add_argument("--base-url", required=True)
+    deviation_score = subparsers.add_parser("expectation-deviation-score-shard")
+    deviation_score.add_argument("--config", type=Path, required=True)
+    deviation_score.add_argument("--shard-index", type=int, required=True)
+    deviation_score.add_argument("--num-shards", type=int, required=True)
+    deviation_score.add_argument("--base-url", required=True)
+    deviation_merge = subparsers.add_parser("expectation-deviation-merge")
+    deviation_merge.add_argument("--config", type=Path, required=True)
+    deviation_merge.add_argument("--num-shards", type=int, required=True)
+    deviation_smoke = subparsers.add_parser("expectation-deviation-smoke")
+    deviation_smoke.add_argument("--config", type=Path, required=True)
+    deviation_smoke.add_argument("--base-url", required=True)
     success_merge_activations = subparsers.add_parser("success-merge-activations")
     success_merge_activations.add_argument("--config", type=Path, required=True)
     success_merge_activations.add_argument("--num-shards", type=int, required=True)
@@ -220,6 +238,8 @@ def _parser() -> argparse.ArgumentParser:
         "consequence-expectation-evaluate",
         "expectation-matching-prepare",
         "expectation-matching-evaluate",
+        "expectation-deviation-prepare",
+        "expectation-deviation-evaluate",
     ):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, required=True)
@@ -368,6 +388,36 @@ def main(argv: list[str] | None = None) -> None:
         return
     elif args.command == "expectation-matching-evaluate":
         paths = run_expectation_matching_evaluation(args.config)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
+    elif args.command == "expectation-deviation-prepare":
+        paths = build_expectation_deviation_dataset(args.config)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
+    elif args.command == "expectation-deviation-score-shard":
+        print(
+            run_expectation_deviation_score_shard(
+                args.config,
+                shard_index=args.shard_index,
+                num_shards=args.num_shards,
+                base_url=args.base_url,
+            )
+        )
+        return
+    elif args.command == "expectation-deviation-merge":
+        print(
+            merge_expectation_deviation_scores(args.config, num_shards=args.num_shards)
+        )
+        return
+    elif args.command == "expectation-deviation-smoke":
+        paths = run_expectation_deviation_smoke(args.config, base_url=args.base_url)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
+    elif args.command == "expectation-deviation-evaluate":
+        paths = run_expectation_deviation_evaluation(args.config)
         for name, path in paths.items():
             print(f"{name}: {path}")
         return

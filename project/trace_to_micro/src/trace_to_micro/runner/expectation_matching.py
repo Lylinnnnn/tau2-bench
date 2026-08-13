@@ -189,7 +189,7 @@ def _validate_shard(shard_index: int, num_shards: int) -> None:
         raise ValueError(f"shard_index must be in [0, {num_shards})")
 
 
-def _messages_for_context(
+def messages_for_context(
     query: dict[str, Any],
     records: dict[str, dict[str, Any]],
     context_variant: str,
@@ -245,7 +245,7 @@ def _score_matching_query(
     )
     rows = []
     for context_variant in config.context_variants:
-        raw_messages = _messages_for_context(query, records, context_variant)
+        raw_messages = messages_for_context(query, records, context_variant)
         for content_variant in config.content_variants:
             messages = (
                 raw_messages

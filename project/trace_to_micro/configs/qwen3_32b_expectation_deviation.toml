@@ -1,0 +1,20 @@
+[expectation_deviation]
+domains = ["airline", "retail"]
+train_split = "train"
+test_split = "test"
+results_dir = "../../data/simulations"
+results_prefix = "trace_to_micro_qwen3_32b_thinking_t06_success_direction"
+expected_agent_model = "openai/qwen3-32b"
+expected_user_model = "openai/qwen3-32b"
+expected_num_trials = 1
+output_dir = "outputs/qwen3_32b_thinking_t06_expectation_deviation"
+scoring_model = "qwen3-32b"
+context_variants = ["full", "action_only", "shuffled"]
+severity_levels = [1, 2, 3]
+rematch_candidate_count = 4
+max_length_delta_ratio = 0.10
+calibration_minimum_count = 5
+bootstrap_samples = 2000
+random_seed = 300
+smoke_domain = "retail"
+smoke_task_id = "26"

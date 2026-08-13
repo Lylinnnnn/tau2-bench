@@ -153,3 +153,20 @@ def test_expectation_matching_launcher_reuses_healthy_servers_and_shards_scores(
     assert "expectation-matching-evaluate" in launcher
     assert 'export CUDA_VISIBLE_DEVICES="${smoke_gpu}"' in launcher
     assert "export TENSOR_PARALLEL_SIZE=1" in launcher
+
+
+def test_expectation_deviation_launcher_uses_single_gpu_services() -> None:
+    launcher = read_script("run_qwen3_32b_expectation_deviation.sh")
+
+    assert 'num_shards="${NUM_SHARDS:-8}"' in launcher
+    assert 'smoke_gpu="${SMOKE_GPU:-0}"' in launcher
+    assert 'base_port="${BASE_PORT:-8300}"' in launcher
+    assert 'internal_base_port="${INTERNAL_BASE_PORT:-24000}"' in launcher
+    assert 'master_base_port="${MASTER_BASE_PORT:-44000}"' in launcher
+    assert 'export CUDA_VISIBLE_DEVICES="${gpu}"' in launcher
+    assert 'export CUDA_VISIBLE_DEVICES="${smoke_gpu}"' in launcher
+    assert "export TENSOR_PARALLEL_SIZE=1" in launcher
+    assert "with_managed_qwen3_32b_vllm.sh" in launcher
+    assert "expectation-deviation-score-shard" in launcher
+    assert "expectation-deviation-merge" in launcher
+    assert "expectation-deviation-evaluate" in launcher
