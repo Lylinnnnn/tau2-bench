@@ -138,6 +138,7 @@ def test_expectation_matching_launcher_reuses_healthy_servers_and_shards_scores(
     launcher = read_script("run_qwen3_32b_expectation_matching.sh")
 
     assert 'num_shards="${NUM_SHARDS:-8}"' in launcher
+    assert 'smoke_gpu="${SMOKE_GPU:-0}"' in launcher
     assert 'base_port="${BASE_PORT:-8200}"' in launcher
     assert 'shard_zero_port="${SHARD_ZERO_PORT:-8000}"' in launcher
     assert 'internal_base_port="${INTERNAL_BASE_PORT:-22000}"' in launcher
@@ -150,3 +151,5 @@ def test_expectation_matching_launcher_reuses_healthy_servers_and_shards_scores(
     assert "expectation-matching-score-shard" in launcher
     assert "expectation-matching-merge" in launcher
     assert "expectation-matching-evaluate" in launcher
+    assert 'export CUDA_VISIBLE_DEVICES="${smoke_gpu}"' in launcher
+    assert "export TENSOR_PARALLEL_SIZE=1" in launcher

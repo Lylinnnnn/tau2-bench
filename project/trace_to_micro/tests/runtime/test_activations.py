@@ -94,7 +94,6 @@ def test_load_hidden_export_rejects_other_prompt_tokens(tmp_path: Path) -> None:
 def test_score_chat_suffix_sums_only_new_prompt_tokens(monkeypatch) -> None:
     responses = iter(
         [
-            {"tokens": [1]},
             {"tokens": [1, 2, 7, 8]},
             {"tokens": [1, 2, 9, 8]},
             {
@@ -131,7 +130,6 @@ def test_score_chat_suffix_sums_only_new_prompt_tokens(monkeypatch) -> None:
     )
 
     assert score == {
-        "action_prefix_token_count": 1,
         "prefix_token_count": 2,
         "suffix_token_count": 2,
         "sum_logprob": pytest.approx(-1.6),
@@ -139,17 +137,22 @@ def test_score_chat_suffix_sums_only_new_prompt_tokens(monkeypatch) -> None:
     }
     assert calls[-1][1]["prompt_logprobs"] == 1
     assert calls[-1][1]["return_token_ids"] is True
-    assert calls[2][1]["messages"][-1]["content"] == "\0"
+    assert calls[1][1]["messages"][-1]["content"] == "\0"
 
 
-def test_score_chat_suffix_rejects_non_prefix_stable_template(monkeypatch) -> None:
-    responses = iter([{"tokens": [1, 2]}, {"tokens": [1, 3, 7]}])
+def test_score_chat_suffix_rejects_unisolated_content_boundary(monkeypatch) -> None:
+    responses = iter(
+        [
+            {"tokens": [1, 3, 7]},
+            {"tokens": [1, 3, 7]},
+        ]
+    )
     monkeypatch.setattr(
         "trace_to_micro.runtime.activations.request_json",
         lambda *args, **kwargs: next(responses),
     )
 
-    with pytest.raises(ValueError, match="prefix-stable"):
+    with pytest.raises(ValueError, match="content boundary"):
         score_chat_suffix(
             prefix_messages=[{"role": "assistant", "content": "call"}],
             suffix_message={

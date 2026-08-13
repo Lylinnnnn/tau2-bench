@@ -50,6 +50,17 @@ def _selected_token_logprob(entry: dict[str, Any], token_id: int) -> float:
     return float(value["logprob"])
 
 
+def _common_prefix_length(left: list[int], right: list[int]) -> int:
+    return next(
+        (
+            position
+            for position, (left_token, right_token) in enumerate(zip(left, right))
+            if left_token != right_token
+        ),
+        min(len(left), len(right)),
+    )
+
+
 def score_chat_suffix(
     *,
     prefix_messages: list[dict[str, Any]],
@@ -69,22 +80,12 @@ def score_chat_suffix(
         "add_generation_prompt": False,
         "chat_template_kwargs": chat_template_kwargs,
     }
-    prefix = request_json(
-        tokenizer_url,
-        api_key=api_key,
-        payload={**common, "messages": prefix_messages},
-        timeout_seconds=180.0,
-    )["tokens"]
     complete = request_json(
         tokenizer_url,
         api_key=api_key,
         payload={**common, "messages": [*prefix_messages, suffix_message]},
         timeout_seconds=180.0,
     )["tokens"]
-    if complete[: len(prefix)] != prefix:
-        raise ValueError(
-            "Chat template is not prefix-stable for the tool-result suffix"
-        )
     content = suffix_message.get("content")
     if not isinstance(content, str) or content.startswith("\0"):
         raise ValueError(
@@ -99,17 +100,8 @@ def score_chat_suffix(
         },
         timeout_seconds=180.0,
     )["tokens"]
-    if sentinel[: len(prefix)] != prefix:
-        raise ValueError("Chat template changed the action prefix for a tool result")
-    content_start = next(
-        (
-            position
-            for position, (actual, alternate) in enumerate(zip(complete, sentinel))
-            if actual != alternate
-        ),
-        min(len(complete), len(sentinel)),
-    )
-    if content_start < len(prefix) or content_start == len(complete):
+    content_start = _common_prefix_length(complete, sentinel)
+    if content_start == 0 or content_start == len(complete):
         raise ValueError("Could not isolate the tool-result content boundary")
     suffix_token_ids = complete[content_start:]
     if not suffix_token_ids:
@@ -143,7 +135,6 @@ def score_chat_suffix(
                 raise ValueError(f"Missing prompt logprob at position {position}")
             selected.append(_selected_token_logprob(entry, complete[position]))
         return {
-            "action_prefix_token_count": len(prefix),
             "prefix_token_count": content_start,
             "suffix_token_count": len(selected),
             "sum_logprob": float(sum(selected)),

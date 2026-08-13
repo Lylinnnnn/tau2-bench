@@ -12,6 +12,7 @@ repo_dir="$(cd "${project_dir}/../.." && pwd)"
 config="${project_dir}/configs/qwen3_32b_expectation_matching.toml"
 num_shards="${NUM_SHARDS:-8}"
 first_gpu="${FIRST_GPU:-0}"
+smoke_gpu="${SMOKE_GPU:-0}"
 base_port="${BASE_PORT:-8200}"
 shard_zero_port="${SHARD_ZERO_PORT:-8000}"
 internal_base_port="${INTERNAL_BASE_PORT:-22000}"
@@ -141,6 +142,8 @@ case "${stage}" in
   smoke)
     run_checks
     prepare
+    export CUDA_VISIBLE_DEVICES="${smoke_gpu}"
+    export TENSOR_PARALLEL_SIZE=1
     exec "${project_dir}/scripts/with_managed_qwen3_32b_vllm.sh" \
       uv run --no-sync python -m trace_to_micro.cli expectation-matching-smoke \
         --config "${config}" \
