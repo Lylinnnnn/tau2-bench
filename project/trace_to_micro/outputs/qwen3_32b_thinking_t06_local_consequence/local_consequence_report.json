@@ -1,0 +1,2099 @@
+{
+  "experiment": {
+    "hypothesis": "Given the logged state and emitted mutating tool call but before its result, a simple hidden-state direction predicts whether the real next state is closer to the official target state.",
+    "data_source": "complete logged trajectories; no new agent rollout",
+    "train_split": "train",
+    "test_split": "test",
+    "primary_moment": "action",
+    "primary_label": "goal_progress",
+    "primary_layer_id": 47,
+    "primary_metric": "tool-centered within-tool AUROC",
+    "unit": "tool decision; uncertainty is clustered by trajectory"
+  },
+  "primary_test": {
+    "evidence_rule": "Both domains require tool-centered within-tool AUROC > 0.5 and a trajectory-cluster bootstrap 95% lower bound > 0.5.",
+    "evidence_status": "no_detectable_local_progress_direction",
+    "evaluations": {
+      "airline:action:goal_progress:layer_47": {
+        "eligible": true,
+        "training_decision_count": 31,
+        "training_trajectory_count": 16,
+        "training_positive_count": 12,
+        "training_negative_count": 19,
+        "decision_count": 20,
+        "trajectory_count": 13,
+        "positive_count": 8,
+        "negative_count": 12,
+        "auroc": 0.5520833333333334,
+        "trajectory_cluster_bootstrap_95_ci": [
+          0.27446524064171124,
+          0.8541761363636363
+        ],
+        "within_tool_auroc": 0.5416666666666666,
+        "within_tool_eligible_tool_count": 3,
+        "within_tool_positive_negative_pairs": 24,
+        "within_tool_trajectory_cluster_bootstrap_95_ci": [
+          0.125,
+          1.0
+        ],
+        "tool_centered_within_tool_auroc": 0.6666666666666666,
+        "tool_centered_train_eligible_tools": [
+          "book_reservation",
+          "cancel_reservation",
+          "update_reservation_flights",
+          "update_reservation_passengers"
+        ],
+        "tool_centered_test_eligible_tool_count": 3,
+        "tool_centered_positive_negative_pairs": 24,
+        "tool_centered_trajectory_cluster_bootstrap_95_ci": [
+          0.29814814814814816,
+          1.0
+        ],
+        "baselines": [
+          {
+            "name": "train tool-name positive rate",
+            "auroc": 0.5208333333333334,
+            "unseen_test_decisions": 0
+          },
+          {
+            "field": "target_distance_before",
+            "direction_selected_on_train": "positive",
+            "auroc": 0.5520833333333334
+          },
+          {
+            "field": "decision_position",
+            "direction_selected_on_train": "positive",
+            "auroc": 0.703125
+          },
+          {
+            "field": "prior_tool_errors",
+            "direction_selected_on_train": "negative",
+            "auroc": 0.4739583333333333
+          },
+          {
+            "field": "prompt_tokens",
+            "direction_selected_on_train": "positive",
+            "auroc": 0.8125
+          }
+        ]
+      },
+      "retail:action:goal_progress:layer_47": {
+        "eligible": true,
+        "training_decision_count": 64,
+        "training_trajectory_count": 44,
+        "training_positive_count": 49,
+        "training_negative_count": 15,
+        "decision_count": 35,
+        "trajectory_count": 20,
+        "positive_count": 23,
+        "negative_count": 12,
+        "auroc": 0.5905797101449275,
+        "trajectory_cluster_bootstrap_95_ci": [
+          0.3685463800904978,
+          0.7983613445378149
+        ],
+        "within_tool_auroc": 0.52,
+        "within_tool_eligible_tool_count": 5,
+        "within_tool_positive_negative_pairs": 50,
+        "within_tool_trajectory_cluster_bootstrap_95_ci": [
+          0.22717914438502673,
+          0.84
+        ],
+        "tool_centered_within_tool_auroc": 0.66,
+        "tool_centered_train_eligible_tools": [
+          "cancel_pending_order",
+          "exchange_delivered_order_items",
+          "modify_pending_order_address",
+          "modify_pending_order_items",
+          "modify_user_address",
+          "return_delivered_order_items"
+        ],
+        "tool_centered_test_eligible_tool_count": 5,
+        "tool_centered_positive_negative_pairs": 50,
+        "tool_centered_trajectory_cluster_bootstrap_95_ci": [
+          0.3471955128205128,
+          0.9189459459459458
+        ],
+        "baselines": [
+          {
+            "name": "train tool-name positive rate",
+            "auroc": 0.532608695652174,
+            "unseen_test_decisions": 1
+          },
+          {
+            "field": "target_distance_before",
+            "direction_selected_on_train": "positive",
+            "auroc": 0.6286231884057971
+          },
+          {
+            "field": "decision_position",
+            "direction_selected_on_train": "positive",
+            "auroc": 0.7391304347826086
+          },
+          {
+            "field": "prior_tool_errors",
+            "direction_selected_on_train": "positive",
+            "auroc": 0.47101449275362317
+          },
+          {
+            "field": "prompt_tokens",
+            "direction_selected_on_train": "positive",
+            "auroc": 0.6721014492753623
+          }
+        ]
+      }
+    }
+  },
+  "evaluations": {
+    "airline:before:goal_progress:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 12,
+      "training_negative_count": 19,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 8,
+      "negative_count": 12,
+      "auroc": 0.5416666666666666,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.3333333333333333,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 24,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.16666666666666666,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "cancel_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 24,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.5208333333333334,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5520833333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.703125
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.4739583333333333
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7916666666666666
+        }
+      ]
+    },
+    "airline:before:goal_progress:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 12,
+      "training_negative_count": 19,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 8,
+      "negative_count": 12,
+      "auroc": 0.4270833333333333,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.25,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 24,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.0,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "cancel_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 24,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.5208333333333334,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5520833333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.703125
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.4739583333333333
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7916666666666666
+        }
+      ]
+    },
+    "airline:before:tool_success:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 26,
+      "training_negative_count": 5,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 18,
+      "negative_count": 2,
+      "auroc": 0.5555555555555556,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5,
+      "within_tool_eligible_tool_count": 1,
+      "within_tool_positive_negative_pairs": 8,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.25,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 1,
+      "tool_centered_positive_negative_pairs": 8,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.8888888888888888,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.75
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5694444444444444
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.7083333333333334
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5833333333333334
+        }
+      ]
+    },
+    "airline:before:tool_success:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 26,
+      "training_negative_count": 5,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 18,
+      "negative_count": 2,
+      "auroc": 0.5833333333333334,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.625,
+      "within_tool_eligible_tool_count": 1,
+      "within_tool_positive_negative_pairs": 8,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.125,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 1,
+      "tool_centered_positive_negative_pairs": 8,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.8888888888888888,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.75
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5694444444444444
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.7083333333333334
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5833333333333334
+        }
+      ]
+    },
+    "airline:before:state_changed:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 25,
+      "training_negative_count": 6,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 17,
+      "negative_count": 3,
+      "auroc": 0.6274509803921569,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5,
+      "within_tool_eligible_tool_count": 2,
+      "within_tool_positive_negative_pairs": 14,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.5,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 2,
+      "tool_centered_positive_negative_pairs": 14,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7843137254901961,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.5196078431372549
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7156862745098039
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.6274509803921569
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.29411764705882354
+        }
+      ]
+    },
+    "airline:before:state_changed:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 25,
+      "training_negative_count": 6,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 17,
+      "negative_count": 3,
+      "auroc": 0.7843137254901961,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.7142857142857143,
+      "within_tool_eligible_tool_count": 2,
+      "within_tool_positive_negative_pairs": 14,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.5,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 2,
+      "tool_centered_positive_negative_pairs": 14,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7843137254901961,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.5196078431372549
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7156862745098039
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.6274509803921569
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.29411764705882354
+        }
+      ]
+    },
+    "airline:action:goal_progress:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 12,
+      "training_negative_count": 19,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 8,
+      "negative_count": 12,
+      "auroc": 0.3854166666666667,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.625,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 24,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.375,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "cancel_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 24,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.5208333333333334,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5520833333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.703125
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.4739583333333333
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8125
+        }
+      ]
+    },
+    "airline:action:goal_progress:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 12,
+      "training_negative_count": 19,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 8,
+      "negative_count": 12,
+      "auroc": 0.5520833333333334,
+      "trajectory_cluster_bootstrap_95_ci": [
+        0.27446524064171124,
+        0.8541761363636363
+      ],
+      "within_tool_auroc": 0.5416666666666666,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 24,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": [
+        0.125,
+        1.0
+      ],
+      "tool_centered_within_tool_auroc": 0.6666666666666666,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "cancel_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 24,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": [
+        0.29814814814814816,
+        1.0
+      ],
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.5208333333333334,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5520833333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.703125
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.4739583333333333
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8125
+        }
+      ]
+    },
+    "airline:action:tool_success:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 26,
+      "training_negative_count": 5,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 18,
+      "negative_count": 2,
+      "auroc": 0.9444444444444444,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.75,
+      "within_tool_eligible_tool_count": 1,
+      "within_tool_positive_negative_pairs": 8,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.75,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 1,
+      "tool_centered_positive_negative_pairs": 8,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.8888888888888888,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.75
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5694444444444444
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.7083333333333334
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5
+        }
+      ]
+    },
+    "airline:action:tool_success:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 26,
+      "training_negative_count": 5,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 18,
+      "negative_count": 2,
+      "auroc": 0.7777777777777778,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.625,
+      "within_tool_eligible_tool_count": 1,
+      "within_tool_positive_negative_pairs": 8,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.75,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 1,
+      "tool_centered_positive_negative_pairs": 8,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.8888888888888888,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.75
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5694444444444444
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.7083333333333334
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5
+        }
+      ]
+    },
+    "airline:action:state_changed:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 25,
+      "training_negative_count": 6,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 17,
+      "negative_count": 3,
+      "auroc": 0.9215686274509803,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.9285714285714286,
+      "within_tool_eligible_tool_count": 2,
+      "within_tool_positive_negative_pairs": 14,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.9285714285714286,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 2,
+      "tool_centered_positive_negative_pairs": 14,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7843137254901961,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.5196078431372549
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7156862745098039
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.6274509803921569
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.35294117647058826
+        }
+      ]
+    },
+    "airline:action:state_changed:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 25,
+      "training_negative_count": 6,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 17,
+      "negative_count": 3,
+      "auroc": 0.9411764705882353,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.9285714285714286,
+      "within_tool_eligible_tool_count": 2,
+      "within_tool_positive_negative_pairs": 14,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.7142857142857143,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 2,
+      "tool_centered_positive_negative_pairs": 14,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7843137254901961,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.5196078431372549
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7156862745098039
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.6274509803921569
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.35294117647058826
+        }
+      ]
+    },
+    "airline:result:goal_progress:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 12,
+      "training_negative_count": 19,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 8,
+      "negative_count": 12,
+      "auroc": 0.3125,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.4166666666666667,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 24,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.4166666666666667,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "cancel_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 24,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.5208333333333334,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5520833333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.703125
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.4739583333333333
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8072916666666666
+        }
+      ]
+    },
+    "airline:result:goal_progress:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 12,
+      "training_negative_count": 19,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 8,
+      "negative_count": 12,
+      "auroc": 0.5104166666666666,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5833333333333334,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 24,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.5833333333333334,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "cancel_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 24,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.5208333333333334,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5520833333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.703125
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.4739583333333333
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8072916666666666
+        }
+      ]
+    },
+    "airline:result:tool_success:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 26,
+      "training_negative_count": 5,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 18,
+      "negative_count": 2,
+      "auroc": 1.0,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 1.0,
+      "within_tool_eligible_tool_count": 1,
+      "within_tool_positive_negative_pairs": 8,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 1.0,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 1,
+      "tool_centered_positive_negative_pairs": 8,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.8888888888888888,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.75
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5694444444444444
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.7083333333333334
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6111111111111112
+        }
+      ]
+    },
+    "airline:result:tool_success:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 26,
+      "training_negative_count": 5,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 18,
+      "negative_count": 2,
+      "auroc": 1.0,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 1.0,
+      "within_tool_eligible_tool_count": 1,
+      "within_tool_positive_negative_pairs": 8,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 1.0,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 1,
+      "tool_centered_positive_negative_pairs": 8,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.8888888888888888,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.75
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5694444444444444
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.7083333333333334
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6111111111111112
+        }
+      ]
+    },
+    "airline:result:state_changed:layer_31": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 25,
+      "training_negative_count": 6,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 17,
+      "negative_count": 3,
+      "auroc": 0.8823529411764706,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.7142857142857143,
+      "within_tool_eligible_tool_count": 2,
+      "within_tool_positive_negative_pairs": 14,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.7142857142857143,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 2,
+      "tool_centered_positive_negative_pairs": 14,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7843137254901961,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.5196078431372549
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7156862745098039
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.6274509803921569
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7254901960784313
+        }
+      ]
+    },
+    "airline:result:state_changed:layer_47": {
+      "eligible": true,
+      "training_decision_count": 31,
+      "training_trajectory_count": 16,
+      "training_positive_count": 25,
+      "training_negative_count": 6,
+      "decision_count": 20,
+      "trajectory_count": 13,
+      "positive_count": 17,
+      "negative_count": 3,
+      "auroc": 0.9803921568627451,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.9285714285714286,
+      "within_tool_eligible_tool_count": 2,
+      "within_tool_positive_negative_pairs": 14,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.9285714285714286,
+      "tool_centered_train_eligible_tools": [
+        "book_reservation",
+        "update_reservation_flights",
+        "update_reservation_passengers"
+      ],
+      "tool_centered_test_eligible_tool_count": 2,
+      "tool_centered_positive_negative_pairs": 14,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7843137254901961,
+          "unseen_test_decisions": 0
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.5196078431372549
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7156862745098039
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "negative",
+          "auroc": 0.6274509803921569
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7254901960784313
+        }
+      ]
+    },
+    "retail:before:goal_progress:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 49,
+      "training_negative_count": 15,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 23,
+      "negative_count": 12,
+      "auroc": 0.7101449275362319,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.7,
+      "within_tool_eligible_tool_count": 5,
+      "within_tool_positive_negative_pairs": 50,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.66,
+      "tool_centered_train_eligible_tools": [
+        "cancel_pending_order",
+        "exchange_delivered_order_items",
+        "modify_pending_order_address",
+        "modify_pending_order_items",
+        "modify_user_address",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 5,
+      "tool_centered_positive_negative_pairs": 50,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.532608695652174,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6286231884057971
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7391304347826086
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.47101449275362317
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6666666666666666
+        }
+      ]
+    },
+    "retail:before:goal_progress:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 49,
+      "training_negative_count": 15,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 23,
+      "negative_count": 12,
+      "auroc": 0.7137681159420289,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.7,
+      "within_tool_eligible_tool_count": 5,
+      "within_tool_positive_negative_pairs": 50,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.68,
+      "tool_centered_train_eligible_tools": [
+        "cancel_pending_order",
+        "exchange_delivered_order_items",
+        "modify_pending_order_address",
+        "modify_pending_order_items",
+        "modify_user_address",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 5,
+      "tool_centered_positive_negative_pairs": 50,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.532608695652174,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6286231884057971
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7391304347826086
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.47101449275362317
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6666666666666666
+        }
+      ]
+    },
+    "retail:before:tool_success:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 28,
+      "negative_count": 7,
+      "auroc": 0.4642857142857143,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5789473684210527,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 38,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.6052631578947368,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7806122448979592,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5433673469387755
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8010204081632653
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.41836734693877553
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7551020408163265
+        }
+      ]
+    },
+    "retail:before:tool_success:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 28,
+      "negative_count": 7,
+      "auroc": 0.42346938775510207,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 38,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.6578947368421053,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7806122448979592,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5433673469387755
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8010204081632653
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.41836734693877553
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7551020408163265
+        }
+      ]
+    },
+    "retail:before:state_changed:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 27,
+      "negative_count": 8,
+      "auroc": 0.5138888888888888,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5897435897435898,
+      "within_tool_eligible_tool_count": 4,
+      "within_tool_positive_negative_pairs": 39,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.6052631578947368,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.6990740740740741,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5833333333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7523148148148148
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.44907407407407407
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7314814814814815
+        }
+      ]
+    },
+    "retail:before:state_changed:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 27,
+      "negative_count": 8,
+      "auroc": 0.4537037037037037,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5128205128205128,
+      "within_tool_eligible_tool_count": 4,
+      "within_tool_positive_negative_pairs": 39,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.6578947368421053,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.6990740740740741,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5833333333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7523148148148148
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.44907407407407407
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7314814814814815
+        }
+      ]
+    },
+    "retail:action:goal_progress:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 49,
+      "training_negative_count": 15,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 23,
+      "negative_count": 12,
+      "auroc": 0.6485507246376812,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.66,
+      "within_tool_eligible_tool_count": 5,
+      "within_tool_positive_negative_pairs": 50,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.6,
+      "tool_centered_train_eligible_tools": [
+        "cancel_pending_order",
+        "exchange_delivered_order_items",
+        "modify_pending_order_address",
+        "modify_pending_order_items",
+        "modify_user_address",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 5,
+      "tool_centered_positive_negative_pairs": 50,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.532608695652174,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6286231884057971
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7391304347826086
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.47101449275362317
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6721014492753623
+        }
+      ]
+    },
+    "retail:action:goal_progress:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 49,
+      "training_negative_count": 15,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 23,
+      "negative_count": 12,
+      "auroc": 0.5905797101449275,
+      "trajectory_cluster_bootstrap_95_ci": [
+        0.3685463800904978,
+        0.7983613445378149
+      ],
+      "within_tool_auroc": 0.52,
+      "within_tool_eligible_tool_count": 5,
+      "within_tool_positive_negative_pairs": 50,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": [
+        0.22717914438502673,
+        0.84
+      ],
+      "tool_centered_within_tool_auroc": 0.66,
+      "tool_centered_train_eligible_tools": [
+        "cancel_pending_order",
+        "exchange_delivered_order_items",
+        "modify_pending_order_address",
+        "modify_pending_order_items",
+        "modify_user_address",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 5,
+      "tool_centered_positive_negative_pairs": 50,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": [
+        0.3471955128205128,
+        0.9189459459459458
+      ],
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.532608695652174,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6286231884057971
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7391304347826086
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.47101449275362317
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6721014492753623
+        }
+      ]
+    },
+    "retail:action:tool_success:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 28,
+      "negative_count": 7,
+      "auroc": 0.5714285714285714,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.47368421052631576,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 38,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.5263157894736842,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7806122448979592,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5433673469387755
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8010204081632653
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.41836734693877553
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7551020408163265
+        }
+      ]
+    },
+    "retail:action:tool_success:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 28,
+      "negative_count": 7,
+      "auroc": 0.5561224489795918,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5526315789473685,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 38,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.6578947368421053,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7806122448979592,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5433673469387755
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8010204081632653
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.41836734693877553
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7551020408163265
+        }
+      ]
+    },
+    "retail:action:state_changed:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 27,
+      "negative_count": 8,
+      "auroc": 0.5879629629629629,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.48717948717948717,
+      "within_tool_eligible_tool_count": 4,
+      "within_tool_positive_negative_pairs": 39,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.5263157894736842,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.6990740740740741,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5833333333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7523148148148148
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.44907407407407407
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7314814814814815
+        }
+      ]
+    },
+    "retail:action:state_changed:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 27,
+      "negative_count": 8,
+      "auroc": 0.6018518518518519,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.5641025641025641,
+      "within_tool_eligible_tool_count": 4,
+      "within_tool_positive_negative_pairs": 39,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.6578947368421053,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.6990740740740741,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5833333333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7523148148148148
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.44907407407407407
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7314814814814815
+        }
+      ]
+    },
+    "retail:result:goal_progress:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 49,
+      "training_negative_count": 15,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 23,
+      "negative_count": 12,
+      "auroc": 0.7789855072463768,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.8,
+      "within_tool_eligible_tool_count": 5,
+      "within_tool_positive_negative_pairs": 50,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.82,
+      "tool_centered_train_eligible_tools": [
+        "cancel_pending_order",
+        "exchange_delivered_order_items",
+        "modify_pending_order_address",
+        "modify_pending_order_items",
+        "modify_user_address",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 5,
+      "tool_centered_positive_negative_pairs": 50,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.532608695652174,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6286231884057971
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7391304347826086
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.47101449275362317
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7065217391304348
+        }
+      ]
+    },
+    "retail:result:goal_progress:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 49,
+      "training_negative_count": 15,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 23,
+      "negative_count": 12,
+      "auroc": 0.7971014492753623,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.86,
+      "within_tool_eligible_tool_count": 5,
+      "within_tool_positive_negative_pairs": 50,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 0.88,
+      "tool_centered_train_eligible_tools": [
+        "cancel_pending_order",
+        "exchange_delivered_order_items",
+        "modify_pending_order_address",
+        "modify_pending_order_items",
+        "modify_user_address",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 5,
+      "tool_centered_positive_negative_pairs": 50,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.532608695652174,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.6286231884057971
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7391304347826086
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.47101449275362317
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7065217391304348
+        }
+      ]
+    },
+    "retail:result:tool_success:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 28,
+      "negative_count": 7,
+      "auroc": 1.0,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 1.0,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 38,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 1.0,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7806122448979592,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5433673469387755
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8010204081632653
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.41836734693877553
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8367346938775511
+        }
+      ]
+    },
+    "retail:result:tool_success:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 28,
+      "negative_count": 7,
+      "auroc": 1.0,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 1.0,
+      "within_tool_eligible_tool_count": 3,
+      "within_tool_positive_negative_pairs": 38,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 1.0,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.7806122448979592,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5433673469387755
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8010204081632653
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.41836734693877553
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8367346938775511
+        }
+      ]
+    },
+    "retail:result:state_changed:layer_31": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 27,
+      "negative_count": 8,
+      "auroc": 0.9675925925925926,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.9743589743589743,
+      "within_tool_eligible_tool_count": 4,
+      "within_tool_positive_negative_pairs": 39,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 1.0,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.6990740740740741,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5833333333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7523148148148148
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.44907407407407407
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8101851851851852
+        }
+      ]
+    },
+    "retail:result:state_changed:layer_47": {
+      "eligible": true,
+      "training_decision_count": 64,
+      "training_trajectory_count": 44,
+      "training_positive_count": 59,
+      "training_negative_count": 5,
+      "decision_count": 35,
+      "trajectory_count": 20,
+      "positive_count": 27,
+      "negative_count": 8,
+      "auroc": 0.9398148148148148,
+      "trajectory_cluster_bootstrap_95_ci": null,
+      "within_tool_auroc": 0.9743589743589743,
+      "within_tool_eligible_tool_count": 4,
+      "within_tool_positive_negative_pairs": 39,
+      "within_tool_trajectory_cluster_bootstrap_95_ci": null,
+      "tool_centered_within_tool_auroc": 1.0,
+      "tool_centered_train_eligible_tools": [
+        "exchange_delivered_order_items",
+        "modify_pending_order_items",
+        "return_delivered_order_items"
+      ],
+      "tool_centered_test_eligible_tool_count": 3,
+      "tool_centered_positive_negative_pairs": 38,
+      "tool_centered_trajectory_cluster_bootstrap_95_ci": null,
+      "baselines": [
+        {
+          "name": "train tool-name positive rate",
+          "auroc": 0.6990740740740741,
+          "unseen_test_decisions": 1
+        },
+        {
+          "field": "target_distance_before",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.5833333333333334
+        },
+        {
+          "field": "decision_position",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.7523148148148148
+        },
+        {
+          "field": "prior_tool_errors",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.44907407407407407
+        },
+        {
+          "field": "prompt_tokens",
+          "direction_selected_on_train": "positive",
+          "auroc": 0.8101851851851852
+        }
+      ]
+    }
+  }
+}
