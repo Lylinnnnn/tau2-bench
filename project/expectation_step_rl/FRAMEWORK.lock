@@ -1,0 +1,6 @@
+verl_release=v0.7.1
+verl_commit=bec9ef74768dd201881cd4e54cd0385e87caae27
+verl_source_vllm_spec=>=0.8.5,<=0.12.0
+verl_install_script_vllm=0.11.0
+training_vllm=0.11.0
+scorer_protocol=OpenAI /tokenize and /v1/completions prompt_logprobs

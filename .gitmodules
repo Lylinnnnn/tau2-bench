@@ -1,0 +1,3 @@
+[submodule "project/expectation_step_rl/third_party/verl"]
+	path = project/expectation_step_rl/third_party/verl
+	url = https://github.com/verl-project/verl.git

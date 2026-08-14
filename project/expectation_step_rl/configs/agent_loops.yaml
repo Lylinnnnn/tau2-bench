@@ -1,0 +1,11 @@
+- name: tau2_expectation_step
+  _target_: expectation_step_rl.verl_adapter.agent_loop.Tau2ExpectationStepAgentLoop
+  scorer_base_url: ${oc.env:EXPECTATION_SCORER_BASE_URL,http://127.0.0.1:8000/v1}
+  scorer_api_key: ${oc.env:EXPECTATION_SCORER_API_KEY,EMPTY}
+  scorer_model: ${oc.env:EXPECTATION_SCORER_MODEL,qwen3-32b}
+  calibration_path: ${oc.env:EXPECTATION_CALIBRATION_PATH}
+  min_k_fraction: 0.1
+  reward_clip: 5.0
+  invalid_action_penalty: -5.0
+  tool_error_penalty: -4.0
+  unsupported_tool_penalty: -3.0
