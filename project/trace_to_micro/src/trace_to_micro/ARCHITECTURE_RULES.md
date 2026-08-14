@@ -125,13 +125,13 @@ analysis / evaluation / clean / runtime
 | 目标无关的后果多头探针与结果偏离反馈评测 | `evaluation/consequence_expectation.py` |
 | 不训练探针的真实工具返回候选构造与排序评测 | `evaluation/expectation_matching.py` |
 | 实体一致匿名化和受控返回异常构造 | `evaluation/expectation_deviation.py` |
-| Train 分组校准、异常程度指标和一致匿名复核指标 | `evaluation/deviation_metrics.py` |
+| Train 分组校准、Contextual Min-K 概率探针、异常程度指标和一致匿名复核指标 | `evaluation/deviation_metrics.py` |
 | 后果探针的普通信息/隐藏特征、闭式拟合与预测 | `evaluation/consequence_probe.py` |
 | 后果头指标、异常偏离和 task 级重采样 | `evaluation/consequence_metrics.py` |
 | 预期后果评测的已有产物读取与落盘 | `runner/consequence_expectation.py` |
 | 真实工具返回期待匹配的数据集、似然分片与评测编排 | `runner/expectation_matching.py` |
-| 一致匿名后的工具返回条件似然计算 | `runner/deviation_scoring.py` |
-| 受控返回异常的数据集、似然分片、校准与评测编排 | `runner/expectation_deviation.py` |
+| 一致匿名后的工具返回条件似然与逐 token 上下文偏离计算 | `runner/deviation_scoring.py` |
+| 受控返回异常的数据集、平均似然/Contextual Min-K 分片、Train 校准与评测编排 | `runner/expectation_deviation.py` |
 | 成功方向实验的跨领域阶段编排 | `runner/success_direction.py` |
 | 局部后果请求、隐藏表示分片和评测编排 | `runner/local_consequence.py` |
 
@@ -179,6 +179,10 @@ analysis / evaluation / clean / runtime
   完整模板的共同前缀定位，不得假设追加工具返回以后动作模板仍严格保持不变。
   无法唯一定位内容边界、服务不返回所选词元的似然、或服务返回的词元与本地渲染
   不一致时必须直接失败，禁止改用生成文本、字符长度或静默近似。
+- Contextual Min-K 只能比较同一匿名化返回在完整上下文和 action-only 上的逐 token
+  log probability；两者必须在同一匿名映射下生成且 suffix token id 完全一致。逐 token
+  数组只允许在单个评分组内暂存，长期产物只能保存预注册比例的聚合统计，禁止落盘
+  完整 token 数组。
 - 受控异常实验的 Test 异常值只能来自官方 Train 中同领域、同工具、同字段路径且
   类型相同的真实返回值；被替换的 Test 原值必须已经出现在当前动作前历史或动作
   中。异常级别固定为累积修改 1、2、3 个不同字段，必须保持 JSON 字段路径和类型
@@ -188,6 +192,9 @@ analysis / evaluation / clean / runtime
 - 异常分数校准只能由官方 Train 的干净工具返回拟合，官方 Test 只用于最终评测。
   校准先按领域、上下文、工具和返回结构分组，支持不足时只能显式回退到领域、
   上下文和工具级，并报告回退比例；禁止在 Test 上选择均值、尺度或阈值。
+- Contextual Min-K 的主校准固定按“领域 + 工具”对官方 Train 干净返回估计均值和
+  标准差，不使用精确 JSON structure key，不设置 Test 驱动的回退层级；支持不足的
+  工具必须在主报告中列为未校准，不得借用 Test 统计量。
 
 只有当需求与这些文件的变化原因确实不同，且满足第 3 节时，才新增模块。
 

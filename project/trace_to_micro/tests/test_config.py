@@ -178,5 +178,10 @@ def test_expectation_deviation_config_separates_train_calibration_and_test() -> 
     assert config.severity_levels == (1, 2, 3)
     assert config.max_length_delta_ratio == 0.1
     assert config.calibration_minimum_count == 5
+    assert config.min_k_fraction == 0.1
+    assert config.sigma_threshold == 3.0
     assert config.rematch_candidate_count == 4
     assert config.score_shard_path(7, 8).name == "shard_07_of_08.jsonl"
+    assert config.min_k_score_shard_path(7, 8).parent.name == (
+        "contextual_min_k_score_shards"
+    )

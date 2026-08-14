@@ -18,6 +18,7 @@ from trace_to_micro.analysis.logged_trace import (
 from trace_to_micro.config import ExpectationDeviationConfig
 from trace_to_micro.evaluation.deviation_metrics import (
     build_consistent_rematch_report,
+    build_contextual_min_k_report,
     build_deviation_report,
 )
 from trace_to_micro.evaluation.expectation_deviation import (
@@ -31,6 +32,8 @@ from trace_to_micro.evaluation.expectation_matching import (
 from trace_to_micro.runner.deviation_scoring import (
     anonymize_scoring_bundle,
     score_calibration_record,
+    score_contextual_min_k_calibration,
+    score_contextual_min_k_query,
     score_controlled_query,
     score_rematch_query,
 )
@@ -54,6 +57,10 @@ def _paths(config: ExpectationDeviationConfig) -> dict[str, Path]:
         "calibration": config.output_dir / "expectation_deviation_calibration.json",
         "report": config.output_dir / "expectation_deviation_report.json",
         "rematch_report": config.output_dir / "consistent_rematch_report.json",
+        "min_k_scores": config.output_dir / "contextual_min_k_scores.jsonl",
+        "min_k_measurements": config.output_dir / "contextual_min_k_measurements.jsonl",
+        "min_k_calibration": config.output_dir / "contextual_min_k_calibration.json",
+        "min_k_report": config.output_dir / "contextual_min_k_report.json",
     }
 
 
@@ -538,6 +545,274 @@ def run_expectation_deviation_evaluation(config_path: Path) -> dict[str, Path]:
         name: paths[name]
         for name in ("measurements", "calibration", "report", "rematch_report")
     }
+
+
+def _min_k_work(
+    config: ExpectationDeviationConfig,
+    records: dict[str, dict[str, Any]],
+    queries: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    evaluated_tools = {(row["domain"], row["tool_name"]) for row in queries}
+    calibration = [
+        row
+        for row in records.values()
+        if row["split"] == config.train_split
+        and (row["domain"], row["tool_name"]) in evaluated_tools
+    ]
+    work = [{"kind": "controlled", "value": row} for row in queries]
+    work.extend({"kind": "calibration", "value": row} for row in calibration)
+    return sorted(
+        work,
+        key=lambda row: (
+            row["kind"],
+            row["value"].get("query_id", row["value"].get("decision_id")),
+        ),
+    )
+
+
+def _min_k_work_id(item: dict[str, Any]) -> str:
+    identifier = item["value"].get("query_id", item["value"].get("decision_id"))
+    return f"min_k_{item['kind']}:{identifier}"
+
+
+def _min_k_work_fingerprint(
+    item: dict[str, Any], config: ExpectationDeviationConfig
+) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            {
+                "work": item,
+                "model": config.scoring_model,
+                "contexts": ["full", "action_only"],
+                "min_k_fraction": config.min_k_fraction,
+                "scoring": "contextual token likelihood-ratio upper tail",
+            },
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+
+
+def _expected_min_k_row_count(item: dict[str, Any]) -> int:
+    return len(item["value"]["variants"]) if item["kind"] == "controlled" else 1
+
+
+def run_contextual_min_k_score_shard(
+    config_path: Path,
+    *,
+    shard_index: int,
+    num_shards: int,
+    base_url: str,
+) -> Path:
+    """Score one resumable contextual Min-K shard without new rollouts."""
+
+    if num_shards <= 0 or not 0 <= shard_index < num_shards:
+        raise ValueError("Invalid shard index or shard count")
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY must be non-empty")
+    config = ExpectationDeviationConfig.load(config_path)
+    records, queries, _ = _load_inputs(config)
+    all_work = _min_k_work(config, records, queries)
+    assigned = [
+        item for index, item in enumerate(all_work) if index % num_shards == shard_index
+    ]
+    output = config.min_k_score_shard_path(shard_index, num_shards)
+    existing = read_jsonl(output)
+    counts = Counter(row["work_id"] for row in existing)
+    expected_counts = {
+        _min_k_work_id(item): _expected_min_k_row_count(item) for item in assigned
+    }
+    if set(counts) - set(expected_counts):
+        raise ValueError("Min-K shard contains work assigned to another shard")
+    fingerprints = {
+        _min_k_work_id(item): _min_k_work_fingerprint(item, config) for item in assigned
+    }
+    stale = {
+        row["work_id"]
+        for row in existing
+        if row.get("work_fingerprint") != fingerprints[row["work_id"]]
+    }
+    if stale:
+        raise ValueError(f"Min-K shard contains stale work groups: {sorted(stale)}")
+    partial = {
+        work_id: count
+        for work_id, count in counts.items()
+        if count != expected_counts[work_id]
+    }
+    if partial:
+        existing = [row for row in existing if row["work_id"] not in partial]
+        write_jsonl(output, existing)
+        counts = Counter(row["work_id"] for row in existing)
+    completed = set(counts)
+    for item in assigned:
+        work_id = _min_k_work_id(item)
+        if work_id in completed:
+            continue
+        if item["kind"] == "controlled":
+            rows = score_contextual_min_k_query(
+                item["value"],
+                records,
+                config=config,
+                base_url=base_url,
+                api_key=api_key,
+            )
+        else:
+            rows = [
+                score_contextual_min_k_calibration(
+                    item["value"],
+                    records,
+                    config=config,
+                    base_url=base_url,
+                    api_key=api_key,
+                )
+            ]
+        completed_rows = [
+            {
+                "work_id": work_id,
+                "work_fingerprint": fingerprints[work_id],
+                **row,
+            }
+            for row in rows
+        ]
+        append_jsonl_batch(output, completed_rows)
+        existing.extend(completed_rows)
+    return output
+
+
+def merge_contextual_min_k_scores(config_path: Path, *, num_shards: int) -> Path:
+    """Merge complete contextual Min-K work groups from every shard."""
+
+    config = ExpectationDeviationConfig.load(config_path)
+    records, queries, _ = _load_inputs(config)
+    work = _min_k_work(config, records, queries)
+    expected = {_min_k_work_id(item) for item in work}
+    fingerprints = {
+        _min_k_work_id(item): _min_k_work_fingerprint(item, config) for item in work
+    }
+    expected_counts = {
+        _min_k_work_id(item): _expected_min_k_row_count(item) for item in work
+    }
+    rows = []
+    for shard_index in range(num_shards):
+        path = config.min_k_score_shard_path(shard_index, num_shards)
+        if not path.is_file():
+            raise ValueError(f"Missing contextual Min-K shard {path}")
+        rows.extend(read_jsonl(path))
+    counts = Counter(row["work_id"] for row in rows)
+    if set(counts) != expected:
+        raise ValueError("Merged Min-K shards do not cover every work item")
+    stale = {
+        row["work_id"]
+        for row in rows
+        if row.get("work_fingerprint") != fingerprints[row["work_id"]]
+    }
+    if stale:
+        raise ValueError(f"Merged Min-K shards contain stale groups: {sorted(stale)}")
+    incomplete = {
+        work_id: count
+        for work_id, count in counts.items()
+        if count != expected_counts[work_id]
+    }
+    if incomplete:
+        raise ValueError(f"Merged Min-K work groups are incomplete: {incomplete}")
+    output = _paths(config)["min_k_scores"]
+    write_jsonl(
+        output,
+        sorted(
+            rows,
+            key=lambda row: (row["work_id"], row.get("severity", -1)),
+        ),
+    )
+    return output
+
+
+def run_contextual_min_k_evaluation(config_path: Path) -> dict[str, Path]:
+    """Fit Train-only Min-K calibration and evaluate controlled Test anomalies."""
+
+    config = ExpectationDeviationConfig.load(config_path)
+    paths = _paths(config)
+    rows = read_jsonl(paths["min_k_scores"])
+    if not rows:
+        raise ValueError("Merge contextual Min-K scores before evaluation")
+    report, measurements, calibration = build_contextual_min_k_report(
+        rows,
+        domains=config.domains,
+        calibration_minimum_count=config.calibration_minimum_count,
+        min_k_fraction=config.min_k_fraction,
+        sigma_threshold=config.sigma_threshold,
+        bootstrap_samples=config.bootstrap_samples,
+        random_seed=config.random_seed,
+    )
+    write_jsonl(paths["min_k_measurements"], measurements)
+    write_json(paths["min_k_calibration"], calibration)
+    write_json(paths["min_k_report"], report)
+    return {
+        name: paths[name]
+        for name in ("min_k_measurements", "min_k_calibration", "min_k_report")
+    }
+
+
+def run_contextual_min_k_smoke(config_path: Path, *, base_url: str) -> dict[str, Path]:
+    """Score one Test query and one Train clean record with the Min-K probe."""
+
+    config = ExpectationDeviationConfig.load(config_path)
+    records, queries, _ = _load_inputs(config)
+    controlled = next(
+        (
+            row
+            for row in queries
+            if row["domain"] == config.smoke_domain
+            and row["task_id"] == config.smoke_task_id
+        ),
+        next(row for row in queries if row["domain"] == config.smoke_domain),
+    )
+    train_record = next(
+        row
+        for row in records.values()
+        if row["domain"] == controlled["domain"]
+        and row["split"] == config.train_split
+        and row["tool_name"] == controlled["tool_name"]
+    )
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY must be non-empty")
+    controlled_rows = score_contextual_min_k_query(
+        controlled, records, config=config, base_url=base_url, api_key=api_key
+    )
+    calibration_row = score_contextual_min_k_calibration(
+        train_record, records, config=config, base_url=base_url, api_key=api_key
+    )
+    output_dir = config.smoke_output_dir()
+    scores_path = output_dir / "contextual_min_k_scores.jsonl"
+    report_path = output_dir / "contextual_min_k_smoke_report.json"
+    rows = [*controlled_rows, calibration_row]
+    write_jsonl(scores_path, rows)
+    ordered = sorted(controlled_rows, key=lambda row: row["severity"])
+    write_json(
+        report_path,
+        {
+            "completed": True,
+            "new_rollout_used": False,
+            "controlled_query_id": controlled["query_id"],
+            "calibration_decision_id": train_record["decision_id"],
+            "score_row_count": len(rows),
+            "expected_score_row_count": len(config.severity_levels) + 2,
+            "model_calls": len(rows) * 2,
+            "min_k_fraction": config.min_k_fraction,
+            "token_details_persisted": False,
+            "controlled_scores_by_severity": {
+                str(row["severity"]): row["contextual_min_k_deviation"]
+                for row in ordered
+            },
+            "controlled_strictly_monotonic": all(
+                left["contextual_min_k_deviation"] < right["contextual_min_k_deviation"]
+                for left, right in zip(ordered, ordered[1:])
+            ),
+        },
+    )
+    return {"scores": scores_path, "report": report_path}
 
 
 def run_expectation_deviation_smoke(

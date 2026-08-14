@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ "$#" -ne 1 ]]; then
-  echo "Usage: $0 <prepare|smoke|score|merge|evaluate|full>" >&2
+  echo "Usage: $0 <prepare|smoke|score|merge|evaluate|full|min-k-smoke|min-k-score|min-k-merge|min-k-evaluate|min-k-full>" >&2
   exit 2
 fi
 
@@ -76,6 +76,9 @@ prepare() {
 }
 
 run_score_workers() {
+  local score_command="$1"
+  local log_prefix="$2"
+  local rpc_label="$3"
   local -A pids=()
   local shard
   for ((shard = 0; shard < num_shards; shard++)); do
@@ -87,14 +90,14 @@ run_score_workers() {
     local internal_port=$((internal_base_port + shard * internal_port_stride))
     local master_port=$((master_base_port + shard))
     local base_url="http://127.0.0.1:${port}/v1"
-    local worker_log="${run_log_dir}/score_shard_${shard}.log"
+    local worker_log="${run_log_dir}/${log_prefix}_shard_${shard}.log"
     local server_log="${vllm_log_dir}/gpu_${gpu}_port_${port}.log"
     (
       export CUDA_VISIBLE_DEVICES="${gpu}"
       export QWEN3_32B_HTTP_PORT="${port}"
       export VLLM_HOST_IP="127.0.0.1"
       export VLLM_PORT="${internal_port}"
-      export VLLM_RPC_BASE_PATH="/tmp/trace_to_micro_deviation_${shard}_${BASHPID}"
+      export VLLM_RPC_BASE_PATH="/tmp/trace_to_micro_${rpc_label}_${shard}_${BASHPID}"
       mkdir -p "${VLLM_RPC_BASE_PATH}"
       export MASTER_ADDR="127.0.0.1"
       export MASTER_PORT="${master_port}"
@@ -104,7 +107,7 @@ run_score_workers() {
       export VLLM_LOG_PATH="${server_log}"
       "${project_dir}/scripts/with_managed_qwen3_32b_vllm.sh" \
         uv run --no-sync python -m trace_to_micro.cli \
-          expectation-deviation-score-shard --config "${config}" \
+          "${score_command}" --config "${config}" \
           --shard-index "${shard}" --num-shards "${num_shards}" \
           --base-url "${base_url}"
     ) >"${worker_log}" 2>&1 &
@@ -114,7 +117,7 @@ run_score_workers() {
   local failed=0
   for ((shard = 0; shard < num_shards; shard++)); do
     if ! wait "${pids[${shard}]}"; then
-      echo "Shard ${shard} failed; inspect ${run_log_dir}/score_shard_${shard}.log" >&2
+      echo "Shard ${shard} failed; inspect ${run_log_dir}/${log_prefix}_shard_${shard}.log" >&2
       failed=1
     fi
   done
@@ -132,6 +135,17 @@ merge() {
 evaluate() {
   uv run --no-sync python -m trace_to_micro.cli \
     expectation-deviation-evaluate --config "${config}"
+}
+
+min_k_merge() {
+  uv run --no-sync python -m trace_to_micro.cli \
+    contextual-min-k-merge --config "${config}" \
+    --num-shards "${num_shards}"
+}
+
+min_k_evaluate() {
+  uv run --no-sync python -m trace_to_micro.cli \
+    contextual-min-k-evaluate --config "${config}"
 }
 
 case "${stage}" in
@@ -153,7 +167,7 @@ case "${stage}" in
     validate_port_layout
     run_checks
     prepare
-    run_score_workers
+    run_score_workers expectation-deviation-score-shard score deviation
     ;;
   merge)
     merge
@@ -165,9 +179,39 @@ case "${stage}" in
     validate_port_layout
     run_checks
     prepare
-    run_score_workers
+    run_score_workers expectation-deviation-score-shard score deviation
     merge
     evaluate
+    ;;
+  min-k-smoke)
+    run_checks
+    prepare
+    export CUDA_VISIBLE_DEVICES="${smoke_gpu}"
+    export TENSOR_PARALLEL_SIZE=1
+    exec "${project_dir}/scripts/with_managed_qwen3_32b_vllm.sh" \
+      uv run --no-sync python -m trace_to_micro.cli \
+        contextual-min-k-smoke --config "${config}" \
+        --base-url "${OPENAI_API_BASE:-http://127.0.0.1:8000/v1}"
+    ;;
+  min-k-score)
+    validate_port_layout
+    run_checks
+    prepare
+    run_score_workers contextual-min-k-score-shard min_k_score contextual_min_k
+    ;;
+  min-k-merge)
+    min_k_merge
+    ;;
+  min-k-evaluate)
+    min_k_evaluate
+    ;;
+  min-k-full)
+    validate_port_layout
+    run_checks
+    prepare
+    run_score_workers contextual-min-k-score-shard min_k_score contextual_min_k
+    min_k_merge
+    min_k_evaluate
     ;;
   *)
     echo "Unknown stage: ${stage}" >&2

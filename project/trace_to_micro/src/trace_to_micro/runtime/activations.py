@@ -70,6 +70,7 @@ def score_chat_suffix(
     base_url: str,
     api_key: str,
     model: str,
+    include_token_details: bool = False,
 ) -> dict[str, Any]:
     """Score a factual chat suffix under an already selected action."""
 
@@ -134,12 +135,16 @@ def score_chat_suffix(
             if not isinstance(entry, dict):
                 raise ValueError(f"Missing prompt logprob at position {position}")
             selected.append(_selected_token_logprob(entry, complete[position]))
-        return {
+        score = {
             "prefix_token_count": content_start,
             "suffix_token_count": len(selected),
             "sum_logprob": float(sum(selected)),
             "mean_logprob": float(sum(selected) / len(selected)),
         }
+        if include_token_details:
+            score["suffix_token_ids"] = suffix_token_ids
+            score["token_logprobs"] = selected
+        return score
     except (KeyError, IndexError, TypeError) as error:
         raise ValueError(f"vLLM omitted prompt likelihoods: {response}") from error
     finally:

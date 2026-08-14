@@ -124,3 +124,60 @@ consistent_rematch_report.json
 outputs/run_logs/expectation_deviation/full.log
 outputs/run_logs/expectation_deviation/score_shard_*.log
 ```
+
+## 7. Contextual Min-K 概率探针补跑
+
+补跑不重新生成 Agent 轨迹，也不重复一致匿名后的四候选 rematch。它只读取已经构造
+好的 170 个 Test 受控异常决策和 335 个 Train 干净校准决策，并为每个返回计算完整
+上下文与 action-only 两套逐 token log probability，共需 2,030 次离线前向评分。
+
+对第 `i` 个返回 token 定义：
+
+```text
+token_contextual_deviation(i) =
+    logp_action_only(i) - logp_full_context(i)
+```
+
+主信号 `contextual_min_k_deviation` 固定取偏离最大的 10% token 的平均值。分数越大，
+表示返回中最可疑的一小部分 token 越不受正确任务上下文支持。逐 token 数组只在一次
+评分调用中暂存；落盘文件只保存以下四个标量：
+
+- `full_mean_surprisal`：完整上下文下的全文平均惊讶度基线；
+- `full_min_k_surprisal`：完整上下文下最意外 10% token 的平均惊讶度基线；
+- `mean_contextual_deviation`：全文平均上下文似然比基线；
+- `contextual_min_k_deviation`：最意外 10% token 的上下文似然比，固定为主信号。
+
+校准只使用官方 Train 的干净工具返回，固定按“领域 + 工具”估计每个标量的均值和
+标准差。Test 不参与分组、均值、标准差、10%比例或 3σ 阈值的选择。报告包含：
+
+- 四个信号校准前后的 AUROC 和 Average Precision；
+- 主信号按 task id 重采样的 AUROC/AP 95% 区间；
+- 干净返回与三级异常的配对方向、严格单调率和任意严重度顺序准确率；
+- 主信号按严重度的均值、中位数，以及 3σ 下的误报率、检出率、精确率、召回率、
+  特异度和 F1；
+- 每个工具的主指标和未达到 Train 最小校准支持度的工具清单。
+
+先用单 GPU smoke 验证逐 token 对齐和落盘字段：
+
+```bash
+project/trace_to_micro/scripts/run_qwen3_32b_expectation_deviation.sh min-k-smoke
+```
+
+smoke 通过后使用八个独立单卡服务补跑、合并并评测：
+
+```bash
+project/trace_to_micro/scripts/run_qwen3_32b_expectation_deviation.sh min-k-full
+```
+
+新增产物：
+
+```text
+smoke/contextual_min_k_scores.jsonl
+smoke/contextual_min_k_smoke_report.json
+contextual_min_k_score_shards/shard_*.jsonl
+contextual_min_k_scores.jsonl
+contextual_min_k_measurements.jsonl
+contextual_min_k_calibration.json
+contextual_min_k_report.json
+outputs/run_logs/expectation_deviation/min_k_score_shard_*.log
+```

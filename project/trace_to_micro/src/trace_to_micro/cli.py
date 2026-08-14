@@ -15,7 +15,11 @@ from trace_to_micro.runner.consequence_expectation import (
 )
 from trace_to_micro.runner.expectation_deviation import (
     build_expectation_deviation_dataset,
+    merge_contextual_min_k_scores,
     merge_expectation_deviation_scores,
+    run_contextual_min_k_evaluation,
+    run_contextual_min_k_score_shard,
+    run_contextual_min_k_smoke,
     run_expectation_deviation_evaluation,
     run_expectation_deviation_score_shard,
     run_expectation_deviation_smoke,
@@ -221,6 +225,17 @@ def _parser() -> argparse.ArgumentParser:
     deviation_smoke = subparsers.add_parser("expectation-deviation-smoke")
     deviation_smoke.add_argument("--config", type=Path, required=True)
     deviation_smoke.add_argument("--base-url", required=True)
+    min_k_score = subparsers.add_parser("contextual-min-k-score-shard")
+    min_k_score.add_argument("--config", type=Path, required=True)
+    min_k_score.add_argument("--shard-index", type=int, required=True)
+    min_k_score.add_argument("--num-shards", type=int, required=True)
+    min_k_score.add_argument("--base-url", required=True)
+    min_k_merge = subparsers.add_parser("contextual-min-k-merge")
+    min_k_merge.add_argument("--config", type=Path, required=True)
+    min_k_merge.add_argument("--num-shards", type=int, required=True)
+    min_k_smoke = subparsers.add_parser("contextual-min-k-smoke")
+    min_k_smoke.add_argument("--config", type=Path, required=True)
+    min_k_smoke.add_argument("--base-url", required=True)
     success_merge_activations = subparsers.add_parser("success-merge-activations")
     success_merge_activations.add_argument("--config", type=Path, required=True)
     success_merge_activations.add_argument("--num-shards", type=int, required=True)
@@ -240,6 +255,7 @@ def _parser() -> argparse.ArgumentParser:
         "expectation-matching-evaluate",
         "expectation-deviation-prepare",
         "expectation-deviation-evaluate",
+        "contextual-min-k-evaluate",
     ):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, required=True)
@@ -418,6 +434,29 @@ def main(argv: list[str] | None = None) -> None:
         return
     elif args.command == "expectation-deviation-evaluate":
         paths = run_expectation_deviation_evaluation(args.config)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
+    elif args.command == "contextual-min-k-score-shard":
+        print(
+            run_contextual_min_k_score_shard(
+                args.config,
+                shard_index=args.shard_index,
+                num_shards=args.num_shards,
+                base_url=args.base_url,
+            )
+        )
+        return
+    elif args.command == "contextual-min-k-merge":
+        print(merge_contextual_min_k_scores(args.config, num_shards=args.num_shards))
+        return
+    elif args.command == "contextual-min-k-smoke":
+        paths = run_contextual_min_k_smoke(args.config, base_url=args.base_url)
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
+    elif args.command == "contextual-min-k-evaluate":
+        paths = run_contextual_min_k_evaluation(args.config)
         for name, path in paths.items():
             print(f"{name}: {path}")
         return

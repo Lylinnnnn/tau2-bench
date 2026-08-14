@@ -170,3 +170,6 @@ def test_expectation_deviation_launcher_uses_single_gpu_services() -> None:
     assert "expectation-deviation-score-shard" in launcher
     assert "expectation-deviation-merge" in launcher
     assert "expectation-deviation-evaluate" in launcher
+    assert "contextual-min-k-score-shard" in launcher
+    assert "contextual-min-k-merge" in launcher
+    assert "contextual-min-k-evaluate" in launcher

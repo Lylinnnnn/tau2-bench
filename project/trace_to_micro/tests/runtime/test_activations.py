@@ -166,3 +166,43 @@ def test_score_chat_suffix_rejects_unisolated_content_boundary(monkeypatch) -> N
             api_key="EMPTY",
             model="qwen3-32b",
         )
+
+
+def test_score_chat_suffix_can_return_transient_token_details(monkeypatch) -> None:
+    responses = iter(
+        [
+            {"tokens": [1, 2, 7, 8]},
+            {"tokens": [1, 2, 9, 8]},
+            {
+                "choices": [
+                    {
+                        "prompt_token_ids": [1, 2, 7, 8],
+                        "prompt_logprobs": [
+                            None,
+                            {"2": {"logprob": -0.1}},
+                            {"7": {"logprob": -0.6}},
+                            {"8": {"logprob": -1.0}},
+                        ],
+                    }
+                ]
+            },
+        ]
+    )
+    monkeypatch.setattr(
+        "trace_to_micro.runtime.activations.request_json",
+        lambda *args, **kwargs: next(responses),
+    )
+
+    score = score_chat_suffix(
+        prefix_messages=[{"role": "assistant", "content": "call"}],
+        suffix_message={"role": "tool", "content": "result", "tool_call_id": "1"},
+        tools=[],
+        chat_template_kwargs={"enable_thinking": True},
+        base_url="http://127.0.0.1:8000/v1",
+        api_key="EMPTY",
+        model="qwen3-32b",
+        include_token_details=True,
+    )
+
+    assert score["suffix_token_ids"] == [7, 8]
+    assert score["token_logprobs"] == pytest.approx([-0.6, -1.0])

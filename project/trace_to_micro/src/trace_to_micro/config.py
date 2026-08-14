@@ -511,6 +511,8 @@ class ExpectationDeviationConfig:
     rematch_candidate_count: int
     max_length_delta_ratio: float
     calibration_minimum_count: int
+    min_k_fraction: float
+    sigma_threshold: float
     bootstrap_samples: int
     random_seed: int
     smoke_domain: str
@@ -539,6 +541,10 @@ class ExpectationDeviationConfig:
             raise ValueError("max_length_delta_ratio must be in [0, 1]")
         if values["calibration_minimum_count"] < 2:
             raise ValueError("calibration_minimum_count must be at least two")
+        if not 0 < values["min_k_fraction"] <= 1:
+            raise ValueError("min_k_fraction must be in (0, 1]")
+        if values["sigma_threshold"] <= 0:
+            raise ValueError("sigma_threshold must be positive")
         if values["bootstrap_samples"] <= 0:
             raise ValueError("bootstrap_samples must be positive")
         if values["expected_num_trials"] <= 0:
@@ -561,6 +567,8 @@ class ExpectationDeviationConfig:
             rematch_candidate_count=values["rematch_candidate_count"],
             max_length_delta_ratio=values["max_length_delta_ratio"],
             calibration_minimum_count=values["calibration_minimum_count"],
+            min_k_fraction=values["min_k_fraction"],
+            sigma_threshold=values["sigma_threshold"],
             bootstrap_samples=values["bootstrap_samples"],
             random_seed=values["random_seed"],
             smoke_domain=values["smoke_domain"],
@@ -579,6 +587,15 @@ class ExpectationDeviationConfig:
         return (
             self.output_dir
             / "score_shards"
+            / f"shard_{shard_index:02d}_of_{num_shards:02d}.jsonl"
+        )
+
+    def min_k_score_shard_path(self, shard_index: int, num_shards: int) -> Path:
+        """Return one resumable contextual Min-K score shard."""
+
+        return (
+            self.output_dir
+            / "contextual_min_k_score_shards"
             / f"shard_{shard_index:02d}_of_{num_shards:02d}.jsonl"
         )
 
