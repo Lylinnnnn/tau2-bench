@@ -1,0 +1,186 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.0.1, pluggy-1.6.0
+rootdir: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro
+configfile: pyproject.toml
+plugins: anyio-4.11.0, xdist-3.8.0
+collected 130 items
+
+project/trace_to_micro/tests/analysis/test_logged_trace.py .........     [  6%]
+project/trace_to_micro/tests/analysis/test_logged_transitions.py .       [  7%]
+project/trace_to_micro/tests/analysis/test_results.py ..                 [  9%]
+project/trace_to_micro/tests/analysis/test_task_inventory.py ...         [ 11%]
+project/trace_to_micro/tests/analysis/test_trajectory.py ..              [ 13%]
+project/trace_to_micro/tests/clean/test_audit.py ..                      [ 14%]
+project/trace_to_micro/tests/clean/test_contract.py .....                [ 18%]
+project/trace_to_micro/tests/clean/test_evidence.py ....                 [ 21%]
+project/trace_to_micro/tests/clean/test_report.py .                      [ 22%]
+project/trace_to_micro/tests/clean/test_semantic.py ...                  [ 24%]
+project/trace_to_micro/tests/evaluation/test_consequence_expectation.py . [ 25%]
+.                                                                        [ 26%]
+project/trace_to_micro/tests/evaluation/test_consequence_metrics.py .    [ 26%]
+project/trace_to_micro/tests/evaluation/test_consequence_probe.py .      [ 27%]
+project/trace_to_micro/tests/evaluation/test_deviation_metrics.py ....   [ 30%]
+project/trace_to_micro/tests/evaluation/test_expectation_deviation.py .. [ 32%]
+                                                                         [ 32%]
+project/trace_to_micro/tests/evaluation/test_expectation_matching.py ... [ 34%]
+                                                                         [ 34%]
+project/trace_to_micro/tests/evaluation/test_local_consequence.py .      [ 35%]
+project/trace_to_micro/tests/evaluation/test_paired.py .....             [ 39%]
+project/trace_to_micro/tests/evaluation/test_success_direction.py ....   [ 42%]
+project/trace_to_micro/tests/evaluation/test_support.py ...              [ 44%]
+project/trace_to_micro/tests/replay/test_branching.py .                  [ 45%]
+project/trace_to_micro/tests/replay/test_consequence.py ....             [ 48%]
+project/trace_to_micro/tests/replay/test_reference.py ..                 [ 50%]
+project/trace_to_micro/tests/replay/test_state.py .....                  [ 53%]
+project/trace_to_micro/tests/runner/test_context.py ......               [ 58%]
+project/trace_to_micro/tests/runner/test_deviation_scoring.py ..         [ 60%]
+project/trace_to_micro/tests/runner/test_runner_consequence_expectation.py . [ 60%]
+                                                                         [ 60%]
+project/trace_to_micro/tests/runner/test_runner_expectation_deviation.py . [ 61%]
+                                                                         [ 61%]
+project/trace_to_micro/tests/runner/test_runner_expectation_matching.py . [ 62%]
+.                                                                        [ 63%]
+project/trace_to_micro/tests/runner/test_runner_local_consequence.py ... [ 65%]
+..                                                                       [ 66%]
+project/trace_to_micro/tests/runner/test_success_direction_runner.py ... [ 69%]
+.                                                                        [ 70%]
+project/trace_to_micro/tests/runner/test_trajectory_runner.py ...        [ 72%]
+project/trace_to_micro/tests/runtime/test_activations.py ......          [ 76%]
+project/trace_to_micro/tests/runtime/test_server_preflight.py ......     [ 81%]
+project/trace_to_micro/tests/test_architecture.py ....                   [ 84%]
+project/trace_to_micro/tests/test_config.py .......                      [ 90%]
+project/trace_to_micro/tests/test_io.py .                                [ 90%]
+project/trace_to_micro/tests/test_launch_scripts.py ............         [100%]
+
+=============================== warnings summary ===============================
+src/tau2/voice/utils/audio_preprocessing.py:4
+  /home/liuyanlin.lyl/notebook/lyl/tau2-bench/src/tau2/voice/utils/audio_preprocessing.py:4: DeprecationWarning: 'audioop' is deprecated and slated for removal in Python 3.13
+    import audioop
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 130 passed, 1 warning in 11.39s ========================
+All checks passed!
+92 files already formatted
+2026-08-14 15:38:32.945 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-14 15:38:32.946 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+[92m15:38:43 - LiteLLM:WARNING[0m: get_model_cost_map.py:174 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: The read operation timed out. Falling back to local backup.
+2026-08-14 15:38:46.543 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-14 15:38:46.783 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-14 15:38:46.798 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-14 15:38:46.798 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+records: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/expectation_deviation_records.jsonl
+queries: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/controlled_anomaly_queries.jsonl
+rematch_queries: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/consistent_rematch_queries.jsonl
+audit: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/expectation_deviation_audit.json
+Started shard 0: GPU 0, HTTP 8000, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/expectation_deviation/min_k_score_shard_0.log
+Started shard 1: GPU 1, HTTP 8301, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/expectation_deviation/min_k_score_shard_1.log
+Started shard 2: GPU 2, HTTP 8302, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/expectation_deviation/min_k_score_shard_2.log
+Started shard 3: GPU 3, HTTP 8303, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/expectation_deviation/min_k_score_shard_3.log
+Started shard 4: GPU 4, HTTP 8304, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/expectation_deviation/min_k_score_shard_4.log
+Started shard 5: GPU 5, HTTP 8305, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/expectation_deviation/min_k_score_shard_5.log
+Started shard 6: GPU 6, HTTP 8306, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/expectation_deviation/min_k_score_shard_6.log
+Started shard 7: GPU 7, HTTP 8307, log /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/run_logs/expectation_deviation/min_k_score_shard_7.log
+2026-08-14 15:59:07.901 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-14 15:59:07.901 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+2026-08-14 15:59:14.255 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-14 15:59:14.441 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-14 15:59:14.457 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-14 15:59:14.457 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/contextual_min_k_scores.jsonl
+2026-08-14 15:59:16.746 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-14 15:59:16.746 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+[92m15:59:22 - LiteLLM:WARNING[0m: get_model_cost_map.py:174 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: _ssl.c:993: The handshake operation timed out. Falling back to local backup.
+2026-08-14 15:59:24.779 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-14 15:59:24.953 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-14 15:59:24.964 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-14 15:59:24.965 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+min_k_measurements: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/contextual_min_k_measurements.jsonl
+min_k_calibration: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/contextual_min_k_calibration.json
+min_k_report: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/contextual_min_k_report.json
