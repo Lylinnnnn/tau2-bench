@@ -1,0 +1,232 @@
+{
+  "minimum_count": 5,
+  "structure": {
+    "airline|action_only|cancel_reservation|f5ca8b6214629738": {
+      "count": 13,
+      "mean": -0.647753578907981,
+      "std": 0.06617061092926321
+    },
+    "airline|action_only|get_reservation_details|a6974618deb93a5f": {
+      "count": 54,
+      "mean": -0.695559986808201,
+      "std": 0.06479083386901253
+    },
+    "airline|action_only|search_direct_flight|197ff63c0f0670c6": {
+      "count": 6,
+      "mean": -0.6471775943952087,
+      "std": 0.12103469917010158
+    },
+    "airline|action_only|update_reservation_flights|a6974618deb93a5f": {
+      "count": 8,
+      "mean": -0.6683694800138227,
+      "std": 0.0456326227492923
+    },
+    "airline|full|cancel_reservation|f5ca8b6214629738": {
+      "count": 13,
+      "mean": -0.027479417861170478,
+      "std": 0.022023999027472665
+    },
+    "airline|full|get_reservation_details|a6974618deb93a5f": {
+      "count": 54,
+      "mean": -0.41526137580418065,
+      "std": 0.1885128090636569
+    },
+    "airline|full|search_direct_flight|197ff63c0f0670c6": {
+      "count": 6,
+      "mean": -0.4818078071091727,
+      "std": 0.1687313910778159
+    },
+    "airline|full|update_reservation_flights|a6974618deb93a5f": {
+      "count": 8,
+      "mean": -0.07807292156265913,
+      "std": 0.032794904586930906
+    },
+    "airline|shuffled|cancel_reservation|f5ca8b6214629738": {
+      "count": 13,
+      "mean": -0.39214193628095734,
+      "std": 0.06038537558343203
+    },
+    "airline|shuffled|get_reservation_details|a6974618deb93a5f": {
+      "count": 54,
+      "mean": -0.6810547233317529,
+      "std": 0.06212713281915161
+    },
+    "airline|shuffled|search_direct_flight|197ff63c0f0670c6": {
+      "count": 6,
+      "mean": -0.5348172663663197,
+      "std": 0.09352799358873051
+    },
+    "airline|shuffled|update_reservation_flights|a6974618deb93a5f": {
+      "count": 8,
+      "mean": -0.3817257263151278,
+      "std": 0.033742552609634616
+    }
+  },
+  "tool": {
+    "airline|action_only|cancel_reservation": {
+      "count": 13,
+      "mean": -0.647753578907981,
+      "std": 0.06617061092926321
+    },
+    "airline|action_only|get_reservation_details": {
+      "count": 54,
+      "mean": -0.695559986808201,
+      "std": 0.06479083386901253
+    },
+    "airline|action_only|get_user_details": {
+      "count": 18,
+      "mean": -0.9335434728516577,
+      "std": 0.12366518849177881
+    },
+    "airline|action_only|search_direct_flight": {
+      "count": 9,
+      "mean": -3.0627803520969072,
+      "std": 3.625033420945734
+    },
+    "airline|action_only|update_reservation_flights": {
+      "count": 8,
+      "mean": -0.6683694800138227,
+      "std": 0.0456326227492923
+    },
+    "airline|full|cancel_reservation": {
+      "count": 13,
+      "mean": -0.027479417861170478,
+      "std": 0.022023999027472665
+    },
+    "airline|full|get_reservation_details": {
+      "count": 54,
+      "mean": -0.41526137580418065,
+      "std": 0.1885128090636569
+    },
+    "airline|full|get_user_details": {
+      "count": 18,
+      "mean": -0.8744840957144073,
+      "std": 0.11567640950127554
+    },
+    "airline|full|search_direct_flight": {
+      "count": 9,
+      "mean": -1.3771322450106962,
+      "std": 1.3876731273754779
+    },
+    "airline|full|update_reservation_flights": {
+      "count": 8,
+      "mean": -0.07807292156265913,
+      "std": 0.032794904586930906
+    },
+    "airline|shuffled|cancel_reservation": {
+      "count": 13,
+      "mean": -0.39214193628095734,
+      "std": 0.06038537558343203
+    },
+    "airline|shuffled|get_reservation_details": {
+      "count": 54,
+      "mean": -0.6810547233317529,
+      "std": 0.06212713281915161
+    },
+    "airline|shuffled|get_user_details": {
+      "count": 18,
+      "mean": -0.9434258458526446,
+      "std": 0.12942727177253005
+    },
+    "airline|shuffled|search_direct_flight": {
+      "count": 9,
+      "mean": -1.7732747748772713,
+      "std": 1.8600385947503013
+    },
+    "airline|shuffled|update_reservation_flights": {
+      "count": 8,
+      "mean": -0.3817257263151278,
+      "std": 0.033742552609634616
+    },
+    "retail|action_only|cancel_pending_order": {
+      "count": 11,
+      "mean": -0.78283796025385,
+      "std": 0.03785484024374459
+    },
+    "retail|action_only|exchange_delivered_order_items": {
+      "count": 14,
+      "mean": -0.6891082734579541,
+      "std": 0.07106756008493931
+    },
+    "retail|action_only|get_order_details": {
+      "count": 114,
+      "mean": -0.7782822955413319,
+      "std": 0.06385790732966402
+    },
+    "retail|action_only|get_user_details": {
+      "count": 57,
+      "mean": -1.022278805784635,
+      "std": 0.08352901493828589
+    },
+    "retail|action_only|modify_pending_order_items": {
+      "count": 8,
+      "mean": -0.7766228702151308,
+      "std": 0.0330521936087961
+    },
+    "retail|action_only|return_delivered_order_items": {
+      "count": 18,
+      "mean": -0.7019591317283179,
+      "std": 0.05093999174180463
+    },
+    "retail|full|cancel_pending_order": {
+      "count": 11,
+      "mean": -0.009557328016293207,
+      "std": 0.006115493295750161
+    },
+    "retail|full|exchange_delivered_order_items": {
+      "count": 14,
+      "mean": -0.01950228570961814,
+      "std": 0.011345690568487886
+    },
+    "retail|full|get_order_details": {
+      "count": 114,
+      "mean": -0.4846916483097037,
+      "std": 0.14430476387764196
+    },
+    "retail|full|get_user_details": {
+      "count": 57,
+      "mean": -0.8546900001373351,
+      "std": 0.09806860494288169
+    },
+    "retail|full|modify_pending_order_items": {
+      "count": 8,
+      "mean": -0.04801250201197606,
+      "std": 0.022569212377232226
+    },
+    "retail|full|return_delivered_order_items": {
+      "count": 18,
+      "mean": -0.01040430176946671,
+      "std": 0.005984029421813552
+    },
+    "retail|shuffled|cancel_pending_order": {
+      "count": 11,
+      "mean": -0.4321272350341958,
+      "std": 0.07078172004239658
+    },
+    "retail|shuffled|exchange_delivered_order_items": {
+      "count": 14,
+      "mean": -0.3871562261378422,
+      "std": 0.07622859367136765
+    },
+    "retail|shuffled|get_order_details": {
+      "count": 114,
+      "mean": -0.4663544769721852,
+      "std": 0.05640011886466151
+    },
+    "retail|shuffled|get_user_details": {
+      "count": 57,
+      "mean": -1.0088724842046795,
+      "std": 0.09117797812851174
+    },
+    "retail|shuffled|modify_pending_order_items": {
+      "count": 8,
+      "mean": -0.5104083098700896,
+      "std": 0.04445874305595825
+    },
+    "retail|shuffled|return_delivered_order_items": {
+      "count": 18,
+      "mean": -0.43959921918105527,
+      "std": 0.054393249818893145
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "airline": {
+    "action_only": {
+      "query_count": 65,
+      "pairwise_accuracy": 0.758974358974359,
+      "hit_at_1": 0.5692307692307692
+    },
+    "full": {
+      "query_count": 65,
+      "pairwise_accuracy": 0.8974358974358975,
+      "hit_at_1": 0.8153846153846154
+    },
+    "shuffled": {
+      "query_count": 65,
+      "pairwise_accuracy": 0.6461538461538462,
+      "hit_at_1": 0.36923076923076925
+    }
+  },
+  "retail": {
+    "action_only": {
+      "query_count": 155,
+      "pairwise_accuracy": 0.6881720430107526,
+      "hit_at_1": 0.5032258064516129
+    },
+    "full": {
+      "query_count": 155,
+      "pairwise_accuracy": 0.8795698924731183,
+      "hit_at_1": 0.7870967741935484
+    },
+    "shuffled": {
+      "query_count": 155,
+      "pairwise_accuracy": 0.6107526881720431,
+      "hit_at_1": 0.3225806451612903
+    }
+  }
+}

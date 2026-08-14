@@ -1,0 +1,40 @@
+Starting managed Qwen3-32B vLLM; log: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/vllm_logs/expectation_deviation/gpu_5_port_8305.log
+Managed Qwen3-32B vLLM is ready at http://127.0.0.1:8305/v1
+Model-server preflight passed: ['qwen3-32b']
+2026-08-13 23:44:01.875 | WARNING  | tau2.utils.utils:<module>:15 - No .env file found
+2026-08-13 23:44:01.875 | INFO     | tau2.utils.utils:<module>:28 - Using data directory from source: /home/liuyanlin.lyl/notebook/lyl/tau2-bench/data
+2026-08-13 23:44:07.014 | INFO     | tau2.utils.llm_utils:<module>:102 - LiteLLM: Cache is disabled
+2026-08-13 23:44:07.212 | DEBUG    | tau2.registry:<module>:281 - Registering default components...
+2026-08-13 23:44:07.224 | DEBUG    | tau2.registry:<module>:292 - Voice dependencies not installed, skipping voice user registration
+2026-08-13 23:44:07.225 | DEBUG    | tau2.registry:<module>:350 - Default components registered successfully. Registry info: {
+  "domains": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ],
+  "agents": [
+    "llm_agent",
+    "llm_agent_gt",
+    "llm_agent_solo",
+    "discrete_time_audio_native_agent"
+  ],
+  "users": [
+    "user_simulator",
+    "dummy_user"
+  ],
+  "task_sets": [
+    "mock",
+    "airline",
+    "retail",
+    "telecom_full",
+    "telecom_small",
+    "telecom",
+    "telecom-workflow",
+    "banking_knowledge"
+  ]
+}
+/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/trace_to_micro/outputs/qwen3_32b_thinking_t06_expectation_deviation/score_shards/shard_05_of_08.jsonl
+Stopping managed Qwen3-32B vLLM process 236479
