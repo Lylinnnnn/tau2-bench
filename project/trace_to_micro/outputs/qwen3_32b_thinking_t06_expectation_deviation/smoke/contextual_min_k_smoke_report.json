@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "new_rollout_used": false,
+  "controlled_query_id": "7b0f5173-ade7-494b-818a-74a15fd0a6c2:10",
+  "calibration_decision_id": "4be7dee0-5589-477e-8472-9c20540080c4:2",
+  "score_row_count": 5,
+  "expected_score_row_count": 5,
+  "model_calls": 10,
+  "min_k_fraction": 0.1,
+  "token_details_persisted": false,
+  "controlled_scores_by_severity": {
+    "0": 0.22574788730971934,
+    "1": 0.34105967405929777,
+    "2": 0.31773357092601867,
+    "3": 0.5425745634225634
+  },
+  "controlled_strictly_monotonic": false
+}
