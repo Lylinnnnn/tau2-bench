@@ -118,17 +118,44 @@ def check_submodule(project_root: Path) -> str:
         raise ValueError(
             f"verl checkout {commit} differs from lock {lock['verl_commit']}"
         )
-    installed_vllm = importlib.metadata.version("vllm")
-    if installed_vllm != lock["training_vllm"]:
-        raise ValueError(
-            f"Training vLLM {installed_vllm} differs from lock {lock['training_vllm']}"
-        )
     importlib.metadata.version("verl")
     from expectation_step_rl.verl_adapter.agent_loop import (  # noqa: F401
         Tau2ExpectationStepAgentLoop,
     )
 
     return commit
+
+
+def check_training_packages(project_root: Path) -> dict[str, str]:
+    """Require the exact GPU package versions used by the pinned verl release."""
+
+    lock = dict(
+        line.split("=", 1)
+        for line in (project_root / "FRAMEWORK.lock").read_text().splitlines()
+        if line and not line.startswith("#")
+    )
+    requirements = {
+        "vllm": lock["training_vllm"],
+        "torch": lock["training_torch"],
+        "flash-attn": lock["training_flash_attn"],
+        "flashinfer-python": lock["training_flashinfer"],
+    }
+    installed = {
+        package: importlib.metadata.version(package) for package in requirements
+    }
+    mismatches = {
+        package: {"expected": requirements[package], "installed": version}
+        for package, version in installed.items()
+        if version != requirements[package]
+    }
+    if mismatches:
+        raise ValueError(f"Training package versions differ from lock: {mismatches}")
+
+    import flash_attn
+
+    if not callable(flash_attn.flash_attn_func):
+        raise RuntimeError("flash_attn.flash_attn_func is unavailable")
+    return installed
 
 
 def check_scorer(base_url: str, api_key: str, expected_model: str) -> str:
@@ -191,6 +218,7 @@ def main() -> None:
     report = {
         **check_dataset(args.train_data, args.test_data),
         "calibration_groups": check_calibration(args.calibration),
+        "training_packages": check_training_packages(args.project_root),
         "verl_commit": check_submodule(args.project_root),
         "scorer_model": check_scorer(
             args.scorer_base_url,

@@ -46,7 +46,7 @@ expectation_step_rl/
 └── third_party/verl/        # 固定提交的 Git submodule
 ```
 
-`verl` 固定在提交 `bec9ef74768dd201881cd4e54cd0385e87caae27`（release `v0.7.1`）。精确源码的 `setup.py` 声明 `vLLM >=0.8.5, <=0.12.0`，其安装脚本固定 `vLLM 0.11.0`，所以训练环境使用 0.11.0。已有的冻结打分服务是独立进程，可以继续使用已经跑通 prompt logprob 的 vLLM 0.25.1；两者不共享 Python 环境。
+`verl` 固定在提交 `bec9ef74768dd201881cd4e54cd0385e87caae27`（release `v0.7.1`）。精确源码的 `setup.py` 声明 `vLLM >=0.8.5, <=0.12.0`，其安装脚本固定 `vLLM 0.11.0`，所以训练环境使用 vLLM 0.11.0 和它依赖的 PyTorch 2.8.0。训练端还使用 verl 官方安装脚本对应的 FlashAttention 2.8.1 预编译 wheel 与 FlashInfer 0.3.1。已有的冻结打分服务是独立进程，可以继续使用已经跑通 prompt logprob 的 vLLM 0.25.1；两者不共享 Python 环境。
 
 LoRA rollout 按该版本官方要求使用 `vLLM + safetensors load_format`，并开启逐层权重同步以控制峰值显存。项目没有修改 `verl` 的参数更新算法；自定义部分仅是单步环境和奖励来源。
 
@@ -59,6 +59,8 @@ git submodule update --init --recursive project/expectation_step_rl/third_party/
 bash project/expectation_step_rl/scripts/bootstrap_training_env.sh
 bash project/expectation_step_rl/scripts/prepare_dataset.sh
 ```
+
+安装脚本会先安装 vLLM/PyTorch，再安装与 PyTorch 2.8 匹配的 FlashAttention 预编译 wheel，不会在服务器上现场编译 `flash-attn`。如果旧环境在 FlashAttention 处失败，直接重新运行同一个安装脚本即可修复；不要另外执行普通的 `pip install flash-attn`，该命令会进入源码隔离构建并可能报构建环境找不到 `torch`。
 
 数据准备默认读取已经完整生成的 Airline/Retail Qwen3-32B 轨迹，并输出：
 
@@ -79,7 +81,7 @@ TRAINING_CUDA_VISIBLE_DEVICES=1 bash scripts/run_smoke_tmux.sh
 tmux attach -t expectation-step-rl-smoke
 ```
 
-smoke 只取一个 Train 状态、生成两个候选并更新一步。预飞行检查会直接验证数据无 Train/Test 重叠、校准来源、submodule 提交、训练 vLLM 版本和打分服务模型。
+smoke 只取一个 Train 状态、生成两个候选并更新一步。预飞行检查会直接验证数据无 Train/Test 重叠、校准来源、submodule 提交、训练端 vLLM、PyTorch、FlashAttention、FlashInfer 的精确版本和可导入性，以及打分服务模型。
 
 确认 smoke 的两个候选都有 `expectation_outcome`、连续 reward 和一次参数更新后，再跑 7 卡 pilot；GPU 0 留给冻结打分服务：
 

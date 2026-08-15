@@ -3,7 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from expectation_step_rl.preflight import check_calibration, check_dataset
+from expectation_step_rl.preflight import (
+    check_calibration,
+    check_dataset,
+    check_training_packages,
+)
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -50,3 +54,28 @@ def test_dataset_check_rejects_official_reward_leakage(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="forbidden supervision"):
         check_dataset(train, test)
+
+
+def test_training_package_check_rejects_version_drift(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock = tmp_path / "FRAMEWORK.lock"
+    lock.write_text(
+        "training_vllm=0.11.0\n"
+        "training_torch=2.8.0\n"
+        "training_flash_attn=2.8.1\n"
+        "training_flashinfer=0.3.1\n"
+    )
+    versions = {
+        "vllm": "0.11.0",
+        "torch": "2.8.0",
+        "flash-attn": "2.8.0",
+        "flashinfer-python": "0.3.1",
+    }
+    monkeypatch.setattr(
+        "expectation_step_rl.preflight.importlib.metadata.version",
+        versions.__getitem__,
+    )
+
+    with pytest.raises(ValueError, match="flash-attn"):
+        check_training_packages(tmp_path)

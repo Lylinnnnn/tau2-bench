@@ -3,4 +3,8 @@ verl_commit=bec9ef74768dd201881cd4e54cd0385e87caae27
 verl_source_vllm_spec=>=0.8.5,<=0.12.0
 verl_install_script_vllm=0.11.0
 training_vllm=0.11.0
+training_torch=2.8.0
+training_flash_attn=2.8.1
+training_flashinfer=0.3.1
+flash_attn_wheel=https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.1/flash_attn-2.8.1+cu12torch2.8cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
 scorer_protocol=OpenAI /tokenize and /v1/completions prompt_logprobs
