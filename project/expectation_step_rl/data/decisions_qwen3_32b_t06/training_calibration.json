@@ -1,0 +1,132 @@
+{
+  "source": "official Train clean tool results only",
+  "source_filter": {
+    "split": "train",
+    "track": "min_k_calibration",
+    "severity": 0
+  },
+  "primary_score": "contextual_min_k_deviation",
+  "minimum_tool_count": 5,
+  "fallback_policy": "domain statistics fitted from the same Train rows",
+  "groups": {
+    "airline|cancel_reservation": {
+      "count": 13,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.10421020860370102,
+          "std": 0.09966760069792928
+        }
+      }
+    },
+    "airline|get_reservation_details": {
+      "count": 54,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.49863756496042205,
+          "std": 0.2356675240403351
+        }
+      }
+    },
+    "airline|get_user_details": {
+      "count": 18,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.5701326516450297,
+          "std": 0.17498552291982947
+        }
+      }
+    },
+    "airline|search_direct_flight": {
+      "count": 9,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.20313600735283155,
+          "std": 0.3613966618923506
+        }
+      }
+    },
+    "airline|update_reservation_flights": {
+      "count": 8,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.1841372405964069,
+          "std": 0.13924559257658825
+        }
+      }
+    },
+    "retail|cancel_pending_order": {
+      "count": 11,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.034766204060883155,
+          "std": 0.053407215290538
+        }
+      }
+    },
+    "retail|exchange_delivered_order_items": {
+      "count": 14,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.05902031975153555,
+          "std": 0.06474374522036101
+        }
+      }
+    },
+    "retail|get_order_details": {
+      "count": 114,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.4972854633889561,
+          "std": 0.18909478519052372
+        }
+      }
+    },
+    "retail|get_user_details": {
+      "count": 57,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.7452189134669084,
+          "std": 0.18261242109748635
+        }
+      }
+    },
+    "retail|modify_pending_order_items": {
+      "count": 8,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.11079414176997288,
+          "std": 0.09353692944350168
+        }
+      }
+    },
+    "retail|return_delivered_order_items": {
+      "count": 18,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.01200420292826739,
+          "std": 0.02258779876857941
+        }
+      }
+    }
+  },
+  "domain_fallbacks": {
+    "airline": {
+      "count": 105,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.40231536159270614,
+          "std": 0.276818509884125
+        }
+      }
+    },
+    "retail": {
+      "count": 230,
+      "statistics": {
+        "contextual_min_k_deviation": {
+          "mean": 0.4435330788540073,
+          "std": 0.30310740166089317
+        }
+      }
+    }
+  }
+}

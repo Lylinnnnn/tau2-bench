@@ -1,0 +1,20 @@
+{
+  "method": "all real single-tool decision states from complete trajectories",
+  "official_split_policy": "Train for optimization; Test for held-out evaluation",
+  "contains_official_reference_actions": false,
+  "contains_official_final_rewards": false,
+  "train_rows": 507,
+  "test_rows": 274,
+  "domains": {
+    "airline": {
+      "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_airline_base/results.json",
+      "test_decisions": 87,
+      "train_decisions": 136
+    },
+    "retail": {
+      "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/trace_to_micro_qwen3_32b_thinking_t06_success_direction_retail_base/results.json",
+      "test_decisions": 187,
+      "train_decisions": 371
+    }
+  }
+}
