@@ -71,19 +71,19 @@ project/expectation_step_rl/data/decisions_qwen3_32b_t06/dataset_report.json
 project/expectation_step_rl/data/decisions_qwen3_32b_t06/training_calibration.json
 ```
 
-## 先跑单卡 smoke
+## 先跑四卡 smoke
 
-冻结 Qwen3-32B 打分服务应已在 `127.0.0.1:8000` 正常运行。smoke 训练默认只让 `verl` 使用 GPU 1，不会重复启动该服务：
+冻结 Qwen3-32B 打分服务应已在 GPU 0、`127.0.0.1:8000` 正常运行。32B 模型的 smoke 默认让 `verl` 使用物理 GPU 1、2、3、4；训练进程看不到 GPU 0，也不会重复启动打分服务：
 
 ```bash
 cd project/expectation_step_rl
-TRAINING_CUDA_VISIBLE_DEVICES=1 bash scripts/run_smoke_tmux.sh
+bash scripts/run_smoke_tmux.sh
 tmux attach -t expectation-step-rl-smoke
 ```
 
-smoke 只取一个 Train 状态、生成两个候选并更新一步。预飞行检查会直接验证数据无 Train/Test 重叠、校准来源、submodule 提交、训练端 vLLM、PyTorch、FlashAttention、FlashInfer 的精确版本和可导入性，以及打分服务模型。
+smoke 只取一个 Train 状态，在四卡上生成四个候选并更新一步。四个候选既组成同一状态的最小 GRPO 比较组，也使四卡 FSDP 的每张卡获得一个训练样本。rollout 使用四卡张量并行，避免任一训练卡独自承载完整 32B 推理权重。预飞行检查会直接验证数据无 Train/Test 重叠、校准来源、submodule 提交、训练端 vLLM、PyTorch、FlashAttention、FlashInfer 的精确版本和可导入性，以及打分服务模型。
 
-确认 smoke 的两个候选都有 `expectation_outcome`、连续 reward 和一次参数更新后，再跑 7 卡 pilot；GPU 0 留给冻结打分服务：
+确认 smoke 的四个候选都有 `expectation_outcome`、连续 reward 和一次参数更新后，再跑 7 卡 pilot；GPU 0 留给冻结打分服务：
 
 ```bash
 cd project/expectation_step_rl
