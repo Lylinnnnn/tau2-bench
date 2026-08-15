@@ -21,6 +21,7 @@ from expectation_step_rl.expectation.calibration import RewardResult, TrainCalib
 from expectation_step_rl.expectation.scoring import VLLMExpectationScorer
 from expectation_step_rl.expectation.structure import result_structure_key
 from expectation_step_rl.tau2_adapter.execution import execute_one_tool_call
+from expectation_step_rl.verl_adapter.reward_fields import build_agent_extra_fields
 
 
 class Tau2ExpectationStepAgentLoop(AgentLoopBase):
@@ -234,27 +235,6 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
         reward: RewardResult,
         extra: dict[str, Any],
     ) -> AgentLoopOutput:
-        reward_extra = dict(extra)
-        for key in (
-            "contextual_min_k_deviation",
-            "calibrated_z",
-            "calibration_count",
-            "suffix_token_count",
-            "min_k_token_count",
-        ):
-            if reward_extra[key] is None:
-                reward_extra[key] = float("nan")
-        for key in (
-            "expectation_outcome",
-            "tool_name",
-            "tool_result",
-            "calibration_key",
-            "calibration_level",
-            "scorer_base_url",
-        ):
-            if reward_extra[key] is None:
-                reward_extra[key] = ""
-        reward_extra["tool_error"] = float(bool(reward_extra["tool_error"]))
         return AgentLoopOutput(
             prompt_ids=prompt_ids,
             response_ids=response_ids,
@@ -263,10 +243,5 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
             reward_score=reward.reward,
             num_turns=2,
             metrics=AgentLoopMetrics.model_validate(metrics),
-            extra_fields={
-                **extra,
-                "reward_extra_info": reward_extra,
-                "turn_scores": [reward.reward],
-                "tool_rewards": [reward.reward],
-            },
+            extra_fields=build_agent_extra_fields(extra, reward),
         )
