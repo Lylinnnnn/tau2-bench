@@ -33,6 +33,7 @@ else
 fi
 TRAINING_CUDA_VISIBLE_DEVICES="${TRAINING_CUDA_VISIBLE_DEVICES:-$DEFAULT_TRAINING_GPUS}"
 OUTPUT_DIR="${OUTPUT_DIR:-$PROJECT_DIR/outputs/$MODE}"
+CHECKPOINT_DIR="${CHECKPOINT_DIR:-/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_${MODE}}"
 
 IFS=',' read -r -a TRAINING_GPU_IDS <<< "$TRAINING_CUDA_VISIBLE_DEVICES"
 if [[ "${#TRAINING_GPU_IDS[@]}" -ne "$TRAINING_N_GPUS" ]]; then
@@ -49,6 +50,7 @@ export CUDA_VISIBLE_DEVICES="$TRAINING_CUDA_VISIBLE_DEVICES"
 
 echo "Training physical GPUs: $TRAINING_CUDA_VISIBLE_DEVICES"
 echo "verl workers: $TRAINING_N_GPUS; rollout tensor parallel: $ROLLOUT_TENSOR_PARALLEL_SIZE"
+echo "Checkpoint directory: $CHECKPOINT_DIR"
 
 "$TRAINING_VENV/bin/python" -m expectation_step_rl.preflight \
   --project-root "$PROJECT_DIR" \
@@ -59,7 +61,7 @@ echo "verl workers: $TRAINING_N_GPUS; rollout tensor parallel: $ROLLOUT_TENSOR_P
   --scorer-api-key "$EXPECTATION_SCORER_API_KEY" \
   --scorer-model "$EXPECTATION_SCORER_MODEL"
 
-mkdir -p "$OUTPUT_DIR" "$OUTPUT_DIR/rollouts"
+mkdir -p "$OUTPUT_DIR/rollouts" "$CHECKPOINT_DIR"
 
 "$TRAINING_VENV/bin/python" -m verl.trainer.main_ppo \
   algorithm.adv_estimator=grpo \
@@ -121,6 +123,6 @@ mkdir -p "$OUTPUT_DIR" "$OUTPUT_DIR/rollouts"
   trainer.total_training_steps="$TOTAL_TRAINING_STEPS" \
   trainer.save_freq="$SAVE_FREQ" \
   trainer.test_freq="$TEST_FREQ" \
-  trainer.default_local_dir="$OUTPUT_DIR/checkpoints" \
+  trainer.default_local_dir="$CHECKPOINT_DIR" \
   trainer.rollout_data_dir="$OUTPUT_DIR/rollouts" \
   "$@"

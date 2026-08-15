@@ -77,6 +77,7 @@ project/expectation_step_rl/data/decisions_qwen3_32b_t06/training_calibration.js
 
 - GPU 0–3 各运行一个冻结 Qwen3-32B 打分服务，HTTP 端口为 8000–8003；
 - GPU 4–7 运行一个四卡 FSDP 训练任务，策略 rollout 使用四卡张量并行；
+- checkpoint 直接写入 OSS 挂载目录 `/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full/`，不占用仓库所在磁盘；
 - 每个冻结服务使用不同的 HTTP、vLLM 内部通信、PyTorch master 端口和 RPC 临时目录；
 - 如果 8000–8003 任一端口已有相同模型的健康服务会直接复用，脚本只清理由自己启动的进程；
 - 每个候选固定路由到一个打分服务，候选之间分散到四个服务；
@@ -91,7 +92,14 @@ bash scripts/run_full_tmux.sh
 tmux attach -t expectation-step-rl-full
 ```
 
-第一次运行会用四个冻结服务计算 485 条 Train 干净结果的校准分；若中途退出，重启后会保留已完成记录并继续缺失部分，只有 485 条全部齐全才会进入训练。正式日志位于 `outputs/run_logs/full.log`，四个冻结服务的独立日志位于 `outputs/run_logs/scorer_pool/`。
+第一次运行会用四个冻结服务计算 485 条 Train 干净结果的校准分；若中途退出，重启后会保留已完成记录并继续缺失部分，只有 485 条全部齐全才会进入训练。checkpoint 直接保存在 OSS；正式日志和 rollout 分别保留在本项目的 `outputs/run_logs/full.log` 与 `outputs/full/rollouts/`，四个冻结服务的独立日志位于 `outputs/run_logs/scorer_pool/`。
+
+如需单独命名一次正式实验，启动时显式覆盖 OSS 目录：
+
+```bash
+CHECKPOINT_DIR=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full_v2 \
+  bash scripts/run_full_tmux.sh
+```
 
 ## 先跑四卡 smoke
 
