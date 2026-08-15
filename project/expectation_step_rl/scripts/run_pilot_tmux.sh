@@ -6,7 +6,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SESSION="${SESSION:-expectation-step-rl-pilot}"
 LOG_DIR="$PROJECT_DIR/outputs/run_logs"
 LOG_PATH="$LOG_DIR/pilot.log"
-TRAINING_CUDA_VISIBLE_DEVICES="${TRAINING_CUDA_VISIBLE_DEVICES:-1,2,3,4,5,6,7}"
+TRAINING_CUDA_VISIBLE_DEVICES="${TRAINING_CUDA_VISIBLE_DEVICES:-4,5,6,7}"
 
 mkdir -p "$LOG_DIR"
 tmux new-session -d -s "$SESSION" \

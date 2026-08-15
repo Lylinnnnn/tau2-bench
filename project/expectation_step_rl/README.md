@@ -17,7 +17,7 @@ z = (D_min-k - Train均值) / Train标准差
 reward = -clip(z, -5, 5)
 ```
 
-因此，越符合上下文期待的真实返回，奖励越高；偏离越明显，奖励越低。样本数不少于 5 的工具使用各自的 Train 统计；更少见的工具使用同领域 Train 统计作为后备，并在日志中标成 `domain_fallback`。这避免把“Train 中出现较少但合法的工具”固定判成负例。Airline 和 Retail Test、官方最终状态、参考动作都不参与校准。
+因此，越符合上下文期待的真实返回，奖励越高；偏离越明显，奖励越低。校准直接覆盖离线轨迹中 485 个成功的 Train 工具结果，优先使用“领域 + 工具 + 返回结构”统计；样本少于 5 时依次退回同工具、同返回结构和同领域统计。Airline 和 Retail Test、官方最终状态、参考动作都不参与校准。
 
 ## 一次训练样本怎样产生
 
@@ -46,7 +46,7 @@ expectation_step_rl/
 └── third_party/verl/        # 固定提交的 Git submodule
 ```
 
-`verl` 固定在提交 `bec9ef74768dd201881cd4e54cd0385e87caae27`（release `v0.7.1`）。精确源码的 `setup.py` 声明 `vLLM >=0.8.5, <=0.12.0`，其安装脚本固定 `vLLM 0.11.0`，所以训练环境使用 vLLM 0.11.0 和它依赖的 PyTorch 2.8.0。训练端还使用 verl 官方安装脚本对应的 FlashAttention 2.8.1 预编译 wheel 与 FlashInfer 0.3.1。已有的冻结打分服务是独立进程，可以继续使用已经跑通 prompt logprob 的 vLLM 0.25.1；两者不共享 Python 环境。
+`verl` 固定在提交 `bec9ef74768dd201881cd4e54cd0385e87caae27`（release `v0.7.1`）。训练环境固定使用 vLLM 0.11.0、PyTorch 2.8.0、Transformers 4.57.1、FlashAttention 2.8.1 和 FlashInfer 0.3.1。冻结打分服务继续使用已经跑通 prompt logprob 的独立 vLLM 0.25.1 环境；两者不共享 Python 包。
 
 LoRA rollout 按该版本官方要求使用 `vLLM + safetensors load_format`，并开启逐层权重同步以控制峰值显存。项目没有修改 `verl` 的参数更新算法；自定义部分仅是单步环境和奖励来源。
 
@@ -57,7 +57,6 @@ LoRA rollout 按该版本官方要求使用 `vLLM + safetensors load_format`，�
 ```bash
 git submodule update --init --recursive project/expectation_step_rl/third_party/verl
 bash project/expectation_step_rl/scripts/bootstrap_training_env.sh
-bash project/expectation_step_rl/scripts/prepare_dataset.sh
 ```
 
 安装脚本会先安装 vLLM/PyTorch，再安装与 PyTorch 2.8 匹配的 FlashAttention 预编译 wheel，不会在服务器上现场编译 `flash-attn`。如果旧环境在 FlashAttention 处失败，直接重新运行同一个安装脚本即可修复；不要另外执行普通的 `pip install flash-attn`，该命令会进入源码隔离构建并可能报构建环境找不到 `torch`。
@@ -68,8 +67,31 @@ bash project/expectation_step_rl/scripts/prepare_dataset.sh
 project/expectation_step_rl/data/decisions_qwen3_32b_t06/train.jsonl
 project/expectation_step_rl/data/decisions_qwen3_32b_t06/test.jsonl
 project/expectation_step_rl/data/decisions_qwen3_32b_t06/dataset_report.json
+project/expectation_step_rl/data/decisions_qwen3_32b_t06/training_calibration_scores.jsonl
 project/expectation_step_rl/data/decisions_qwen3_32b_t06/training_calibration.json
 ```
+
+## 八卡正式训练
+
+正式脚本一次性管理数据准备、Train 校准和训练：
+
+- GPU 0–3 各运行一个冻结 Qwen3-32B 打分服务，HTTP 端口为 8000–8003；
+- GPU 4–7 运行一个四卡 FSDP 训练任务，策略 rollout 使用四卡张量并行；
+- 每个冻结服务使用不同的 HTTP、vLLM 内部通信、PyTorch master 端口和 RPC 临时目录；
+- 如果 8000–8003 任一端口已有相同模型的健康服务会直接复用，脚本只清理由自己启动的进程；
+- 每个候选固定路由到一个打分服务，候选之间分散到四个服务；
+- DataLoader 不创建额外 worker，避免训练结束时出现 worker 被系统杀死的告警。
+
+从仓库根目录启动：
+
+```bash
+git pull --ff-only origin lyl-dev
+cd project/expectation_step_rl
+bash scripts/run_full_tmux.sh
+tmux attach -t expectation-step-rl-full
+```
+
+第一次运行会用四个冻结服务计算 485 条 Train 干净结果的校准分；若中途退出，重启后会保留已完成记录并继续缺失部分，只有 485 条全部齐全才会进入训练。正式日志位于 `outputs/run_logs/full.log`，四个冻结服务的独立日志位于 `outputs/run_logs/scorer_pool/`。
 
 ## 先跑四卡 smoke
 
@@ -83,15 +105,7 @@ tmux attach -t expectation-step-rl-smoke
 
 smoke 只取一个 Train 状态，在四卡上生成四个候选并更新一步。四个候选既组成同一状态的最小 GRPO 比较组，也使四卡 FSDP 的每张卡获得一个训练样本。rollout 使用四卡张量并行，避免任一训练卡独自承载完整 32B 推理权重。预飞行检查会直接验证数据无 Train/Test 重叠、校准来源、submodule 提交、训练端 vLLM、PyTorch、FlashAttention、FlashInfer 的精确版本和可导入性，以及打分服务模型。
 
-确认 smoke 的四个候选都有 `expectation_outcome`、连续 reward 和一次参数更新后，再跑 7 卡 pilot；GPU 0 留给冻结打分服务：
-
-```bash
-cd project/expectation_step_rl
-bash scripts/run_pilot_tmux.sh
-tmux attach -t expectation-step-rl-pilot
-```
-
-训练输出和日志位于 `outputs/`。不要先跑 full；pilot 首先要验证奖励组内有方差、工具调用率没有塌缩、Train 奖励改善且 Test 期待偏离没有恶化。
+smoke 只验证全链路是否可运行；正式训练直接使用上面的八卡脚本，不额外插入多状态 pilot 阶段。
 
 ## 明确不做的事情
 

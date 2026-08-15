@@ -45,6 +45,8 @@ class TrainCalibration:
         if clip <= 0:
             raise ValueError("Reward clip must be positive")
         self.groups = calibration["groups"]
+        self.tool_fallbacks = calibration.get("tool_fallbacks", {})
+        self.structure_fallbacks = calibration.get("structure_fallbacks", {})
         self.domain_fallbacks = calibration.get("domain_fallbacks", {})
         self.clip = clip
         self.invalid_action_penalty = invalid_action_penalty
@@ -63,6 +65,7 @@ class TrainCalibration:
         domain: str,
         tool_name: str | None,
         raw_score: float | None,
+        structure_key: str | None = None,
         action_valid: bool = True,
         tool_error: bool = False,
     ) -> RewardResult:
@@ -88,24 +91,36 @@ class TrainCalibration:
                 None,
                 "tool_error",
             )
-        key = f"{domain}|{tool_name}"
+        key = f"{domain}|{tool_name}|{structure_key}"
         group = self.groups.get(key)
         if group is None:
-            group = self.domain_fallbacks.get(domain)
-            if group is None:
-                return RewardResult(
-                    self.unsupported_tool_penalty,
-                    raw_score,
-                    None,
-                    key,
-                    None,
-                    None,
-                    "unsupported_calibration_group",
-                )
-            key = f"{domain}|*"
-            level = "domain_fallback"
+            tool_key = f"{domain}|{tool_name}"
+            group = self.tool_fallbacks.get(tool_key)
+            if group is not None:
+                key = tool_key
+                level = "tool_fallback"
+            else:
+                structure_key_with_domain = f"{domain}|{structure_key}"
+                group = self.structure_fallbacks.get(structure_key_with_domain)
+                if group is not None:
+                    key = f"{domain}|*|{structure_key}"
+                    level = "structure_fallback"
+                else:
+                    group = self.domain_fallbacks.get(domain)
+                    if group is None:
+                        return RewardResult(
+                            self.unsupported_tool_penalty,
+                            raw_score,
+                            None,
+                            key,
+                            None,
+                            None,
+                            "unsupported_calibration_group",
+                        )
+                    key = f"{domain}|*|*"
+                    level = "domain_fallback"
         else:
-            level = "tool"
+            level = "tool_structure"
         if raw_score is None:
             raise ValueError("A successful tool call requires a measured score")
         statistics = group["statistics"][PRIMARY_SCORE]
@@ -118,13 +133,16 @@ class TrainCalibration:
             calibration_key=key,
             calibration_count=int(group["count"]),
             calibration_level=level,
-            outcome=("scored" if level == "tool" else "scored_domain_fallback"),
+            outcome=("scored" if level == "tool_structure" else f"scored_{level}"),
         )
 
     def supports(self, domain: str, tool_name: str) -> bool:
         """Whether Train contains a usable calibration group for this tool."""
 
-        return f"{domain}|{tool_name}" in self.groups or domain in self.domain_fallbacks
+        return (
+            f"{domain}|{tool_name}" in self.tool_fallbacks
+            or domain in self.domain_fallbacks
+        )
 
 
 def _statistics(values: list[float]) -> dict[str, Any]:
@@ -149,34 +167,51 @@ def fit_training_calibration(
         row
         for row in rows
         if row.get("split") == "train"
-        and row.get("track") == "min_k_calibration"
+        and row.get("track") == "logged_clean_result"
         and int(row.get("severity", 0)) == 0
     ]
     if not selected:
-        raise ValueError("No clean min_k_calibration Train rows were found")
+        raise ValueError("No logged clean Train rows were found")
+    by_tool_structure: dict[str, list[float]] = defaultdict(list)
     by_tool: dict[str, list[float]] = defaultdict(list)
+    by_structure: dict[str, list[float]] = defaultdict(list)
     by_domain: dict[str, list[float]] = defaultdict(list)
     for row in selected:
         score = float(row[PRIMARY_SCORE])
         domain = str(row["domain"])
-        by_tool[f"{domain}|{row['tool_name']}"].append(score)
+        tool = str(row["tool_name"])
+        structure = str(row["structure_key"])
+        by_tool_structure[f"{domain}|{tool}|{structure}"].append(score)
+        by_tool[f"{domain}|{tool}"].append(score)
+        by_structure[f"{domain}|{structure}"].append(score)
         by_domain[domain].append(score)
     groups = {
         key: _statistics(values)
-        for key, values in sorted(by_tool.items())
+        for key, values in sorted(by_tool_structure.items())
         if len(values) >= minimum_tool_count
     }
     return {
-        "source": "official Train clean tool results only",
+        "source": "official Train logged clean tool results only",
         "source_filter": {
             "split": "train",
-            "track": "min_k_calibration",
+            "track": "logged_clean_result",
             "severity": 0,
         },
         "primary_score": PRIMARY_SCORE,
         "minimum_tool_count": minimum_tool_count,
-        "fallback_policy": "domain statistics fitted from the same Train rows",
+        "fallback_policy": "tool, then result structure, then domain; all fitted from Train",
+        "scored_train_records": len(selected),
         "groups": groups,
+        "tool_fallbacks": {
+            key: _statistics(values)
+            for key, values in sorted(by_tool.items())
+            if len(values) >= minimum_tool_count
+        },
+        "structure_fallbacks": {
+            key: _statistics(values)
+            for key, values in sorted(by_structure.items())
+            if len(values) >= minimum_tool_count
+        },
         "domain_fallbacks": {
             domain: _statistics(values) for domain, values in sorted(by_domain.items())
         },

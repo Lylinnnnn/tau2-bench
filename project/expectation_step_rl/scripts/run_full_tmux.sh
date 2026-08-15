@@ -6,11 +6,11 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SESSION="${SESSION:-expectation-step-rl-full}"
 LOG_DIR="$PROJECT_DIR/outputs/run_logs"
 LOG_PATH="$LOG_DIR/full.log"
-TRAINING_CUDA_VISIBLE_DEVICES="${TRAINING_CUDA_VISIBLE_DEVICES:-1,2,3,4,5,6,7}"
+TRAINING_CUDA_VISIBLE_DEVICES="${TRAINING_CUDA_VISIBLE_DEVICES:-4,5,6,7}"
 
 mkdir -p "$LOG_DIR"
 tmux new-session -d -s "$SESSION" \
-  "cd '$PROJECT_DIR' && TRAINING_CUDA_VISIBLE_DEVICES='$TRAINING_CUDA_VISIBLE_DEVICES' bash scripts/run_grpo.sh full 2>&1 | tee '$LOG_PATH'"
+  "cd '$PROJECT_DIR' && TRAINING_CUDA_VISIBLE_DEVICES='$TRAINING_CUDA_VISIBLE_DEVICES' bash scripts/run_full_8gpu.sh 2>&1 | tee '$LOG_PATH'"
 
 echo "Started tmux session: $SESSION"
 echo "Log: $LOG_PATH"

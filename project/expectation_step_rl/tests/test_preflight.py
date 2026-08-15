@@ -45,6 +45,24 @@ def test_calibration_requires_train_provenance(tmp_path: Path) -> None:
         check_calibration(path)
 
 
+def test_calibration_requires_logged_clean_train_coverage(tmp_path: Path) -> None:
+    path = tmp_path / "calibration.json"
+    path.write_text(
+        json.dumps(
+            {
+                "source": "official Train controlled corruption subset",
+                "source_filter": {"track": "min_k_controlled"},
+                "scored_train_records": 100,
+                "groups": {"retail|lookup": {}},
+                "domain_fallbacks": {"retail": {}},
+            }
+        )
+    )
+
+    with pytest.raises(ValueError, match="logged clean"):
+        check_calibration(path)
+
+
 def test_dataset_check_rejects_official_reward_leakage(tmp_path: Path) -> None:
     train = tmp_path / "train.jsonl"
     test = tmp_path / "test.jsonl"
@@ -65,12 +83,18 @@ def test_training_package_check_rejects_version_drift(
         "training_torch=2.8.0\n"
         "training_flash_attn=2.8.1\n"
         "training_flashinfer=0.3.1\n"
+        "training_transformers=4.57.1\n"
+        "training_huggingface_hub=0.36.0\n"
+        "training_tokenizers=0.22.1\n"
     )
     versions = {
         "vllm": "0.11.0",
         "torch": "2.8.0",
         "flash-attn": "2.8.0",
         "flashinfer-python": "0.3.1",
+        "transformers": "4.57.1",
+        "huggingface-hub": "0.36.0",
+        "tokenizers": "0.22.1",
     }
     monkeypatch.setattr(
         "expectation_step_rl.preflight.importlib.metadata.version",

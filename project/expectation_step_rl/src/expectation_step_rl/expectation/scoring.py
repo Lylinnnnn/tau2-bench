@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import urllib.request
@@ -65,6 +66,15 @@ def contextual_min_k(
     return float(np.mean(np.sort(deviation)[-count:]))
 
 
+def scorer_url_for_key(base_urls: list[str], routing_key: str) -> str:
+    """Deterministically keep all requests for one candidate on one replica."""
+
+    if not base_urls:
+        raise ValueError("At least one scorer base URL is required")
+    digest = hashlib.sha256(routing_key.encode()).digest()
+    return base_urls[int.from_bytes(digest[:8], byteorder="big") % len(base_urls)]
+
+
 @dataclass(frozen=True)
 class ExpectationMeasurement:
     """Result likelihoods in full and action-only contexts."""
@@ -75,6 +85,7 @@ class ExpectationMeasurement:
     full_mean_logprob: float
     action_only_mean_logprob: float
     anonymized_identifier_counts: dict[str, int]
+    scorer_base_url: str
 
 
 class VLLMExpectationScorer:
@@ -83,13 +94,15 @@ class VLLMExpectationScorer:
     def __init__(
         self,
         *,
-        base_url: str,
+        base_urls: list[str],
         api_key: str,
         model: str,
         min_k_fraction: float,
         timeout_seconds: float = 180.0,
     ) -> None:
-        self.base_url = base_url.rstrip("/")
+        if not base_urls:
+            raise ValueError("At least one scorer base URL is required")
+        self.base_urls = [value.rstrip("/") for value in base_urls]
         self.api_key = api_key
         self.model = model
         self.min_k_fraction = min_k_fraction
@@ -98,6 +111,7 @@ class VLLMExpectationScorer:
     def _score_suffix(
         self,
         *,
+        base_url: str,
         prefix_messages: list[dict[str, Any]],
         result_message: dict[str, Any],
         tools: list[dict[str, Any]],
@@ -108,7 +122,7 @@ class VLLMExpectationScorer:
             "add_generation_prompt": False,
             "chat_template_kwargs": {"enable_thinking": True},
         }
-        tokenize_url = f"{_api_root(self.base_url)}/tokenize"
+        tokenize_url = f"{_api_root(base_url)}/tokenize"
         complete = _post_json(
             tokenize_url,
             api_key=self.api_key,
@@ -128,7 +142,7 @@ class VLLMExpectationScorer:
         if content_start == 0 or content_start == len(complete):
             raise ValueError("Could not isolate the tool-result token boundary")
         response = _post_json(
-            f"{self.base_url}/completions",
+            f"{base_url}/completions",
             api_key=self.api_key,
             payload={
                 "model": self.model,
@@ -156,8 +170,11 @@ class VLLMExpectationScorer:
         action_message: dict[str, Any],
         result_message: dict[str, Any],
         tools: list[dict[str, Any]],
+        routing_key: str,
     ) -> ExpectationMeasurement:
         """Measure context-specific surprise after consistent anonymization."""
+
+        base_url = scorer_url_for_key(self.base_urls, routing_key)
 
         content = result_message.get("content")
         if not isinstance(content, str):
@@ -188,11 +205,13 @@ class VLLMExpectationScorer:
             ),
         }
         full_ids, full = self._score_suffix(
+            base_url=base_url,
             prefix_messages=[*clean_prompt, clean_action],
             result_message=clean_result,
             tools=clean_tools,
         )
         action_ids, action_only = self._score_suffix(
+            base_url=base_url,
             prefix_messages=[clean_prompt[0], clean_action],
             result_message=clean_result,
             tools=clean_tools,
@@ -209,4 +228,5 @@ class VLLMExpectationScorer:
             full_mean_logprob=float(np.mean(full)),
             action_only_mean_logprob=float(np.mean(action_only)),
             anonymized_identifier_counts=identifier_counts,
+            scorer_base_url=base_url,
         )

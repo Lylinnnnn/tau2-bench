@@ -96,6 +96,10 @@ def check_calibration(path: Path) -> int:
     fallbacks = value.get("domain_fallbacks")
     if not isinstance(fallbacks, dict) or not fallbacks:
         raise ValueError("Calibration has no Train-fitted domain fallbacks")
+    if value.get("source_filter", {}).get("track") != "logged_clean_result":
+        raise ValueError("Calibration does not cover logged clean Train results")
+    if int(value.get("scored_train_records", 0)) <= 0:
+        raise ValueError("Calibration reports no scored Train records")
     return len(groups)
 
 
@@ -139,6 +143,9 @@ def check_training_packages(project_root: Path) -> dict[str, str]:
         "torch": lock["training_torch"],
         "flash-attn": lock["training_flash_attn"],
         "flashinfer-python": lock["training_flashinfer"],
+        "transformers": lock["training_transformers"],
+        "huggingface-hub": lock["training_huggingface_hub"],
+        "tokenizers": lock["training_tokenizers"],
     }
     installed = {
         package: importlib.metadata.version(package) for package in requirements
@@ -207,7 +214,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--train-data", type=Path, required=True)
     parser.add_argument("--test-data", type=Path, required=True)
     parser.add_argument("--calibration", type=Path, required=True)
-    parser.add_argument("--scorer-base-url", required=True)
+    parser.add_argument("--scorer-base-urls", required=True)
     parser.add_argument("--scorer-api-key", default="EMPTY")
     parser.add_argument("--scorer-model", required=True)
     return parser
@@ -220,11 +227,10 @@ def main() -> None:
         "calibration_groups": check_calibration(args.calibration),
         "training_packages": check_training_packages(args.project_root),
         "verl_commit": check_submodule(args.project_root),
-        "scorer_model": check_scorer(
-            args.scorer_base_url,
-            args.scorer_api_key,
-            args.scorer_model,
-        ),
+        "scorer_models": [
+            check_scorer(base_url, args.scorer_api_key, args.scorer_model)
+            for base_url in args.scorer_base_urls.split(",")
+        ],
     }
     print(json.dumps(report, indent=2))
 

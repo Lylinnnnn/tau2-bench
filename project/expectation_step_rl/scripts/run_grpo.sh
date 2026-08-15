@@ -23,13 +23,13 @@ TRAINING_VENV="${TRAINING_VENV:-/home/liuyanlin.lyl/.venvs/expectation-step-rl}"
 MODEL_PATH="${MODEL_PATH:-/data/oss_bucket_0/yanlin/tau2/models/Qwen3-32B}"
 EXPECTATION_DATA_DIR="${EXPECTATION_DATA_DIR:-$PROJECT_DIR/data/decisions_qwen3_32b_t06}"
 EXPECTATION_CALIBRATION_PATH="${EXPECTATION_CALIBRATION_PATH:-$EXPECTATION_DATA_DIR/training_calibration.json}"
-EXPECTATION_SCORER_BASE_URL="${EXPECTATION_SCORER_BASE_URL:-http://127.0.0.1:8000/v1}"
+EXPECTATION_SCORER_BASE_URLS="${EXPECTATION_SCORER_BASE_URLS:-http://127.0.0.1:8000/v1}"
 EXPECTATION_SCORER_API_KEY="${EXPECTATION_SCORER_API_KEY:-EMPTY}"
 EXPECTATION_SCORER_MODEL="${EXPECTATION_SCORER_MODEL:-qwen3-32b}"
 if [[ "$MODE" == "smoke" ]]; then
   DEFAULT_TRAINING_GPUS="1,2,3,4"
 else
-  DEFAULT_TRAINING_GPUS="1,2,3,4,5,6,7"
+  DEFAULT_TRAINING_GPUS="4,5,6,7"
 fi
 TRAINING_CUDA_VISIBLE_DEVICES="${TRAINING_CUDA_VISIBLE_DEVICES:-$DEFAULT_TRAINING_GPUS}"
 OUTPUT_DIR="${OUTPUT_DIR:-$PROJECT_DIR/outputs/$MODE}"
@@ -42,7 +42,7 @@ fi
 
 export EXPECTATION_CALIBRATION_PATH
 export EXPECTATION_SCORER_API_KEY
-export EXPECTATION_SCORER_BASE_URL
+export EXPECTATION_SCORER_BASE_URLS
 export EXPECTATION_SCORER_MODEL
 export PYTHONPATH="$PROJECT_DIR/src:$PROJECT_DIR/third_party/verl:${PYTHONPATH:-}"
 export CUDA_VISIBLE_DEVICES="$TRAINING_CUDA_VISIBLE_DEVICES"
@@ -55,7 +55,7 @@ echo "verl workers: $TRAINING_N_GPUS; rollout tensor parallel: $ROLLOUT_TENSOR_P
   --train-data "$EXPECTATION_DATA_DIR/train.jsonl" \
   --test-data "$EXPECTATION_DATA_DIR/test.jsonl" \
   --calibration "$EXPECTATION_CALIBRATION_PATH" \
-  --scorer-base-url "$EXPECTATION_SCORER_BASE_URL" \
+  --scorer-base-urls "$EXPECTATION_SCORER_BASE_URLS" \
   --scorer-api-key "$EXPECTATION_SCORER_API_KEY" \
   --scorer-model "$EXPECTATION_SCORER_MODEL"
 
@@ -68,6 +68,7 @@ mkdir -p "$OUTPUT_DIR" "$OUTPUT_DIR/rollouts"
   data.val_files="$EXPECTATION_DATA_DIR/test.jsonl" \
   data.prompt_key=prompt \
   data.return_raw_chat=True \
+  data.dataloader_num_workers=0 \
   data.train_max_samples="$TRAIN_MAX_SAMPLES" \
   data.val_max_samples="$VAL_MAX_SAMPLES" \
   data.train_batch_size="$TRAIN_BATCH_SIZE" \

@@ -19,6 +19,7 @@ from verl.workers.rollout.replica import TokenOutput
 
 from expectation_step_rl.expectation.calibration import RewardResult, TrainCalibration
 from expectation_step_rl.expectation.scoring import VLLMExpectationScorer
+from expectation_step_rl.expectation.structure import result_structure_key
 from expectation_step_rl.tau2_adapter.execution import execute_one_tool_call
 
 
@@ -28,7 +29,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
     def __init__(
         self,
         *args,
-        scorer_base_url: str,
+        scorer_base_urls: str,
         scorer_api_key: str,
         scorer_model: str,
         calibration_path: str,
@@ -43,7 +44,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
         self.response_length = self.rollout_config.response_length
         self.tool_parser = ToolParser.get_tool_parser("hermes", self.tokenizer)
         self.scorer = VLLMExpectationScorer(
-            base_url=scorer_base_url,
+            base_urls=[value.strip() for value in scorer_base_urls.split(",")],
             api_key=scorer_api_key,
             model=scorer_model,
             min_k_fraction=min_k_fraction,
@@ -85,6 +86,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
             "calibration_level": None,
             "suffix_token_count": None,
             "min_k_token_count": None,
+            "scorer_base_url": None,
         }
 
     async def run(self, sampling_params: dict[str, Any], **kwargs) -> AgentLoopOutput:
@@ -157,6 +159,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
                     call_id=call_id,
                 )
                 measurement = None
+                structure_key = result_structure_key(execution.content)
                 if not execution.error and self.calibration.supports(
                     str(kwargs["domain"]), call.name
                 ):
@@ -174,6 +177,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
                         action_message=action_message,
                         result_message=result_message,
                         tools=tools,
+                        routing_key=call_id,
                     )
                 reward = self.calibration.score(
                     domain=str(kwargs["domain"]),
@@ -183,6 +187,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
                         if measurement is not None
                         else None
                     ),
+                    structure_key=structure_key,
                     tool_error=execution.error,
                 )
                 extra = {
@@ -204,6 +209,9 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
                         measurement.min_k_token_count
                         if measurement is not None
                         else None
+                    ),
+                    "scorer_base_url": (
+                        measurement.scorer_base_url if measurement is not None else None
                     ),
                 }
 
@@ -242,6 +250,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
             "tool_result",
             "calibration_key",
             "calibration_level",
+            "scorer_base_url",
         ):
             if reward_extra[key] is None:
                 reward_extra[key] = ""
