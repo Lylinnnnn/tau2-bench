@@ -86,6 +86,7 @@ def test_training_package_check_rejects_version_drift(
         "training_transformers=4.57.1\n"
         "training_huggingface_hub=0.36.0\n"
         "training_tokenizers=0.22.1\n"
+        "training_swanlab=0.9.1\n"
     )
     versions = {
         "vllm": "0.11.0",
@@ -95,6 +96,7 @@ def test_training_package_check_rejects_version_drift(
         "transformers": "4.57.1",
         "huggingface-hub": "0.36.0",
         "tokenizers": "0.22.1",
+        "swanlab": "0.9.1",
     }
     monkeypatch.setattr(
         "expectation_step_rl.preflight.importlib.metadata.version",

@@ -8,7 +8,9 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-NUM_SCORERS=4
+SCORER_GPU_IDS="${SCORER_GPU_IDS:-0,1,2,3}"
+IFS=',' read -r -a GPU_IDS <<< "$SCORER_GPU_IDS"
+NUM_SCORERS="${#GPU_IDS[@]}"
 HTTP_BASE_PORT="${SCORER_HTTP_BASE_PORT:-8000}"
 INTERNAL_BASE_PORT="${SCORER_INTERNAL_BASE_PORT:-24000}"
 INTERNAL_PORT_STRIDE="${SCORER_INTERNAL_PORT_STRIDE:-1000}"
@@ -47,7 +49,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 for ((index = 0; index < NUM_SCORERS; index++)); do
-  gpu="$index"
+  gpu="${GPU_IDS[$index]}"
   http_port=$((HTTP_BASE_PORT + index))
   internal_port=$((INTERNAL_BASE_PORT + index * INTERNAL_PORT_STRIDE))
   master_port=$((MASTER_BASE_PORT + index))

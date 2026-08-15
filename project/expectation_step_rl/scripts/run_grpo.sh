@@ -11,7 +11,7 @@ REPO_ROOT="$(cd "$PROJECT_DIR/../.." && pwd)"
 CONFIG="$PROJECT_DIR/configs/$MODE/grpo.env"
 
 if [[ ! -f "$CONFIG" ]]; then
-  echo "Unknown mode '$MODE'; expected smoke, pilot, or full" >&2
+  echo "Unknown mode '$MODE'; expected smoke, checkpoint_smoke, pilot, or full" >&2
   exit 2
 fi
 
@@ -26,7 +26,7 @@ EXPECTATION_CALIBRATION_PATH="${EXPECTATION_CALIBRATION_PATH:-$EXPECTATION_DATA_
 EXPECTATION_SCORER_BASE_URLS="${EXPECTATION_SCORER_BASE_URLS:-http://127.0.0.1:8000/v1}"
 EXPECTATION_SCORER_API_KEY="${EXPECTATION_SCORER_API_KEY:-EMPTY}"
 EXPECTATION_SCORER_MODEL="${EXPECTATION_SCORER_MODEL:-qwen3-32b}"
-if [[ "$MODE" == "smoke" ]]; then
+if [[ "$MODE" == "smoke" || "$MODE" == "checkpoint_smoke" ]]; then
   DEFAULT_TRAINING_GPUS="1,2,3,4"
 else
   DEFAULT_TRAINING_GPUS="4,5,6,7"
@@ -34,6 +34,11 @@ fi
 TRAINING_CUDA_VISIBLE_DEVICES="${TRAINING_CUDA_VISIBLE_DEVICES:-$DEFAULT_TRAINING_GPUS}"
 OUTPUT_DIR="${OUTPUT_DIR:-$PROJECT_DIR/outputs/$MODE}"
 CHECKPOINT_DIR="${CHECKPOINT_DIR:-/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_${MODE}}"
+TRAINER_LOGGERS="${TRAINER_LOGGERS:-[\"console\"]}"
+TRAINER_PROJECT_NAME="${TRAINER_PROJECT_NAME:-tau2_expectation_step_rl}"
+TRAINER_EXPERIMENT_NAME="${TRAINER_EXPERIMENT_NAME:-qwen3_32b_${MODE}}"
+SWANLAB_LOG_DIR="${SWANLAB_LOG_DIR:-/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/swanlog}"
+SWANLAB_MODE="${SWANLAB_MODE:-cloud}"
 
 IFS=',' read -r -a TRAINING_GPU_IDS <<< "$TRAINING_CUDA_VISIBLE_DEVICES"
 if [[ "${#TRAINING_GPU_IDS[@]}" -ne "$TRAINING_N_GPUS" ]]; then
@@ -45,12 +50,18 @@ export EXPECTATION_CALIBRATION_PATH
 export EXPECTATION_SCORER_API_KEY
 export EXPECTATION_SCORER_BASE_URLS
 export EXPECTATION_SCORER_MODEL
+export SWANLAB_LOG_DIR
+export SWANLAB_MODE
 export PYTHONPATH="$PROJECT_DIR/src:$PROJECT_DIR/third_party/verl:${PYTHONPATH:-}"
 export CUDA_VISIBLE_DEVICES="$TRAINING_CUDA_VISIBLE_DEVICES"
 
 echo "Training physical GPUs: $TRAINING_CUDA_VISIBLE_DEVICES"
 echo "verl workers: $TRAINING_N_GPUS; rollout tensor parallel: $ROLLOUT_TENSOR_PARALLEL_SIZE"
 echo "Checkpoint directory: $CHECKPOINT_DIR"
+echo "Tracking backends: $TRAINER_LOGGERS"
+if [[ "$TRAINER_LOGGERS" == *swanlab* ]]; then
+  echo "SwanLab log directory: $SWANLAB_LOG_DIR"
+fi
 
 "$TRAINING_VENV/bin/python" -m expectation_step_rl.preflight \
   --project-root "$PROJECT_DIR" \
@@ -62,6 +73,9 @@ echo "Checkpoint directory: $CHECKPOINT_DIR"
   --scorer-model "$EXPECTATION_SCORER_MODEL"
 
 mkdir -p "$OUTPUT_DIR/rollouts" "$CHECKPOINT_DIR"
+if [[ "$TRAINER_LOGGERS" == *swanlab* ]]; then
+  mkdir -p "$SWANLAB_LOG_DIR"
+fi
 
 "$TRAINING_VENV/bin/python" -m verl.trainer.main_ppo \
   algorithm.adv_estimator=grpo \
@@ -79,6 +93,8 @@ mkdir -p "$OUTPUT_DIR/rollouts" "$CHECKPOINT_DIR"
   data.filter_overlong_prompts=False \
   data.truncation=error \
   data.shuffle=True \
+  data.seed=42 \
+  data.validation_shuffle=False \
   +data.apply_chat_template_kwargs.enable_thinking=True \
   actor_rollout_ref.model.path="$MODEL_PATH" \
   actor_rollout_ref.model.lora_rank="$LORA_RANK" \
@@ -113,9 +129,9 @@ mkdir -p "$OUTPUT_DIR/rollouts" "$CHECKPOINT_DIR"
   actor_rollout_ref.rollout.agent.agent_loop_config_path="$PROJECT_DIR/configs/agent_loops.yaml" \
   actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu="$LOGPROB_MICRO_BATCH_SIZE_PER_GPU" \
   actor_rollout_ref.ref.fsdp_config.param_offload=True \
-  trainer.project_name=tau2_expectation_step_rl \
-  trainer.experiment_name="qwen3_32b_${MODE}" \
-  trainer.logger='["console"]' \
+  trainer.project_name="$TRAINER_PROJECT_NAME" \
+  trainer.experiment_name="$TRAINER_EXPERIMENT_NAME" \
+  trainer.logger="$TRAINER_LOGGERS" \
   trainer.n_gpus_per_node="$TRAINING_N_GPUS" \
   trainer.nnodes=1 \
   trainer.use_legacy_worker_impl=disable \

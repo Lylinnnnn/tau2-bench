@@ -46,7 +46,7 @@ expectation_step_rl/
 └── third_party/verl/        # 固定提交的 Git submodule
 ```
 
-`verl` 固定在提交 `bec9ef74768dd201881cd4e54cd0385e87caae27`（release `v0.7.1`）。训练环境固定使用 vLLM 0.11.0、PyTorch 2.8.0、Transformers 4.57.1、FlashAttention 2.8.1 和 FlashInfer 0.3.1。冻结打分服务继续使用已经跑通 prompt logprob 的独立 vLLM 0.25.1 环境；两者不共享 Python 包。
+`verl` 固定在提交 `bec9ef74768dd201881cd4e54cd0385e87caae27`（release `v0.7.1`）。训练环境固定使用 vLLM 0.11.0、PyTorch 2.8.0、Transformers 4.57.1、FlashAttention 2.8.1、FlashInfer 0.3.1 和 SwanLab 0.9.1。冻结打分服务继续使用已经跑通 prompt logprob 的独立 vLLM 0.25.1 环境；两者不共享 Python 包。
 
 LoRA rollout 按该版本官方要求使用 `vLLM + safetensors load_format`，并开启逐层权重同步以控制峰值显存。项目没有修改 `verl` 的参数更新算法；自定义部分仅是单步环境和奖励来源。
 
@@ -60,6 +60,12 @@ bash project/expectation_step_rl/scripts/bootstrap_training_env.sh
 ```
 
 安装脚本会先安装 vLLM/PyTorch，再安装与 PyTorch 2.8 匹配的 FlashAttention 预编译 wheel，不会在服务器上现场编译 `flash-attn`。如果旧环境在 FlashAttention 处失败，直接重新运行同一个安装脚本即可修复；不要另外执行普通的 `pip install flash-attn`，该命令会进入源码隔离构建并可能报构建环境找不到 `torch`。
+
+正式训练使用 SwanLab 云端记录曲线。安装环境后，在服务器上执行一次交互式登录；API key 只输入到 SwanLab 官方客户端，不要写进仓库或发到聊天中：
+
+```bash
+/home/liuyanlin.lyl/.venvs/expectation-step-rl/bin/swanlab login
+```
 
 数据准备默认读取已经完整生成的 Airline/Retail Qwen3-32B 轨迹，并输出：
 
@@ -78,6 +84,8 @@ project/expectation_step_rl/data/decisions_qwen3_32b_t06/training_calibration.js
 - GPU 0–3 各运行一个冻结 Qwen3-32B 打分服务，HTTP 端口为 8000–8003；
 - GPU 4–7 运行一个四卡 FSDP 训练任务，策略 rollout 使用四卡张量并行；
 - checkpoint 直接写入 OSS 挂载目录 `/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full/`，不占用仓库所在磁盘；
+- console 与 SwanLab 同时记录训练曲线，SwanLab 本地缓存也写入 OSS 下的 `expectation_step_rl/swanlog/`；
+- 每 10 个训练 step 保存一次 checkpoint，并在固定的 32 个 Test 决策状态上验证一次；完整 Test 不在训练中反复运行，留给最终冻结模型评测；
 - 每个冻结服务使用不同的 HTTP、vLLM 内部通信、PyTorch master 端口和 RPC 临时目录；
 - 如果 8000–8003 任一端口已有相同模型的健康服务会直接复用，脚本只清理由自己启动的进程；
 - 每个候选固定路由到一个打分服务，候选之间分散到四个服务；
@@ -99,6 +107,22 @@ tmux attach -t expectation-step-rl-full
 ```bash
 CHECKPOINT_DIR=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full_v2 \
   bash scripts/run_full_tmux.sh
+```
+
+## 先验证一次 OSS checkpoint
+
+之前的 smoke 禁用了保存，只证明了训练更新能执行。正式训练前运行下面的专用检查：它使用 GPU 0 的一个冻结打分服务和 GPU 1–4 的四卡训练，完成一个训练 step，在独立 OSS 目录生成 `global_step_1`，随后强制检查 actor 文件、DataLoader 状态和最新 step 标记均存在且非空。它同时会跑训练前和 step 1 后的验证，并向 SwanLab 上传曲线，因此也覆盖验证聚合与 SwanLab 接入。
+
+```bash
+cd project/expectation_step_rl
+bash scripts/run_checkpoint_smoke_tmux.sh
+tmux attach -t expectation-step-rl-ckpt-smoke
+```
+
+成功日志最后必须出现：
+
+```text
+OSS checkpoint smoke passed: /data/oss_bucket_0/...
 ```
 
 ## 先跑四卡 smoke

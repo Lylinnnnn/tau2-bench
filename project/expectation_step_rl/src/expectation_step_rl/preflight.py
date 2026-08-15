@@ -146,6 +146,7 @@ def check_training_packages(project_root: Path) -> dict[str, str]:
         "transformers": lock["training_transformers"],
         "huggingface-hub": lock["training_huggingface_hub"],
         "tokenizers": lock["training_tokenizers"],
+        "swanlab": lock["training_swanlab"],
     }
     installed = {
         package: importlib.metadata.version(package) for package in requirements

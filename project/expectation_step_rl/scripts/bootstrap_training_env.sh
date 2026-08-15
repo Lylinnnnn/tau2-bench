@@ -19,6 +19,7 @@ FLASHINFER_VERSION="$(lock_value training_flashinfer)"
 TRANSFORMERS_VERSION="$(lock_value training_transformers)"
 HUGGINGFACE_HUB_VERSION="$(lock_value training_huggingface_hub)"
 TOKENIZERS_VERSION="$(lock_value training_tokenizers)"
+SWANLAB_VERSION="$(lock_value training_swanlab)"
 FLASH_ATTN_WHEEL="$(lock_value flash_attn_wheel)"
 
 git -C "$REPO_ROOT" submodule update --init --recursive \
@@ -38,6 +39,7 @@ fi
 "$TRAINING_VENV/bin/python" -m pip install -e "$PROJECT_DIR/third_party/verl"
 "$TRAINING_VENV/bin/python" -m pip install -e "$REPO_ROOT"
 "$TRAINING_VENV/bin/python" -m pip install -e "$PROJECT_DIR"
+"$TRAINING_VENV/bin/python" -m pip install "swanlab==$SWANLAB_VERSION"
 "$TRAINING_VENV/bin/python" -m pip install --no-deps \
   "transformers==$TRANSFORMERS_VERSION" \
   "huggingface-hub==$HUGGINGFACE_HUB_VERSION" \
@@ -47,5 +49,7 @@ fi
   "import flash_attn; assert flash_attn.__version__ == '$FLASH_ATTN_VERSION', flash_attn.__version__"
 "$TRAINING_VENV/bin/python" -c \
   "import transformers; assert transformers.__version__ == '$TRANSFORMERS_VERSION', transformers.__version__"
+"$TRAINING_VENV/bin/python" -c \
+  "import swanlab; from importlib.metadata import version; assert version('swanlab') == '$SWANLAB_VERSION', version('swanlab')"
 
 echo "Training environment ready: $TRAINING_VENV"
