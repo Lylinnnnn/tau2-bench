@@ -107,7 +107,7 @@ bash scripts/run_full_tmux.sh
 tmux attach -t expectation-step-rl-full
 ```
 
-第一次运行会用两个冻结服务计算 485 条 Train 干净结果的校准分；校准阶段若中途退出，重启后会保留已完成记录并继续缺失部分，只有 485 条全部齐全才会进入训练。训练 checkpoint 关闭自动恢复，只保留各保存 step 的 LoRA adapter；训练进程中断后需要重新开始正式训练，不能从 optimizer 状态精确续跑。正式日志和 rollout 分别保留在本项目的 `outputs/run_logs/full.log` 与 `outputs/full/rollouts/`，两个冻结服务的独立日志位于 `outputs/run_logs/scorer_pool/`。
+第一次运行会用两个冻结服务计算 485 条 Train 干净结果的校准分；校准阶段若中途退出，重启后会保留已完成记录并继续缺失部分，只有 485 条全部齐全才会进入训练。训练 checkpoint 关闭自动恢复，只保留各保存 step 的 LoRA adapter；训练进程中断后需要重新开始正式训练，不能从 optimizer 状态精确续跑。每次正式运行使用独立的 `outputs/run_logs/full_<时间>.log` 并在末尾记录真实退出码，rollout 保留在 `outputs/full/rollouts/`，两个冻结服务的独立日志位于 `outputs/run_logs/scorer_pool/`。
 
 如需单独命名一次正式实验，启动时显式覆盖 OSS 目录：
 
