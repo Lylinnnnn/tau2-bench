@@ -83,7 +83,7 @@ project/expectation_step_rl/data/decisions_qwen3_32b_t06/training_calibration.js
 
 - GPU 0–1 各运行一个冻结 Qwen3-32B 打分服务，HTTP 端口为 8000–8001；
 - GPU 2–7 运行一个六卡 FSDP 训练任务；策略 rollout 使用两卡张量并行，形成三个并行采样副本；
-- checkpoint 直接写入 OSS 挂载目录 `/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full/`，不占用仓库所在磁盘；
+- 每 10 step 只把可直接配合基座模型推理的 LoRA adapter 写入 OSS 目录 `/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full/`；不保存 FSDP 模型、优化器和随机状态分片；
 - console 与 SwanLab 同时记录训练曲线，SwanLab 本地缓存也写入 OSS 下的 `expectation_step_rl/swanlog/`；
 - 每 10 个训练 step 保存一次 checkpoint，并在固定的 32 个 Test 决策状态上验证一次；完整 Test 不在训练中反复运行，留给最终冻结模型评测；
 - 每个冻结服务使用不同的 HTTP、vLLM 内部通信、PyTorch master 端口和 RPC 临时目录；
@@ -100,7 +100,7 @@ bash scripts/run_full_tmux.sh
 tmux attach -t expectation-step-rl-full
 ```
 
-第一次运行会用两个冻结服务计算 485 条 Train 干净结果的校准分；若中途退出，重启后会保留已完成记录并继续缺失部分，只有 485 条全部齐全才会进入训练。checkpoint 直接保存在 OSS；正式日志和 rollout 分别保留在本项目的 `outputs/run_logs/full.log` 与 `outputs/full/rollouts/`，两个冻结服务的独立日志位于 `outputs/run_logs/scorer_pool/`。
+第一次运行会用两个冻结服务计算 485 条 Train 干净结果的校准分；校准阶段若中途退出，重启后会保留已完成记录并继续缺失部分，只有 485 条全部齐全才会进入训练。训练 checkpoint 关闭自动恢复，只保留各保存 step 的 LoRA adapter；训练进程中断后需要重新开始正式训练，不能从 optimizer 状态精确续跑。正式日志和 rollout 分别保留在本项目的 `outputs/run_logs/full.log` 与 `outputs/full/rollouts/`，两个冻结服务的独立日志位于 `outputs/run_logs/scorer_pool/`。
 
 如需单独命名一次正式实验，启动时显式覆盖 OSS 目录：
 
@@ -111,7 +111,7 @@ CHECKPOINT_DIR=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qw
 
 ## 先验证一次 OSS checkpoint
 
-之前的 smoke 禁用了保存，只证明了训练更新能执行。正式训练前运行下面的专用检查：它使用 GPU 0 的一个冻结打分服务和 GPU 1–4 的四卡训练，完成一个训练 step，在独立 OSS 目录生成 `global_step_1`，随后强制检查 actor 文件、DataLoader 状态和最新 step 标记均存在且非空。它同时会跑训练前和 step 1 后的验证，并向 SwanLab 上传曲线，因此也覆盖验证聚合与 SwanLab 接入。
+之前的 smoke 禁用了保存，只证明了训练更新能执行。正式训练前运行下面的专用检查：它使用 GPU 0 的一个冻结打分服务和 GPU 1–4 的四卡训练，完成一个训练 step，在独立 OSS 目录生成 `global_step_1`，随后强制检查 LoRA adapter、DataLoader 状态和最新 step 标记均存在且非空，并拒绝任何 FSDP 模型、优化器或随机状态大分片。它同时会跑训练前和 step 1 后的验证，并向 SwanLab 上传曲线，因此也覆盖验证聚合与 SwanLab 接入。
 
 ```bash
 cd project/expectation_step_rl
@@ -122,7 +122,7 @@ tmux attach -t expectation-step-rl-ckpt-smoke
 成功日志最后必须出现：
 
 ```text
-OSS checkpoint smoke passed: /data/oss_bucket_0/...
+OSS inference-adapter checkpoint smoke passed: /data/oss_bucket_0/...
 ```
 
 ## 先跑四卡 smoke

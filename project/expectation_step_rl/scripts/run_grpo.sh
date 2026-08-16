@@ -40,6 +40,9 @@ TRAINER_EXPERIMENT_NAME="${TRAINER_EXPERIMENT_NAME:-qwen3_32b_${MODE}}"
 SWANLAB_LOG_DIR="${SWANLAB_LOG_DIR:-/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/swanlog}"
 SWANLAB_MODE="${SWANLAB_MODE:-cloud}"
 AGENT_LOOP_NUM_WORKERS="${AGENT_LOOP_NUM_WORKERS:-8}"
+TRAINER_RESUME_MODE="${TRAINER_RESUME_MODE:-disable}"
+CHECKPOINT_SAVE_CONTENTS="${CHECKPOINT_SAVE_CONTENTS:-[]}"
+CHECKPOINT_LOAD_CONTENTS="${CHECKPOINT_LOAD_CONTENTS:-[]}"
 
 IFS=',' read -r -a TRAINING_GPU_IDS <<< "$TRAINING_CUDA_VISIBLE_DEVICES"
 if [[ "${#TRAINING_GPU_IDS[@]}" -ne "$TRAINING_N_GPUS" ]]; then
@@ -60,6 +63,7 @@ echo "Training physical GPUs: $TRAINING_CUDA_VISIBLE_DEVICES"
 echo "verl workers: $TRAINING_N_GPUS; rollout tensor parallel: $ROLLOUT_TENSOR_PARALLEL_SIZE"
 echo "rollout replicas: $((TRAINING_N_GPUS / ROLLOUT_TENSOR_PARALLEL_SIZE)); agent-loop workers: $AGENT_LOOP_NUM_WORKERS"
 echo "Checkpoint directory: $CHECKPOINT_DIR"
+echo "Checkpoint contents: $CHECKPOINT_SAVE_CONTENTS; resume mode: $TRAINER_RESUME_MODE"
 echo "Tracking backends: $TRAINER_LOGGERS"
 if [[ "$TRAINER_LOGGERS" == *swanlab* ]]; then
   echo "SwanLab log directory: $SWANLAB_LOG_DIR"
@@ -118,6 +122,8 @@ fi
   actor_rollout_ref.actor.kl_loss_coef=0.001 \
   actor_rollout_ref.actor.kl_loss_type=low_var_kl \
   actor_rollout_ref.actor.entropy_coeff=0 \
+  actor_rollout_ref.actor.checkpoint.save_contents="$CHECKPOINT_SAVE_CONTENTS" \
+  actor_rollout_ref.actor.checkpoint.load_contents="$CHECKPOINT_LOAD_CONTENTS" \
   actor_rollout_ref.actor.fsdp_config.param_offload=True \
   actor_rollout_ref.actor.fsdp_config.optimizer_offload=True \
   actor_rollout_ref.rollout.name=vllm \
@@ -147,6 +153,7 @@ fi
   trainer.use_legacy_worker_impl=disable \
   trainer.total_epochs="$TOTAL_EPOCHS" \
   trainer.total_training_steps="$TOTAL_TRAINING_STEPS" \
+  trainer.resume_mode="$TRAINER_RESUME_MODE" \
   trainer.save_freq="$SAVE_FREQ" \
   trainer.test_freq="$TEST_FREQ" \
   trainer.default_local_dir="$CHECKPOINT_DIR" \

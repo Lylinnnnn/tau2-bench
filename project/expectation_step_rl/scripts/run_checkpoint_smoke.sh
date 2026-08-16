@@ -12,4 +12,4 @@ CHECKPOINT_DIR="${CHECKPOINT_DIR:?CHECKPOINT_DIR is required}"
   --checkpoint-dir "$CHECKPOINT_DIR" \
   --expected-step 1
 
-echo "OSS checkpoint smoke passed: $CHECKPOINT_DIR"
+echo "OSS inference-adapter checkpoint smoke passed: $CHECKPOINT_DIR"
