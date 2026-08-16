@@ -209,6 +209,64 @@ def check_scorer(base_url: str, api_key: str, expected_model: str) -> str:
     return expected_model
 
 
+def check_parallelism(
+    *,
+    training_gpus: int,
+    rollout_tensor_parallel_size: int,
+    train_batch_size: int,
+    rollout_n: int,
+    ppo_mini_batch_size: int,
+    ppo_micro_batch_size_per_gpu: int,
+    agent_loop_workers: int,
+) -> dict[str, int]:
+    """Reject batch and worker layouts that verl cannot divide evenly."""
+
+    values = {
+        "training_gpus": training_gpus,
+        "rollout_tensor_parallel_size": rollout_tensor_parallel_size,
+        "train_batch_size": train_batch_size,
+        "rollout_n": rollout_n,
+        "ppo_mini_batch_size": ppo_mini_batch_size,
+        "ppo_micro_batch_size_per_gpu": ppo_micro_batch_size_per_gpu,
+        "agent_loop_workers": agent_loop_workers,
+    }
+    if any(value <= 0 for value in values.values()):
+        raise ValueError(f"Parallelism values must be positive: {values}")
+    if training_gpus % rollout_tensor_parallel_size:
+        raise ValueError(
+            "training_gpus must be divisible by rollout_tensor_parallel_size"
+        )
+    if ppo_mini_batch_size > train_batch_size:
+        raise ValueError("ppo_mini_batch_size cannot exceed train_batch_size")
+
+    sampled_sequences = train_batch_size * rollout_n
+    if sampled_sequences % training_gpus:
+        raise ValueError(
+            "train_batch_size * rollout_n must be divisible by training_gpus"
+        )
+    if sampled_sequences < agent_loop_workers or sampled_sequences % agent_loop_workers:
+        raise ValueError(
+            "train_batch_size * rollout_n must be at least and divisible by "
+            "agent_loop_workers"
+        )
+
+    normalized_ppo_batch = ppo_mini_batch_size * rollout_n
+    if normalized_ppo_batch % training_gpus:
+        raise ValueError(
+            "ppo_mini_batch_size * rollout_n must be divisible by training_gpus"
+        )
+    normalized_ppo_batch //= training_gpus
+    if normalized_ppo_batch % ppo_micro_batch_size_per_gpu:
+        raise ValueError("per-GPU PPO mini batch must be divisible by PPO micro batch")
+
+    return {
+        "sampled_sequences_per_step": sampled_sequences,
+        "rollout_replicas": training_gpus // rollout_tensor_parallel_size,
+        "sequences_per_agent_loop_worker": sampled_sequences // agent_loop_workers,
+        "ppo_samples_per_training_gpu": normalized_ppo_batch,
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, required=True)
@@ -218,6 +276,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scorer-base-urls", required=True)
     parser.add_argument("--scorer-api-key", default="EMPTY")
     parser.add_argument("--scorer-model", required=True)
+    parser.add_argument("--training-gpus", type=int, required=True)
+    parser.add_argument("--rollout-tensor-parallel-size", type=int, required=True)
+    parser.add_argument("--train-batch-size", type=int, required=True)
+    parser.add_argument("--rollout-n", type=int, required=True)
+    parser.add_argument("--ppo-mini-batch-size", type=int, required=True)
+    parser.add_argument("--ppo-micro-batch-size-per-gpu", type=int, required=True)
+    parser.add_argument("--agent-loop-workers", type=int, required=True)
     return parser
 
 
@@ -232,6 +297,15 @@ def main() -> None:
             check_scorer(base_url, args.scorer_api_key, args.scorer_model)
             for base_url in args.scorer_base_urls.split(",")
         ],
+        "parallelism": check_parallelism(
+            training_gpus=args.training_gpus,
+            rollout_tensor_parallel_size=args.rollout_tensor_parallel_size,
+            train_batch_size=args.train_batch_size,
+            rollout_n=args.rollout_n,
+            ppo_mini_batch_size=args.ppo_mini_batch_size,
+            ppo_micro_batch_size_per_gpu=args.ppo_micro_batch_size_per_gpu,
+            agent_loop_workers=args.agent_loop_workers,
+        ),
     }
     print(json.dumps(report, indent=2))
 

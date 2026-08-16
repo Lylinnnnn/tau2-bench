@@ -39,6 +39,7 @@ TRAINER_PROJECT_NAME="${TRAINER_PROJECT_NAME:-tau2_expectation_step_rl}"
 TRAINER_EXPERIMENT_NAME="${TRAINER_EXPERIMENT_NAME:-qwen3_32b_${MODE}}"
 SWANLAB_LOG_DIR="${SWANLAB_LOG_DIR:-/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/swanlog}"
 SWANLAB_MODE="${SWANLAB_MODE:-cloud}"
+AGENT_LOOP_NUM_WORKERS="${AGENT_LOOP_NUM_WORKERS:-8}"
 
 IFS=',' read -r -a TRAINING_GPU_IDS <<< "$TRAINING_CUDA_VISIBLE_DEVICES"
 if [[ "${#TRAINING_GPU_IDS[@]}" -ne "$TRAINING_N_GPUS" ]]; then
@@ -57,6 +58,7 @@ export CUDA_VISIBLE_DEVICES="$TRAINING_CUDA_VISIBLE_DEVICES"
 
 echo "Training physical GPUs: $TRAINING_CUDA_VISIBLE_DEVICES"
 echo "verl workers: $TRAINING_N_GPUS; rollout tensor parallel: $ROLLOUT_TENSOR_PARALLEL_SIZE"
+echo "rollout replicas: $((TRAINING_N_GPUS / ROLLOUT_TENSOR_PARALLEL_SIZE)); agent-loop workers: $AGENT_LOOP_NUM_WORKERS"
 echo "Checkpoint directory: $CHECKPOINT_DIR"
 echo "Tracking backends: $TRAINER_LOGGERS"
 if [[ "$TRAINER_LOGGERS" == *swanlab* ]]; then
@@ -70,7 +72,14 @@ fi
   --calibration "$EXPECTATION_CALIBRATION_PATH" \
   --scorer-base-urls "$EXPECTATION_SCORER_BASE_URLS" \
   --scorer-api-key "$EXPECTATION_SCORER_API_KEY" \
-  --scorer-model "$EXPECTATION_SCORER_MODEL"
+  --scorer-model "$EXPECTATION_SCORER_MODEL" \
+  --training-gpus "$TRAINING_N_GPUS" \
+  --rollout-tensor-parallel-size "$ROLLOUT_TENSOR_PARALLEL_SIZE" \
+  --train-batch-size "$TRAIN_BATCH_SIZE" \
+  --rollout-n "$ROLLOUT_N" \
+  --ppo-mini-batch-size "$PPO_MINI_BATCH_SIZE" \
+  --ppo-micro-batch-size-per-gpu "$PPO_MICRO_BATCH_SIZE_PER_GPU" \
+  --agent-loop-workers "$AGENT_LOOP_NUM_WORKERS"
 
 mkdir -p "$OUTPUT_DIR/rollouts" "$CHECKPOINT_DIR"
 if [[ "$TRAINER_LOGGERS" == *swanlab* ]]; then
@@ -127,6 +136,7 @@ fi
   actor_rollout_ref.rollout.free_cache_engine=True \
   actor_rollout_ref.rollout.agent.default_agent_loop=tau2_expectation_step \
   actor_rollout_ref.rollout.agent.agent_loop_config_path="$PROJECT_DIR/configs/agent_loops.yaml" \
+  actor_rollout_ref.rollout.agent.num_workers="$AGENT_LOOP_NUM_WORKERS" \
   actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu="$LOGPROB_MICRO_BATCH_SIZE_PER_GPU" \
   actor_rollout_ref.ref.fsdp_config.param_offload=True \
   trainer.project_name="$TRAINER_PROJECT_NAME" \

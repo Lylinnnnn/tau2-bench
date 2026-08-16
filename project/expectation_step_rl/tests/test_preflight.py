@@ -6,6 +6,7 @@ import pytest
 from expectation_step_rl.preflight import (
     check_calibration,
     check_dataset,
+    check_parallelism,
     check_training_packages,
 )
 
@@ -105,3 +106,49 @@ def test_training_package_check_rejects_version_drift(
 
     with pytest.raises(ValueError, match="flash-attn"):
         check_training_packages(tmp_path)
+
+
+def test_parallelism_accepts_six_gpu_full_layout() -> None:
+    report = check_parallelism(
+        training_gpus=6,
+        rollout_tensor_parallel_size=2,
+        train_batch_size=30,
+        rollout_n=8,
+        ppo_mini_batch_size=30,
+        ppo_micro_batch_size_per_gpu=1,
+        agent_loop_workers=8,
+    )
+
+    assert report == {
+        "sampled_sequences_per_step": 240,
+        "rollout_replicas": 3,
+        "sequences_per_agent_loop_worker": 30,
+        "ppo_samples_per_training_gpu": 40,
+    }
+
+
+@pytest.mark.parametrize(
+    ("override", "message"),
+    [
+        ({"rollout_tensor_parallel_size": 4}, "tensor_parallel_size"),
+        ({"train_batch_size": 29}, "train_batch_size"),
+        ({"ppo_mini_batch_size": 29}, "ppo_mini_batch_size"),
+        ({"agent_loop_workers": 7}, "agent_loop_workers"),
+    ],
+)
+def test_parallelism_rejects_non_divisible_layouts(
+    override: dict[str, int], message: str
+) -> None:
+    layout = {
+        "training_gpus": 6,
+        "rollout_tensor_parallel_size": 2,
+        "train_batch_size": 30,
+        "rollout_n": 8,
+        "ppo_mini_batch_size": 30,
+        "ppo_micro_batch_size_per_gpu": 1,
+        "agent_loop_workers": 8,
+    }
+    layout.update(override)
+
+    with pytest.raises(ValueError, match=message):
+        check_parallelism(**layout)
