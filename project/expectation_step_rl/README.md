@@ -50,6 +50,8 @@ expectation_step_rl/
 
 LoRA rollout 按该版本官方要求使用 `vLLM + safetensors load_format`，并开启逐层权重同步以控制峰值显存。项目没有修改 `verl` 的参数更新算法；自定义部分仅是单步环境和奖励来源。
 
+训练由 `expectation_step_rl.verl_adapter.main_ppo` 进入，再调用固定的 `verl` 训练器。这个薄入口只在 Ray 训练进程中安装 JSONL 导出兼容层，使 NumPy 奖励诊断值按原数值类型写入；未知对象仍直接报错。这样无需修改 `third_party/verl` 或服务器虚拟环境。
+
 ## 服务器准备
 
 从仓库根目录执行：

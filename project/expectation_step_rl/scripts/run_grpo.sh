@@ -90,7 +90,7 @@ if [[ "$TRAINER_LOGGERS" == *swanlab* ]]; then
   mkdir -p "$SWANLAB_LOG_DIR"
 fi
 
-"$TRAINING_VENV/bin/python" -m verl.trainer.main_ppo \
+"$TRAINING_VENV/bin/python" -m expectation_step_rl.verl_adapter.main_ppo \
   algorithm.adv_estimator=grpo \
   algorithm.use_kl_in_reward=False \
   data.train_files="$EXPECTATION_DATA_DIR/train.jsonl" \
