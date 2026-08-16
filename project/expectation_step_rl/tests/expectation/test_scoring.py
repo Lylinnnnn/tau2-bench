@@ -1,6 +1,7 @@
 import pytest
 
 from expectation_step_rl.expectation.scoring import (
+    _post_json,
     contextual_min_k,
     scorer_url_for_key,
 )
@@ -24,3 +25,26 @@ def test_scorer_routing_is_sticky_and_uses_pool() -> None:
 
     assert scorer_url_for_key(urls, "same") == scorer_url_for_key(urls, "same")
     assert set(assignments) == set(urls)
+
+
+def test_scorer_timeout_names_endpoint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def time_out(*args, **kwargs):
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(
+        "expectation_step_rl.expectation.scoring.urllib.request.urlopen",
+        time_out,
+    )
+
+    with pytest.raises(
+        TimeoutError,
+        match=r"after 900s: http://127\.0\.0\.1:8000/v1/completions",
+    ):
+        _post_json(
+            "http://127.0.0.1:8000/v1/completions",
+            api_key="EMPTY",
+            payload={"model": "qwen3-32b"},
+            timeout=900,
+        )

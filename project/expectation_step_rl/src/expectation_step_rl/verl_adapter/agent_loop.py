@@ -34,6 +34,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
         scorer_api_key: str,
         scorer_model: str,
         calibration_path: str,
+        scorer_timeout_seconds: float = 180.0,
         min_k_fraction: float = 0.1,
         reward_clip: float = 5.0,
         invalid_action_penalty: float = -5.0,
@@ -49,6 +50,7 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
             api_key=scorer_api_key,
             model=scorer_model,
             min_k_fraction=min_k_fraction,
+            timeout_seconds=float(scorer_timeout_seconds),
         )
         self.calibration = TrainCalibration.load(
             Path(calibration_path),

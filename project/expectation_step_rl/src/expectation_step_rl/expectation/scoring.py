@@ -26,8 +26,13 @@ def _post_json(
         },
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read())
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read())
+    except TimeoutError as exc:
+        raise TimeoutError(
+            f"Frozen scorer request timed out after {timeout:g}s: {url}"
+        ) from exc
 
 
 def _api_root(base_url: str) -> str:

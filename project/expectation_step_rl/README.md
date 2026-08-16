@@ -95,6 +95,7 @@ project/expectation_step_rl/data/decisions_qwen3_32b_t06/training_calibration.js
 - 每个冻结服务使用不同的 HTTP、vLLM 内部通信、PyTorch master 端口和 RPC 临时目录；
 - 如果 8000–8001 任一端口已有相同模型的健康服务会直接复用，脚本只清理由自己启动的进程；
 - 每个候选固定路由到一个打分服务，候选之间分散到两个服务；
+- 正式 batch 的长上下文打分允许最多等待 900 秒；超时会报告具体打分地址，不会静默重试或跳过候选；
 - DataLoader 不创建额外 worker，避免训练结束时出现 worker 被系统杀死的告警。
 
 从仓库根目录启动：

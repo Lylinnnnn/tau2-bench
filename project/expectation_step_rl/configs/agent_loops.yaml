@@ -3,6 +3,7 @@
   scorer_base_urls: ${oc.env:EXPECTATION_SCORER_BASE_URLS,http://127.0.0.1:8000/v1}
   scorer_api_key: ${oc.env:EXPECTATION_SCORER_API_KEY,EMPTY}
   scorer_model: ${oc.env:EXPECTATION_SCORER_MODEL,qwen3-32b}
+  scorer_timeout_seconds: ${oc.env:EXPECTATION_SCORER_TIMEOUT_SECONDS,180}
   calibration_path: ${oc.env:EXPECTATION_CALIBRATION_PATH}
   min_k_fraction: 0.1
   reward_clip: 5.0
