@@ -111,7 +111,7 @@ CHECKPOINT_DIR=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qw
 
 ## 先验证一次 OSS checkpoint
 
-之前的 smoke 禁用了保存，只证明了训练更新能执行。正式训练前运行下面的专用检查：它使用 GPU 0 的一个冻结打分服务和 GPU 1–4 的四卡训练，完成一个训练 step，在独立 OSS 目录生成 `global_step_1`，随后强制检查 LoRA adapter、DataLoader 状态和最新 step 标记均存在且非空，并拒绝任何 FSDP 模型、优化器或随机状态大分片。它同时会跑训练前和 step 1 后的验证，并向 SwanLab 上传曲线，因此也覆盖验证聚合与 SwanLab 接入。
+之前的 smoke 禁用了保存，只证明了训练更新能执行。正式训练前运行下面的专用检查：它使用 GPU 0 的一个冻结打分服务和 GPU 1–4 的四卡训练，完成一个训练 step，在独立 OSS 目录生成 `global_step_1`，随后强制检查 LoRA adapter、DataLoader 状态和最新 step 标记均存在且非空，并拒绝任何 FSDP 模型、优化器或随机状态大分片。最后在 GPU 5 上实际加载基座模型和 adapter，分别完成 adapter 推理、内存合并和合并后推理，并要求合并前后的第一个贪心 token 相同。合并模型不会落盘，因此不会额外占用约一份 32B 模型的 OSS 空间。它同时会跑训练前和 step 1 后的验证，并向 SwanLab 上传曲线，因此也覆盖验证聚合与 SwanLab 接入。
 
 ```bash
 cd project/expectation_step_rl
@@ -124,6 +124,8 @@ tmux attach -t expectation-step-rl-ckpt-smoke
 ```text
 OSS inference-adapter checkpoint smoke passed: /data/oss_bucket_0/...
 ```
+
+同一 checkpoint 下还会生成 `global_step_1/inference_smoke.json`，记录 adapter 与内存合并模型的首 token、生成 token 和解码文本；`merge_saved_to_disk` 必须为 `false`。
 
 ## 先跑四卡 smoke
 
