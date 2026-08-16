@@ -108,9 +108,9 @@ def test_training_package_check_rejects_version_drift(
         check_training_packages(tmp_path)
 
 
-def test_parallelism_accepts_six_gpu_full_layout() -> None:
+def test_parallelism_accepts_four_gpu_full_layout() -> None:
     report = check_parallelism(
-        training_gpus=6,
+        training_gpus=4,
         rollout_tensor_parallel_size=2,
         train_batch_size=30,
         rollout_n=8,
@@ -121,9 +121,9 @@ def test_parallelism_accepts_six_gpu_full_layout() -> None:
 
     assert report == {
         "sampled_sequences_per_step": 240,
-        "rollout_replicas": 3,
+        "rollout_replicas": 2,
         "sequences_per_agent_loop_worker": 30,
-        "ppo_samples_per_training_gpu": 40,
+        "ppo_samples_per_training_gpu": 60,
     }
 
 
