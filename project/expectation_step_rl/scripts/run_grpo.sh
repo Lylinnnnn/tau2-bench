@@ -60,6 +60,8 @@ export PYTHONPATH="$PROJECT_DIR/src:$PROJECT_DIR/third_party/verl:${PYTHONPATH:-
 export CUDA_VISIBLE_DEVICES="$TRAINING_CUDA_VISIBLE_DEVICES"
 
 echo "Training physical GPUs: $TRAINING_CUDA_VISIBLE_DEVICES"
+echo "Repository commit: $(git -C "$REPO_ROOT" rev-parse --short HEAD)"
+echo "Trainer entrypoint: expectation_step_rl.verl_adapter.main_ppo"
 echo "verl workers: $TRAINING_N_GPUS; rollout tensor parallel: $ROLLOUT_TENSOR_PARALLEL_SIZE"
 echo "rollout replicas: $((TRAINING_N_GPUS / ROLLOUT_TENSOR_PARALLEL_SIZE)); agent-loop workers: $AGENT_LOOP_NUM_WORKERS"
 echo "Checkpoint directory: $CHECKPOINT_DIR"

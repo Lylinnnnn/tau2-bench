@@ -14,7 +14,7 @@ TRAINER_EXPERIMENT_NAME="${TRAINER_EXPERIMENT_NAME:-checkpoint_smoke_${TIMESTAMP
 
 mkdir -p "$LOG_DIR"
 tmux new-session -d -s "$SESSION" \
-  "cd '$PROJECT_DIR' && CHECKPOINT_DIR='$CHECKPOINT_DIR' SCORER_GPU_IDS=0 ADAPTER_INFERENCE_GPU='$ADAPTER_INFERENCE_GPU' TRAINER_EXPERIMENT_NAME='$TRAINER_EXPERIMENT_NAME' TRAINING_CUDA_VISIBLE_DEVICES='$TRAINING_CUDA_VISIBLE_DEVICES' bash scripts/with_managed_scorer_pool.sh bash scripts/run_checkpoint_smoke.sh 2>&1 | tee '$LOG_PATH'"
+  "exec bash -c 'cd \"$PROJECT_DIR\" && CHECKPOINT_DIR=\"$CHECKPOINT_DIR\" SCORER_GPU_IDS=0 ADAPTER_INFERENCE_GPU=\"$ADAPTER_INFERENCE_GPU\" TRAINER_EXPERIMENT_NAME=\"$TRAINER_EXPERIMENT_NAME\" TRAINING_CUDA_VISIBLE_DEVICES=\"$TRAINING_CUDA_VISIBLE_DEVICES\" bash scripts/with_managed_scorer_pool.sh bash scripts/run_checkpoint_smoke.sh > >(tee \"$LOG_PATH\") 2>&1; status=\$?; echo checkpoint-smoke-exit-code=\$status | tee -a \"$LOG_PATH\"; exit \$status'"
 
 echo "Started tmux session: $SESSION"
 echo "Log: $LOG_PATH"

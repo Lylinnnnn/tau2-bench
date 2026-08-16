@@ -52,6 +52,8 @@ LoRA rollout 按该版本官方要求使用 `vLLM + safetensors load_format`，�
 
 训练由 `expectation_step_rl.verl_adapter.main_ppo` 进入，再调用固定的 `verl` 训练器。这个薄入口只在 Ray 训练进程中安装 JSONL 导出兼容层，使 NumPy 奖励诊断值按原数值类型写入；未知对象仍直接报错。这样无需修改 `third_party/verl` 或服务器虚拟环境。
 
+同一入口还为 `verl` 的新版 FSDP worker 补充 LoRA-only checkpoint 导出。`save_contents=[]` 继续禁止模型、优化器和随机状态分片；训练 worker 单独收集 LoRA 参数并写入 `actor/lora_adapter/`，随后 smoke 会加载基座模型和 adapter、在内存中合并并实际生成一次。
+
 ## 服务器准备
 
 从仓库根目录执行：

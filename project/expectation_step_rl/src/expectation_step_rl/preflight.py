@@ -126,6 +126,9 @@ def check_submodule(project_root: Path) -> str:
     from expectation_step_rl.verl_adapter.agent_loop import (  # noqa: F401
         Tau2ExpectationStepAgentLoop,
     )
+    from expectation_step_rl.verl_adapter.main_ppo import (  # noqa: F401
+        Tau2TaskRunner,
+    )
 
     return commit
 
