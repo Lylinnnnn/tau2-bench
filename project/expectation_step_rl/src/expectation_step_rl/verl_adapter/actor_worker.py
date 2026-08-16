@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +12,14 @@ from safetensors.torch import save_file
 from verl.single_controller.base.decorator import Dispatch, register
 from verl.workers.engine_workers import ActorRolloutRefWorker
 
+
+def _copy_file_contents(source: Path, destination: Path) -> None:
+    """Copy bytes without filesystem metadata or fast-copy syscalls."""
+
+    with source.open("rb") as source_handle, destination.open("wb") as output_handle:
+        shutil.copyfileobj(source_handle, output_handle, length=16 * 1024 * 1024)
+
+
 def save_lora_adapter(
     *,
     engine: Any,
@@ -19,9 +27,9 @@ def save_lora_adapter(
     layered_summon: bool,
 ) -> None:
     """Collect the trained adapter from FSDP and save it on rank zero.
-    
-    Saves to a local temp directory first, then copies to final destination
-    to avoid I/O errors on OSS filesystems.
+
+    Serialize locally, then stream file contents to the OSS mount because its
+    FUSE implementation does not support safetensors' direct write operations.
     """
 
     peft_model = getattr(engine.module, "_fsdp_wrapped_module", engine.module)
@@ -42,16 +50,20 @@ def save_lora_adapter(
     error = None
     if dist.get_rank() == 0:
         try:
-            # Save to local temp directory first to avoid OSS I/O errors
             with tempfile.TemporaryDirectory() as tmp_dir:
                 tmp_path = Path(tmp_dir)
                 save_file(adapter_state, tmp_path / "adapter_model.safetensors")
                 peft_config.save_pretrained(tmp_path)
-                
-                # Copy to final destination
+
                 output_dir.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(tmp_path / "adapter_model.safetensors", output_dir / "adapter_model.safetensors")
-                shutil.copy2(tmp_path / "adapter_config.json", output_dir / "adapter_config.json")
+                _copy_file_contents(
+                    tmp_path / "adapter_model.safetensors",
+                    output_dir / "adapter_model.safetensors",
+                )
+                _copy_file_contents(
+                    tmp_path / "adapter_config.json",
+                    output_dir / "adapter_config.json",
+                )
         except Exception as exc:
             error = f"{type(exc).__name__}: {exc}"
 
@@ -64,4 +76,28 @@ def save_lora_adapter(
         print(
             "Saved inference-only LoRA adapter: "
             f"{output_dir} ({len(adapter_state)} tensors)"
+        )
+
+
+class Tau2ActorRolloutRefWorker(ActorRolloutRefWorker):
+    """Add adapter export missing from verl's new FSDP worker."""
+
+    @register(dispatch_mode=Dispatch.ONE_TO_ALL)
+    def save_checkpoint(
+        self,
+        local_path,
+        hdfs_path=None,
+        global_step=0,
+        max_ckpt_to_keep=None,
+    ) -> None:
+        super().save_checkpoint(
+            local_path,
+            hdfs_path,
+            global_step,
+            max_ckpt_to_keep,
+        )
+        save_lora_adapter(
+            engine=self.actor.engine,
+            output_dir=Path(local_path) / "lora_adapter",
+            layered_summon=self.layered_summon,
         )

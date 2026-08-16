@@ -54,6 +54,8 @@ LoRA rollout 按该版本官方要求使用 `vLLM + safetensors load_format`，�
 
 同一入口还为 `verl` 的新版 FSDP worker 补充 LoRA-only checkpoint 导出。`save_contents=[]` 继续禁止模型、优化器和随机状态分片；训练 worker 单独收集 LoRA 参数并写入 `actor/lora_adapter/`，随后 smoke 会加载基座模型和 adapter、在内存中合并并实际生成一次。
 
+由于 OSS-FUSE 不支持 safetensors 直接写入使用的部分底层文件操作，adapter 会先在节点临时目录完成序列化，再通过普通分块读写复制到 OSS。临时目录随保存调用结束自动删除，不保留本地 checkpoint；最终产物仍直接位于配置的 OSS checkpoint 目录。
+
 ## 服务器准备
 
 从仓库根目录执行：
