@@ -50,10 +50,12 @@ fi
 
 # Function to copy files with appropriate arguments based on the command
 stage_copy() {
+  local source="${1%/}"
+  local destination="${2%/}"
   if [[ "$RSYNC_BIN" == "cp" ]]; then
-    cp -a "$@"
+    cp -a "$source/." "$destination/"
   else
-    "$RSYNC_BIN" -a --info=progress2 "$@"
+    "$RSYNC_BIN" -a --info=progress2 "$source/" "$destination/"
   fi
 }
 
@@ -61,7 +63,7 @@ mkdir -p "$RUN_ROOT/logs" "$RUN_ROOT/vllm_logs"
 
 if [[ "${EXPECTATION_EVAL_IN_TMUX:-0}" != "1" ]]; then
   tmux new-session -d -s "$SESSION" \
-    "exec bash -c 'cd \"$REPO_ROOT\" && EXPECTATION_EVAL_IN_TMUX=1 CHECKPOINT_ROOT=\"$CHECKPOINT_ROOT\" CHECKPOINT_STEPS=\"$CHECKPOINT_STEPS\" TASK_SPLIT=\"$TASK_SPLIT\" DOMAINS=\"$DOMAINS\" NUM_TRIALS=\"$NUM_TRIALS\" SEED=\"$SEED\" MAX_TASKS_PER_DOMAIN=\"$MAX_TASKS_PER_DOMAIN\" INCLUDE_BASELINE=\"$INCLUDE_BASELINE\" RUN_TAG=\"$RUN_TAG\" EVALUATION_ROOT=\"$EVALUATION_ROOT\" BASELINE_ROOT=\"$BASELINE_ROOT\" MAX_EVAL_GPUS=\"$MAX_EVAL_GPUS\" FIRST_GPU=\"$FIRST_GPU\" BASE_PORT=\"$BASE_PORT\" INTERNAL_BASE_PORT=\"$INTERNAL_BASE_PORT\" INTERNAL_PORT_STRIDE=\"$INTERNAL_PORT_STRIDE\" MASTER_BASE_PORT=\"$MASTER_BASE_PORT\" SERVER_WAIT_SECONDS=\"$SERVER_WAIT_SECONDS\" MAX_CONCURRENCY=\"$MAX_CONCURRENCY\" MODEL_PATH=\"$MODEL_PATH\" BASE_MODEL_NAME=\"$BASE_MODEL_NAME\" VLLM_BIN=\"$VLLM_BIN\" UV_BIN=\"$UV_BIN\" GPU_MEMORY_UTILIZATION=\"$GPU_MEMORY_UTILIZATION\" MAX_MODEL_LEN=\"$MAX_MODEL_LEN\" STAGE_EVAL_INPUTS=\"$STAGE_EVAL_INPUTS\" LOCAL_STAGE_PARENT=\"$LOCAL_STAGE_PARENT\" ALLOW_NETWORK_STAGE=\"$ALLOW_NETWORK_STAGE\" RSYNC_BIN=\"$RSYNC_BIN\" RSYNC_ARGS=\"$RSYNC_ARGS\" bash \"$0\" > >(tee \"$LOG_PATH\") 2>&1; status=\$?; echo inference-exit-code=\$status | tee -a \"$LOG_PATH\"; exit \$status'"
+    "exec bash -c 'cd \"$REPO_ROOT\" && EXPECTATION_EVAL_IN_TMUX=1 CHECKPOINT_ROOT=\"$CHECKPOINT_ROOT\" CHECKPOINT_STEPS=\"$CHECKPOINT_STEPS\" TASK_SPLIT=\"$TASK_SPLIT\" DOMAINS=\"$DOMAINS\" NUM_TRIALS=\"$NUM_TRIALS\" SEED=\"$SEED\" MAX_TASKS_PER_DOMAIN=\"$MAX_TASKS_PER_DOMAIN\" INCLUDE_BASELINE=\"$INCLUDE_BASELINE\" RUN_TAG=\"$RUN_TAG\" EVALUATION_ROOT=\"$EVALUATION_ROOT\" BASELINE_ROOT=\"$BASELINE_ROOT\" MAX_EVAL_GPUS=\"$MAX_EVAL_GPUS\" FIRST_GPU=\"$FIRST_GPU\" BASE_PORT=\"$BASE_PORT\" INTERNAL_BASE_PORT=\"$INTERNAL_BASE_PORT\" INTERNAL_PORT_STRIDE=\"$INTERNAL_PORT_STRIDE\" MASTER_BASE_PORT=\"$MASTER_BASE_PORT\" SERVER_WAIT_SECONDS=\"$SERVER_WAIT_SECONDS\" MAX_CONCURRENCY=\"$MAX_CONCURRENCY\" MODEL_PATH=\"$MODEL_PATH\" BASE_MODEL_NAME=\"$BASE_MODEL_NAME\" VLLM_BIN=\"$VLLM_BIN\" UV_BIN=\"$UV_BIN\" GPU_MEMORY_UTILIZATION=\"$GPU_MEMORY_UTILIZATION\" MAX_MODEL_LEN=\"$MAX_MODEL_LEN\" STAGE_EVAL_INPUTS=\"$STAGE_EVAL_INPUTS\" LOCAL_STAGE_PARENT=\"$LOCAL_STAGE_PARENT\" ALLOW_NETWORK_STAGE=\"$ALLOW_NETWORK_STAGE\" RSYNC_BIN=\"$RSYNC_BIN\" bash \"$0\" > >(tee \"$LOG_PATH\") 2>&1; status=\$?; echo inference-exit-code=\$status | tee -a \"$LOG_PATH\"; exit \$status'"
   echo "Started tmux session: $SESSION"
   echo "Log: $LOG_PATH"
   echo "Evaluation output: $RUN_ROOT"
@@ -243,8 +245,7 @@ if [[ "$STAGE_EVAL_INPUTS" == "1" ]]; then
     local_adapter_path="$stage_dir/adapters/${model_keys[$model_index]}"
     mkdir -p "$local_adapter_path"
     echo "Staging LoRA ${model_keys[$model_index]}: ${adapter_paths[$model_index]}"
-    "$RSYNC_BIN" $RSYNC_ARGS \
-      "${adapter_paths[$model_index]}/" "$local_adapter_path/"
+    stage_copy "${adapter_paths[$model_index]}/" "$local_adapter_path/"
     adapter_paths[$model_index]="$local_adapter_path"
   done
   echo "Temporary inputs ready under $stage_dir"
