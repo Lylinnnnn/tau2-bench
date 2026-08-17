@@ -24,12 +24,42 @@
   和试验次数；User 始终使用未训练的 Qwen3-32B 基座。
 - 默认一条任务运行一次，`pass^1` 就是成功任务比例。最终需要多次试验时设置
   `NUM_TRIALS=4`，但不要把一次和四次试验的结果混到同一个 `RUN_TAG`。
-- checkpoint 只从 OSS 读取，不复制或合并成新的全量模型。
+- checkpoint 始终以 OSS 路径作为来源和实验身份；可选的节点本地暂存只在一次评测
+  进程内存在，不会合并或保存新的全量模型。
 - 每个待评测模型分配给一张卡；模型少于 8 个时不会空载多余 GPU，模型多于 8 个时
   按轮转形成均衡队列。同一 LoRA 只加载到负责它的服务，不在 8 个进程中重复占用
   主存。服务使用 HTTP `8200..8207`、互不重叠的内部端口段和独立 RPC 目录。
   为了保证加载的是本次明确列出的 LoRA，这些 HTTP 端口必须事先空闲。
 - 中断后使用同一 `RUN_TAG` 重跑会调用 τ²-Bench 的断点续跑，只补缺失任务。
+
+## 实验身份和固定基线
+
+每个 `RUN_TAG` 首次启动时写入 `experiment_manifest.json`，固定记录代码版本、训练
+run、OSS checkpoint 根目录和 step、模型元数据指纹、τ²-Bench 源码与领域数据版本、
+任务范围、采样参数和随机种子。再次使用同一 `RUN_TAG` 时必须与这些内容完全一致，
+否则直接拒绝，避免不同实验覆盖到同一目录。
+
+基座结果按完整评测协议生成 `baseline_id`，默认保存在 OSS 的
+`/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/evaluation/baselines/<baseline_id>`。
+后续实验只有在模型、benchmark、任务和采样协议全部一致时才复用这份结果；否则会
+自动生成新的 baseline。`evaluation/outputs/experiment_registry.json` 从各次 manifest
+自动重建，集中列出 run、checkpoint step、baseline、状态和官方指标位置。大轨迹、
+baseline 和 registry 都是运行产物，不提交 Git。
+
+## 临时暂存到节点本地存储
+
+`/home/liuyanlin.lyl` 当前是 JuiceFS，不是节点本地 SSD。先用 `df -hT /tmp` 或集群
+提供的本地盘路径确认文件系统类型和至少约 70 GiB 空间。设置
+`STAGE_EVAL_INPUTS=1` 后，脚本会：
+
+1. 在 `LOCAL_STAGE_PARENT` 下创建唯一临时目录；
+2. 只复制一份 62 GB 基座模型和本次发现的 LoRA adapter；
+3. 让所有评测 vLLM 服务共享这些本地文件；
+4. 推理成功、失败或被正常中断时，先关闭服务，再删除整个临时目录。
+
+脚本默认拒绝把“本地暂存”指向 FUSE。它在复制前计算本次输入大小，并额外要求
+5 GiB 空余。`kill -9` 或节点掉电无法触发 shell 清理；这种情况下只需删除名称以
+`expectation_step_rl_eval.` 开头的遗留临时目录。
 
 批量查看全部 checkpoint 的 Test 曲线只用于诊断训练是否整体有效，不能在看过曲线后
 挑最高点作为“最终模型”，否则等于用 Test 选模型。当前批量脚本会完整报告每一个
@@ -44,7 +74,7 @@ checkpoint，不自动选最佳 step。论文主结果应使用训练前约定�
 cd /home/liuyanlin.lyl/notebook/lyl/tau2-bench
 git pull --ff-only origin lyl-dev
 
-CHECKPOINT_ROOT=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full \
+CHECKPOINT_ROOT=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full_ce56a20 \
 CHECKPOINT_STEPS=50 \
 DOMAINS=retail \
 MAX_TASKS_PER_DOMAIN=1 \
@@ -71,9 +101,13 @@ smoke 的报告会标记 `full_split=false`，只能验证链路，不能作为�
 step；默认同时运行基座对照。训练恰好正在写入的半成品 step 会被跳过，不影响其他
 checkpoint。发现结果是一次启动快照，推理期间新保存的 step 要在下一次运行时评测。
 如果显式指定一个不存在或尚未写完的 step，脚本会直接报错。
+同一 `RUN_TAG` 中断重启时，会自动读取已有 manifest 中的 step 列表，保证断点续跑
+不会混入训练期间后来生成的 checkpoint。
 
 ```bash
-CHECKPOINT_ROOT=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full \
+CHECKPOINT_ROOT=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full_ce56a20 \
+STAGE_EVAL_INPUTS=1 \
+LOCAL_STAGE_PARENT=/tmp \
 RUN_TAG=qwen3_32b_full_test_t1_s300 \
 bash project/expectation_step_rl/evaluation/scripts/run_checkpoint_inference_tmux.sh
 
@@ -110,6 +144,7 @@ bash project/expectation_step_rl/evaluation/scripts/run_checkpoint_inference_tmu
 
 ```text
 project/expectation_step_rl/evaluation/outputs/<RUN_TAG>/
+├── experiment_manifest.json
 ├── trajectories/
 │   ├── base/<domain>/<split>/
 │   │   ├── results.json
@@ -120,6 +155,12 @@ project/expectation_step_rl/evaluation/outputs/<RUN_TAG>/
 ├── official_metrics.json
 ├── logs/
 └── vllm_logs/
+
+/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/evaluation/
+└── baselines/<baseline_id>/          # 固定且按协议复用的基座结果
+
+project/expectation_step_rl/evaluation/outputs/
+└── experiment_registry.json          # 所有正式评测的派生索引
 ```
 
 `inference_audit.json` 会拒绝任务缺失、重复 trial、缺 reward、基础设施错误以及

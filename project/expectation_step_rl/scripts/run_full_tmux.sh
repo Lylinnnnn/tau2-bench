@@ -9,7 +9,7 @@ LOG_DIR="$PROJECT_DIR/outputs/run_logs"
 LOG_PATH="${LOG_PATH:-$LOG_DIR/full_${TIMESTAMP}.log}"
 SCORER_GPU_IDS="${SCORER_GPU_IDS:-0,1,2,3}"
 TRAINING_CUDA_VISIBLE_DEVICES="${TRAINING_CUDA_VISIBLE_DEVICES:-4,5,6,7}"
-CHECKPOINT_DIR="${CHECKPOINT_DIR:-/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full}"
+CHECKPOINT_DIR="${CHECKPOINT_DIR:-/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full_ce56a20}"
 
 mkdir -p "$LOG_DIR"
 tmux new-session -d -s "$SESSION" \

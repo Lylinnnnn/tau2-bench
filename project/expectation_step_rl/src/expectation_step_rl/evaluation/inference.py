@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from expectation_step_rl.evaluation.audit import audit_results
+from expectation_step_rl.evaluation.protocol import generation_parameters
 from tau2.data_model.simulation import Results, TextRunConfig
 from tau2.runner import load_tasks, run_domain
 
@@ -63,18 +64,19 @@ def simulation_results_path(repo_root: Path, save_name: str) -> Path:
 
 
 def _llm_args(api_base: str) -> dict[str, Any]:
+    generation = generation_parameters()
     return {
-        "temperature": 0.6,
-        "top_p": 0.95,
-        "max_tokens": 4096,
+        "temperature": generation["temperature"],
+        "top_p": generation["top_p"],
+        "max_tokens": generation["max_tokens"],
         "api_base": api_base,
         "api_key": "EMPTY",
         "timeout": 180.0,
         "num_retries": 0,
         "extra_body": {
-            "top_k": 20,
-            "min_p": 0.0,
-            "chat_template_kwargs": {"enable_thinking": True},
+            "top_k": generation["top_k"],
+            "min_p": generation["min_p"],
+            "chat_template_kwargs": {"enable_thinking": generation["enable_thinking"]},
         },
     }
 

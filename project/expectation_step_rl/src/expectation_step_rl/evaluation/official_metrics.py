@@ -8,6 +8,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from expectation_step_rl.evaluation.tracking import update_run_status
 from tau2.data_model.simulation import Results
 from tau2.metrics.agent_metrics import compute_metrics
 
@@ -117,7 +118,7 @@ def build_report(evaluation_run_root: Path) -> dict[str, Any]:
                 for domain_split, metrics in model_runs.items()
                 if domain_split in runs["base"]
             }
-    return {
+    report = {
         "primary_metric": "pass^1",
         "official_implementation": "tau2.metrics.agent_metrics.compute_metrics",
         "evaluation_scope": {
@@ -128,6 +129,20 @@ def build_report(evaluation_run_root: Path) -> dict[str, Any]:
         "domain_macro_summaries": summaries,
         "comparisons": comparisons,
     }
+    manifest_path = evaluation_run_root / "experiment_manifest.json"
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text())
+        report["experiment"] = {
+            "run_tag": manifest["run_tag"],
+            "training_run_id": manifest["training_run_id"],
+            "checkpoint_steps": [
+                checkpoint["step"] for checkpoint in manifest["checkpoints"]
+            ],
+            "baseline_id": manifest["baseline_id"],
+            "protocol_sha256": manifest["protocol_sha256"],
+            "evaluation_git_commit": manifest["evaluation_git_commit"],
+        }
+    return report
 
 
 def main() -> None:
@@ -139,6 +154,7 @@ def main() -> None:
     output = args.output or args.evaluation_run_root / "official_metrics.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
+    update_run_status(args.evaluation_run_root, status="official_metrics_complete")
     print(json.dumps(report, indent=2, ensure_ascii=False))
 
 

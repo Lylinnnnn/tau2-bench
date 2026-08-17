@@ -97,7 +97,7 @@ project/expectation_step_rl/data/decisions_qwen3_32b_t06/training_calibration.js
 
 - GPU 0–3 各运行一个冻结 Qwen3-32B 打分服务，HTTP 端口为 8000–8003；
 - GPU 4–7 运行一个四卡 FSDP 训练任务；策略 rollout 使用两卡张量并行，形成两个并行采样副本；
-- 每 10 step 只把可直接配合基座模型推理的 LoRA adapter 写入 OSS 目录 `/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full/`；不保存 FSDP 模型、优化器和随机状态分片；
+- 每 10 step 只把可直接配合基座模型推理的 LoRA adapter 写入 OSS 目录 `/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full_ce56a20/`；不保存 FSDP 模型、优化器和随机状态分片；
 - console 与 SwanLab 同时记录训练曲线，SwanLab 本地缓存也写入 OSS 下的 `expectation_step_rl/swanlog/`；
 - 每 10 个训练 step 保存一次 checkpoint，并在固定的 32 个 Test 决策状态上验证一次；完整 Test 不在训练中反复运行，留给最终冻结模型评测；
 - 每个冻结服务使用不同的 HTTP、vLLM 内部通信、PyTorch master 端口和 RPC 临时目录；
