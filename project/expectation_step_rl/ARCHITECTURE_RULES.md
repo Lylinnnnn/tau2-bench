@@ -4,7 +4,7 @@
 
 ## 固定边界
 
-- 本项目只负责训练数据编译、单步环境执行、期待偏离奖励和训练框架适配。
+- 本项目只负责训练数据编译、单步环境执行、期待偏离奖励、训练框架适配，以及冻结 checkpoint 的完整任务评测编排。
 - 不向 `project/trace_to_micro` 写训练代码；预实验结论和既有产物只作为只读输入。
 - 不修改 τ²-Bench 的任务、数据库、工具实现和官方评测器。
 - `third_party/verl` 必须保持 Git submodule，只允许通过更新 `.gitmodules` 和固定提交升级；不得复制、散落或直接修改上游源码。
@@ -16,9 +16,12 @@
 - `tau2_adapter/`：恢复官方任务状态并执行一个动作；不能计算奖励。
 - `expectation/`：匿名化、模型返回概率和 Train 校准；不能访问官方参考动作或最终奖励。
 - `verl_adapter/`：只做 `verl` 接口转换；环境逻辑和信号计算必须下沉到前两个模块。
+- `evaluation/`：只加载冻结 checkpoint、调用原生 τ²-Bench 完整任务 runner、审计轨迹并汇总官方指标；不能参与训练、修改 evaluator 或另造任务成功标准。
 - `configs/`：只保存可复现实验参数，不放 Python 逻辑。
 - `scripts/`：只编排命令和环境变量；超过一个独立算法步骤的逻辑必须进入 `src/`。
 - `tests/`：目录结构与 `src/expectation_step_rl` 对齐。
+
+顶层 `evaluation/scripts/` 只提供训练后评测入口，算法实现必须位于 `src/expectation_step_rl/evaluation/`；评测输出统一进入 `evaluation/outputs/`，原始 τ² 分片轨迹仍进入仓库标准的 `data/simulations/`。
 
 ## 新增、删除和拆分规则
 
@@ -38,6 +41,7 @@
 
 - 优化阶段只能读取官方 Train 决策点和 Train 校准统计。
 - Test 只用于冻结方案后的验证，不能回填均值、方差、阈值或超参数。
+- 训练内单步代理指标不得命名为官方 `pass^1`；官方指标只能从完整任务轨迹调用 `tau2.metrics.agent_metrics.compute_metrics` 得到。
 - 数据集不得包含官方参考动作、最终奖励或目标数据库状态。
 - 一个样本对应一个真实轨迹中的模型决策点，不对应一个完整任务。
 - 策略只生成一个候选动作；环境只执行一个动作；真实工具返回不进入策略 token loss，只用于奖励。

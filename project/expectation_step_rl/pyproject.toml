@@ -16,6 +16,8 @@ dependencies = [
 [project.scripts]
 expectation-step-data = "expectation_step_rl.data.compiler:main"
 expectation-step-preflight = "expectation_step_rl.preflight:main"
+expectation-step-inference = "expectation_step_rl.evaluation.inference_cli:main"
+expectation-step-official-metrics = "expectation_step_rl.evaluation.official_metrics:main"
 
 [tool.uv.sources]
 tau2 = { path = "../..", editable = true }
