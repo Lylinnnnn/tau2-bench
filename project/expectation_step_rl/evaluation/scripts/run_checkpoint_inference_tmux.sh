@@ -229,7 +229,7 @@ if [[ "$STAGE_EVAL_INPUTS" == "1" ]]; then
     local_adapter_path="$stage_dir/adapters/${model_keys[$model_index]}"
     mkdir -p "$local_adapter_path"
     echo "Staging LoRA ${model_keys[$model_index]}: ${adapter_paths[$model_index]}"
-    "$RSYNC_BIN" -a --info=progress2 \
+    "$RSYNC_BIN" $RSYNC_ARGS \
       "${adapter_paths[$model_index]}/" "$local_adapter_path/"
     adapter_paths[$model_index]="$local_adapter_path"
   done
