@@ -210,7 +210,7 @@ if [[ "$STAGE_EVAL_INPUTS" == "1" ]]; then
       required_bytes=$((required_bytes + adapter_bytes))
     fi
   done
-  available_bytes="$(df -PB1 --output=avail "$LOCAL_STAGE_PARENT" | tail -n 1 | tr -d ' ')"
+  available_bytes="$(df -B1 "$LOCAL_STAGE_PARENT" | tail -n 1 | awk '{print $4}')"
   safety_bytes=$((5 * 1024 * 1024 * 1024))
   if ((available_bytes < required_bytes + safety_bytes)); then
     echo "Insufficient staging space under $LOCAL_STAGE_PARENT: required inputs plus 5 GiB safety margin" >&2
