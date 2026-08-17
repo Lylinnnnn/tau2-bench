@@ -1,0 +1,272 @@
+{
+  "status": "provisional_available_case",
+  "publication_ready": false,
+  "warning": "Infrastructure failures were excluded. These values are diagnostic and are not complete official benchmark results.",
+  "run_tag": "qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1",
+  "split": "test",
+  "models": [
+    "base",
+    "step_10",
+    "step_20",
+    "step_30",
+    "step_40"
+  ],
+  "domains": [
+    "airline",
+    "retail"
+  ],
+  "runs": {
+    "base": {
+      "airline": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 20,
+        "evaluated_task_count": 20,
+        "observed_simulation_count": 20,
+        "evaluated_simulation_count": 20,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.35,
+        "pass^1": 0.35,
+        "pass^k": {
+          "1": 0.35
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 20
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/base/airline/test/results.json"
+      },
+      "retail": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 40,
+        "evaluated_task_count": 40,
+        "observed_simulation_count": 40,
+        "evaluated_simulation_count": 40,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.475,
+        "pass^1": 0.475,
+        "pass^k": {
+          "1": 0.475
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 40
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/base/retail/test/results.json"
+      }
+    },
+    "step_10": {
+      "airline": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 20,
+        "evaluated_task_count": 20,
+        "observed_simulation_count": 20,
+        "evaluated_simulation_count": 20,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.3,
+        "pass^1": 0.3,
+        "pass^k": {
+          "1": 0.3
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 20
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/step_10/airline/test/results.json"
+      },
+      "retail": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 40,
+        "evaluated_task_count": 39,
+        "observed_simulation_count": 40,
+        "evaluated_simulation_count": 39,
+        "excluded_infrastructure_count": 1,
+        "excluded_simulation_ids": [
+          "89c9b9ff-ba6a-4e45-a0d6-b2dcc2d7fee0"
+        ],
+        "excluded_task_ids": [
+          "62"
+        ],
+        "average_reward": 0.28205128205128205,
+        "pass^1": 0.28205128205128205,
+        "pass^k": {
+          "1": 0.28205128205128205
+        },
+        "termination_reasons_before_exclusion": {
+          "infrastructure_error": 1,
+          "user_stop": 39
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/data/simulations/expectation_step_rl_eval_qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1_step_10_retail_test_t1_s300_shard_00_of_01/results.json"
+      }
+    },
+    "step_20": {
+      "airline": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 20,
+        "evaluated_task_count": 20,
+        "observed_simulation_count": 20,
+        "evaluated_simulation_count": 20,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.45,
+        "pass^1": 0.45,
+        "pass^k": {
+          "1": 0.45
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 20
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/step_20/airline/test/results.json"
+      },
+      "retail": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 40,
+        "evaluated_task_count": 40,
+        "observed_simulation_count": 40,
+        "evaluated_simulation_count": 40,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.425,
+        "pass^1": 0.425,
+        "pass^k": {
+          "1": 0.425
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 40
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/step_20/retail/test/results.json"
+      }
+    },
+    "step_30": {
+      "airline": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 20,
+        "evaluated_task_count": 20,
+        "observed_simulation_count": 20,
+        "evaluated_simulation_count": 20,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.35,
+        "pass^1": 0.35,
+        "pass^k": {
+          "1": 0.35
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 20
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/step_30/airline/test/results.json"
+      },
+      "retail": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 40,
+        "evaluated_task_count": 40,
+        "observed_simulation_count": 40,
+        "evaluated_simulation_count": 40,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.5,
+        "pass^1": 0.5,
+        "pass^k": {
+          "1": 0.5
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 40
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/step_30/retail/test/results.json"
+      }
+    },
+    "step_40": {
+      "airline": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 20,
+        "evaluated_task_count": 20,
+        "observed_simulation_count": 20,
+        "evaluated_simulation_count": 20,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.4,
+        "pass^1": 0.4,
+        "pass^k": {
+          "1": 0.4
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 20
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/step_40/airline/test/results.json"
+      },
+      "retail": {
+        "status": "provisional_available_case",
+        "publication_ready": false,
+        "implementation": "tau2.metrics.agent_metrics.compute_metrics",
+        "exclusion_rule": "termination_reason == infrastructure_error",
+        "configured_num_trials": 1,
+        "expected_task_count": 40,
+        "evaluated_task_count": 40,
+        "observed_simulation_count": 40,
+        "evaluated_simulation_count": 40,
+        "excluded_infrastructure_count": 0,
+        "excluded_simulation_ids": [],
+        "excluded_task_ids": [],
+        "average_reward": 0.275,
+        "pass^1": 0.275,
+        "pass^k": {
+          "1": 0.275
+        },
+        "termination_reasons_before_exclusion": {
+          "user_stop": 40
+        },
+        "results_path": "/home/liuyanlin.lyl/notebook/lyl/tau2-bench/project/expectation_step_rl/evaluation/outputs/qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1/trajectories/step_40/retail/test/results.json"
+      }
+    }
+  },
+  "domain_macro_average_pass^1": {
+    "base": 0.4125,
+    "step_10": 0.291025641025641,
+    "step_20": 0.4375,
+    "step_30": 0.425,
+    "step_40": 0.3375
+  }
+}
