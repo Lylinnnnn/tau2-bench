@@ -38,6 +38,27 @@ def test_discover_checkpoints_rejects_missing_requested_step(tmp_path: Path) -> 
         discover_checkpoints(checkpoint_root, selected_steps={20})
 
 
+def test_auto_discovery_skips_checkpoint_still_being_written(tmp_path: Path) -> None:
+    checkpoint_root = tmp_path / "checkpoints"
+    _write_adapter(checkpoint_root, 10)
+    incomplete = checkpoint_root / "global_step_20" / "actor" / "lora_adapter"
+    incomplete.mkdir(parents=True)
+
+    with pytest.warns(UserWarning, match="Skipping incomplete checkpoint"):
+        checkpoints = discover_checkpoints(checkpoint_root)
+
+    assert [checkpoint.step for checkpoint in checkpoints] == [10]
+
+
+def test_explicit_incomplete_checkpoint_is_an_error(tmp_path: Path) -> None:
+    checkpoint_root = tmp_path / "checkpoints"
+    incomplete = checkpoint_root / "global_step_20" / "actor" / "lora_adapter"
+    incomplete.mkdir(parents=True)
+
+    with pytest.raises(ValueError, match="Missing non-empty LoRA weights"):
+        discover_checkpoints(checkpoint_root, selected_steps={20})
+
+
 def test_parse_steps_requires_positive_integers() -> None:
     assert parse_steps("10, 30,10") == {10, 30}
     assert parse_steps("") is None

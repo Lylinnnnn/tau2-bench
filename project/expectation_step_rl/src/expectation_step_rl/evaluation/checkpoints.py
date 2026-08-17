@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -67,7 +68,17 @@ def discover_checkpoints(
         if selected_steps is not None and step not in selected_steps:
             continue
         adapter_path = step_dir / "actor" / "lora_adapter"
-        _validate_adapter(adapter_path)
+        try:
+            _validate_adapter(adapter_path)
+        except (OSError, ValueError) as exc:
+            if selected_steps is not None:
+                raise
+            warnings.warn(
+                f"Skipping incomplete checkpoint while auto-discovering: "
+                f"{step_dir} ({exc})",
+                stacklevel=2,
+            )
+            continue
         checkpoints.append(AdapterCheckpoint(step=step, path=adapter_path))
     checkpoints.sort(key=lambda checkpoint: checkpoint.step)
     discovered_steps = {checkpoint.step for checkpoint in checkpoints}

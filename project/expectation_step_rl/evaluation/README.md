@@ -67,7 +67,10 @@ smoke 的报告会标记 `full_split=false`，只能验证链路，不能作为�
 
 ## 批量评测 OSS 中全部 checkpoint
 
-`CHECKPOINT_STEPS` 留空时自动发现所有完整 step；默认同时运行基座对照：
+`CHECKPOINT_STEPS` 留空时，会在脚本启动时自动发现当时已经完整写入 OSS 的所有
+step；默认同时运行基座对照。训练恰好正在写入的半成品 step 会被跳过，不影响其他
+checkpoint。发现结果是一次启动快照，推理期间新保存的 step 要在下一次运行时评测。
+如果显式指定一个不存在或尚未写完的 step，脚本会直接报错。
 
 ```bash
 CHECKPOINT_ROOT=/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full \
