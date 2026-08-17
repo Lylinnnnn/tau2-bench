@@ -27,7 +27,7 @@ if [[ "${EXPECTATION_METRICS_IN_TMUX:-0}" != "1" ]]; then
   exit 0
 fi
 
-export PYTHONPATH="$PROJECT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$PROJECT_DIR/src:$REPO_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 "$UV_BIN" run --frozen python -m expectation_step_rl.evaluation.official_metrics \
   --evaluation-run-root "$RUN_ROOT" \
   --output "$RUN_ROOT/official_metrics.json"
