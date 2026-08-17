@@ -41,7 +41,15 @@ MAX_MODEL_LEN="${MAX_MODEL_LEN:-32768}"
 STAGE_EVAL_INPUTS="${STAGE_EVAL_INPUTS:-0}"
 LOCAL_STAGE_PARENT="${LOCAL_STAGE_PARENT:-/tmp}"
 ALLOW_NETWORK_STAGE="${ALLOW_NETWORK_STAGE:-0}"
-RSYNC_BIN="${RSYNC_BIN:-rsync}"
+RSYNC_BIN="${RSYNC_BIN:-}"
+# Fallback to cp if rsync is not available
+if [[ -z "$RSYNC_BIN" ]] || ! command -v "$RSYNC_BIN" &>/dev/null; then
+  echo "WARNING: rsync not found, falling back to cp -a for staging" >&2
+  RSYNC_BIN="cp"
+  RSYNC_ARGS="-a"
+else
+  RSYNC_ARGS="-a --info=progress2"
+fi
 
 mkdir -p "$RUN_ROOT/logs" "$RUN_ROOT/vllm_logs"
 
@@ -220,7 +228,7 @@ if [[ "$STAGE_EVAL_INPUTS" == "1" ]]; then
   local_model_path="$stage_dir/model/Qwen3-32B"
   mkdir -p "$local_model_path"
   echo "Staging base model once: $SOURCE_MODEL_PATH -> $local_model_path"
-  "$RSYNC_BIN" -a --info=progress2 "$SOURCE_MODEL_PATH/" "$local_model_path/"
+  "$RSYNC_BIN" $RSYNC_ARGS "$SOURCE_MODEL_PATH/" "$local_model_path/"
   MODEL_PATH="$local_model_path"
   for ((model_index = 0; model_index < MODEL_COUNT; model_index++)); do
     if [[ -z "${adapter_paths[$model_index]}" ]]; then
