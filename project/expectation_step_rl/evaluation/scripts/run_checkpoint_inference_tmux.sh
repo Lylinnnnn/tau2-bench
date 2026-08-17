@@ -121,7 +121,9 @@ for ((server = 0; server < ACTIVE_SERVER_COUNT; server++)); do
   port=$((BASE_PORT + server))
   internal_port=$((INTERNAL_BASE_PORT + server * INTERNAL_PORT_STRIDE))
   master_port=$((MASTER_BASE_PORT + server))
-  rpc_path="/tmp/expectation_step_rl_eval_${RUN_TAG}_${server}_${BASHPID}"
+  # Use md5sum to shorten the path and avoid ZMQ IPC path length limit (108 chars)
+  short_id=$(echo -n "${RUN_TAG}_${server}_${BASHPID}" | md5sum | cut -c1-16)
+  rpc_path="/tmp/esrl_eval_${short_id}"
   server_log="$RUN_ROOT/vllm_logs/gpu_${gpu}_port_${port}.log"
   server_loras=()
   for ((model_index = server; model_index < MODEL_COUNT; model_index += ACTIVE_SERVER_COUNT)); do
