@@ -98,6 +98,27 @@ tmux attach -t expectation-step-rl-metrics-qwen3_32b_full_eval_smoke
 
 smoke 的报告会标记 `full_split=false`，只能验证链路，不能作为论文结果。
 
+## 临时排除基础设施异常
+
+如果某条 simulation 因 API、服务或 User Simulator 异常被标记为
+`infrastructure_error`，严格官方汇总会拒绝不完整矩阵。需要先查看其余样本趋势时，
+可以运行独立的 available-case 汇总。它仍调用 τ²-Bench 的 `compute_metrics`，但明确
+报告每组指标的原始任务数、实际统计任务数和被排除的 task；不会修改原始轨迹、正式
+audit 或 `official_metrics.json`，产物不得作为完整官方结果。
+
+```bash
+RUN_TAG=qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1 \
+MODEL_KEYS=base,step_10,step_30 \
+DOMAINS=airline,retail \
+bash project/expectation_step_rl/evaluation/scripts/compute_available_case_metrics.sh
+
+tmux attach -t \
+  expectation-step-rl-available-case-qwen3_32b_full_ce56a20_allsteps_test_t1_s300_v1
+```
+
+结果写入该 run 下的 `provisional_available_case_metrics.json`。修复异常并补齐任务后，
+仍须运行 `compute_official_metrics.sh` 得到最终指标。
+
 ## 批量评测 OSS 中全部 checkpoint
 
 `CHECKPOINT_STEPS` 留空时，会在脚本启动时自动发现当时已经完整写入 OSS 的所有
