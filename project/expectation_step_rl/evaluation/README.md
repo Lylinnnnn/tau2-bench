@@ -130,6 +130,13 @@ bash project/expectation_step_rl/evaluation/scripts/compute_official_metrics.sh
 CHECKPOINT_STEPS=10,30,50 ...
 ```
 
+如果同一正式评测中只有部分 checkpoint 因基础设施错误失败，使用
+`EVALUATE_STEPS` 只补跑这些模型；`CHECKPOINT_STEPS` 仍表示 manifest 中冻结的完整
+checkpoint 集合，不能缩成失败子集。设置 `EVALUATE_BASELINE=0` 会保留原 baseline
+身份但不在补跑进程中启动它。补跑应使用独立 GPU、HTTP、内部通信和 master 端口，
+并设置 `WORKER_LOG_SUFFIX` 保留第一次失败日志。τ²-Bench 的 `auto_resume` 会删除已有
+`infrastructure_error` simulation，只重新执行失败或缺失任务，正常结果不会重跑。
+
 这里的 `test` 是项目用于训练/验证隔离的官方 Test 划分；τ²-Bench 默认对外汇报的
 `base` 包含 Train 与 Test。需要生成与默认 `tau2 run` 完全相同任务范围的结果时，新建
 不同的 `RUN_TAG` 并显式设置 `TASK_SPLIT=base`，不要覆盖 Test 结果：

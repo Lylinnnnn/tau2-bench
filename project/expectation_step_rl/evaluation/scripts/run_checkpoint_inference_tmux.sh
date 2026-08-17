@@ -10,6 +10,8 @@ TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 CHECKPOINT_ROOT="${CHECKPOINT_ROOT:-/data/oss_bucket_0/yanlin/tau2/expectation_step_rl/checkpoints/qwen3_32b_full_ce56a20}"
 SOURCE_CHECKPOINT_ROOT="$CHECKPOINT_ROOT"
 CHECKPOINT_STEPS="${CHECKPOINT_STEPS:-}"
+EVALUATE_STEPS="${EVALUATE_STEPS:-}"
+EVALUATE_BASELINE="${EVALUATE_BASELINE:-1}"
 TASK_SPLIT="${TASK_SPLIT:-test}"
 DOMAINS="${DOMAINS:-airline,retail}"
 NUM_TRIALS="${NUM_TRIALS:-1}"
@@ -42,6 +44,7 @@ STAGE_EVAL_INPUTS="${STAGE_EVAL_INPUTS:-0}"
 LOCAL_STAGE_PARENT="${LOCAL_STAGE_PARENT:-/tmp}"
 ALLOW_NETWORK_STAGE="${ALLOW_NETWORK_STAGE:-0}"
 RSYNC_BIN="${RSYNC_BIN:-}"
+WORKER_LOG_SUFFIX="${WORKER_LOG_SUFFIX:-}"
 # Fallback to cp if rsync is not available
 if [[ -z "$RSYNC_BIN" ]] || ! command -v "$RSYNC_BIN" &>/dev/null; then
   echo "WARNING: rsync not found, falling back to cp -a for staging" >&2
@@ -63,7 +66,7 @@ mkdir -p "$RUN_ROOT/logs" "$RUN_ROOT/vllm_logs"
 
 if [[ "${EXPECTATION_EVAL_IN_TMUX:-0}" != "1" ]]; then
   tmux new-session -d -s "$SESSION" \
-    "exec bash -c 'cd \"$REPO_ROOT\" && EXPECTATION_EVAL_IN_TMUX=1 CHECKPOINT_ROOT=\"$CHECKPOINT_ROOT\" CHECKPOINT_STEPS=\"$CHECKPOINT_STEPS\" TASK_SPLIT=\"$TASK_SPLIT\" DOMAINS=\"$DOMAINS\" NUM_TRIALS=\"$NUM_TRIALS\" SEED=\"$SEED\" MAX_TASKS_PER_DOMAIN=\"$MAX_TASKS_PER_DOMAIN\" INCLUDE_BASELINE=\"$INCLUDE_BASELINE\" RUN_TAG=\"$RUN_TAG\" EVALUATION_ROOT=\"$EVALUATION_ROOT\" BASELINE_ROOT=\"$BASELINE_ROOT\" MAX_EVAL_GPUS=\"$MAX_EVAL_GPUS\" FIRST_GPU=\"$FIRST_GPU\" BASE_PORT=\"$BASE_PORT\" INTERNAL_BASE_PORT=\"$INTERNAL_BASE_PORT\" INTERNAL_PORT_STRIDE=\"$INTERNAL_PORT_STRIDE\" MASTER_BASE_PORT=\"$MASTER_BASE_PORT\" SERVER_WAIT_SECONDS=\"$SERVER_WAIT_SECONDS\" MAX_CONCURRENCY=\"$MAX_CONCURRENCY\" MODEL_PATH=\"$MODEL_PATH\" BASE_MODEL_NAME=\"$BASE_MODEL_NAME\" VLLM_BIN=\"$VLLM_BIN\" UV_BIN=\"$UV_BIN\" GPU_MEMORY_UTILIZATION=\"$GPU_MEMORY_UTILIZATION\" MAX_MODEL_LEN=\"$MAX_MODEL_LEN\" STAGE_EVAL_INPUTS=\"$STAGE_EVAL_INPUTS\" LOCAL_STAGE_PARENT=\"$LOCAL_STAGE_PARENT\" ALLOW_NETWORK_STAGE=\"$ALLOW_NETWORK_STAGE\" RSYNC_BIN=\"$RSYNC_BIN\" bash \"$0\" > >(tee \"$LOG_PATH\") 2>&1; status=\$?; echo inference-exit-code=\$status | tee -a \"$LOG_PATH\"; exit \$status'"
+    "exec bash -c 'cd \"$REPO_ROOT\" && EXPECTATION_EVAL_IN_TMUX=1 CHECKPOINT_ROOT=\"$CHECKPOINT_ROOT\" CHECKPOINT_STEPS=\"$CHECKPOINT_STEPS\" EVALUATE_STEPS=\"$EVALUATE_STEPS\" EVALUATE_BASELINE=\"$EVALUATE_BASELINE\" TASK_SPLIT=\"$TASK_SPLIT\" DOMAINS=\"$DOMAINS\" NUM_TRIALS=\"$NUM_TRIALS\" SEED=\"$SEED\" MAX_TASKS_PER_DOMAIN=\"$MAX_TASKS_PER_DOMAIN\" INCLUDE_BASELINE=\"$INCLUDE_BASELINE\" RUN_TAG=\"$RUN_TAG\" EVALUATION_ROOT=\"$EVALUATION_ROOT\" BASELINE_ROOT=\"$BASELINE_ROOT\" MAX_EVAL_GPUS=\"$MAX_EVAL_GPUS\" FIRST_GPU=\"$FIRST_GPU\" BASE_PORT=\"$BASE_PORT\" INTERNAL_BASE_PORT=\"$INTERNAL_BASE_PORT\" INTERNAL_PORT_STRIDE=\"$INTERNAL_PORT_STRIDE\" MASTER_BASE_PORT=\"$MASTER_BASE_PORT\" SERVER_WAIT_SECONDS=\"$SERVER_WAIT_SECONDS\" MAX_CONCURRENCY=\"$MAX_CONCURRENCY\" MODEL_PATH=\"$MODEL_PATH\" BASE_MODEL_NAME=\"$BASE_MODEL_NAME\" VLLM_BIN=\"$VLLM_BIN\" UV_BIN=\"$UV_BIN\" GPU_MEMORY_UTILIZATION=\"$GPU_MEMORY_UTILIZATION\" MAX_MODEL_LEN=\"$MAX_MODEL_LEN\" STAGE_EVAL_INPUTS=\"$STAGE_EVAL_INPUTS\" LOCAL_STAGE_PARENT=\"$LOCAL_STAGE_PARENT\" ALLOW_NETWORK_STAGE=\"$ALLOW_NETWORK_STAGE\" RSYNC_BIN=\"$RSYNC_BIN\" WORKER_LOG_SUFFIX=\"$WORKER_LOG_SUFFIX\" bash \"$0\" > >(tee \"$LOG_PATH\") 2>&1; status=\$?; echo inference-exit-code=\$status | tee -a \"$LOG_PATH\"; exit \$status'"
   echo "Started tmux session: $SESSION"
   echo "Log: $LOG_PATH"
   echo "Evaluation output: $RUN_ROOT"
@@ -71,7 +74,10 @@ if [[ "${EXPECTATION_EVAL_IN_TMUX:-0}" != "1" ]]; then
   exit 0
 fi
 
-export PYTHONPATH="$PROJECT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
+# Keep both projects importable in every uv/Ray/subprocess worker.  The root
+# source tree is required for `import tau2`; the training project source tree
+# provides `expectation_step_rl` without installing either package globally.
+export PYTHONPATH="$PROJECT_DIR/src:$REPO_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 export OPENAI_API_KEY="${OPENAI_API_KEY:-EMPTY}"
 export PYTHONUNBUFFERED=1
 
@@ -94,6 +100,17 @@ mapfile -t checkpoint_rows < <("${list_args[@]}")
 if [[ "${#checkpoint_rows[@]}" -eq 0 ]]; then
   echo "No complete checkpoints discovered under $SOURCE_CHECKPOINT_ROOT" >&2
   exit 1
+fi
+if [[ -n "$EVALUATE_STEPS" ]]; then
+  targeted_list_args=(
+    "$UV_BIN" run --frozen python -m expectation_step_rl.evaluation.inference_cli
+    list-checkpoints --checkpoint-root "$SOURCE_CHECKPOINT_ROOT" --format tsv
+    --steps "$EVALUATE_STEPS"
+  )
+  mapfile -t evaluation_rows < <("${targeted_list_args[@]}")
+  echo "Targeted checkpoint rerun: $EVALUATE_STEPS"
+else
+  evaluation_rows=("${checkpoint_rows[@]}")
 fi
 discovered_steps=()
 for row in "${checkpoint_rows[@]}"; do
@@ -141,7 +158,7 @@ model_keys=()
 agent_models=()
 adapter_paths=()
 source_adapter_paths=()
-if [[ "$INCLUDE_BASELINE" == "1" && "$reuse_baseline" == "0" ]]; then
+if [[ "$INCLUDE_BASELINE" == "1" && "$EVALUATE_BASELINE" == "1" && "$reuse_baseline" == "0" ]]; then
   model_keys+=("base")
   agent_models+=("$BASE_MODEL_NAME")
   adapter_paths+=("")
@@ -150,6 +167,9 @@ fi
 for row in "${checkpoint_rows[@]}"; do
   IFS=$'\t' read -r step key served_name adapter_path <<<"$row"
   expected_model_keys+=("$key")
+done
+for row in "${evaluation_rows[@]}"; do
+  IFS=$'\t' read -r step key served_name adapter_path <<<"$row"
   model_keys+=("$key")
   agent_models+=("$served_name")
   adapter_paths+=("$adapter_path")
@@ -254,7 +274,7 @@ fi
 "$UV_BIN" run --frozen python -m expectation_step_rl.evaluation.tracking_cli \
   set-status --run-root "$RUN_ROOT" --status inference_running >/dev/null
 
-if [[ "$reuse_baseline" == "1" ]]; then
+if [[ "$EVALUATE_BASELINE" == "1" && "$reuse_baseline" == "1" ]]; then
   for domain in "${domain_list[@]}"; do
     "$UV_BIN" run --frozen python -m expectation_step_rl.evaluation.tracking_cli \
       materialize-baseline \
@@ -359,7 +379,7 @@ for ((server = 0; server < ACTIVE_SERVER_COUNT; server++)); do
       port=$((BASE_PORT + server))
       base_url="http://127.0.0.1:${port}/v1"
       for domain in "${domain_list[@]}"; do
-        worker_log="$RUN_ROOT/logs/${model_key}_${domain}.log"
+        worker_log="$RUN_ROOT/logs/${model_key}_${domain}${WORKER_LOG_SUFFIX}.log"
         {
           export TAU2_NL_ASSERTIONS_LLM="openai/$BASE_MODEL_NAME"
           export TAU2_NL_ASSERTIONS_LLM_ARGS="{\"temperature\":0,\"max_tokens\":1024,\"api_base\":\"$base_url\",\"api_key\":\"EMPTY\",\"timeout\":180,\"num_retries\":0,\"extra_body\":{\"chat_template_kwargs\":{\"enable_thinking\":false}}}"
@@ -420,7 +440,7 @@ if [[ "$failed" != "0" ]]; then
   exit 1
 fi
 
-if [[ "$INCLUDE_BASELINE" == "1" && "$reuse_baseline" == "0" ]]; then
+if [[ "$INCLUDE_BASELINE" == "1" && "$EVALUATE_BASELINE" == "1" && "$reuse_baseline" == "0" ]]; then
   for domain in "${domain_list[@]}"; do
     "$UV_BIN" run --frozen python -m expectation_step_rl.evaluation.tracking_cli \
       publish-baseline \
@@ -430,8 +450,12 @@ if [[ "$INCLUDE_BASELINE" == "1" && "$reuse_baseline" == "0" ]]; then
   done
 fi
 
+completion_status="inference_complete"
+if [[ -n "$EVALUATE_STEPS" || "$EVALUATE_BASELINE" != "1" ]]; then
+  completion_status="targeted_rerun_complete"
+fi
 "$UV_BIN" run --frozen python -m expectation_step_rl.evaluation.tracking_cli \
-  set-status --run-root "$RUN_ROOT" --status inference_complete >/dev/null
+  set-status --run-root "$RUN_ROOT" --status "$completion_status" >/dev/null
 
 echo "Inference completed: $RUN_ROOT"
 echo "Experiment registry: $EVALUATION_ROOT/experiment_registry.json"
