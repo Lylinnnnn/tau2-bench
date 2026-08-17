@@ -41,7 +41,8 @@ expectation_step_rl/
 ├── src/expectation_step_rl/
 │   ├── data/                # 离线轨迹 -> 单步状态
 │   ├── evaluation/          # checkpoint 发现、完整性审计、官方指标汇总
-│   ├── expectation/         # 匿名化、概率测量、Train 校准奖励
+│   ├── expectation/         # 匿名化、概率测量、Train 校准
+│   ├── reward/              # 独立奖励提供者、融合规则与最终奖励管线
 │   ├── tau2_adapter/        # 官方状态恢复和单工具执行
 │   └── verl_adapter/        # 自定义 verl AgentLoop
 ├── tests/
@@ -49,6 +50,11 @@ expectation_step_rl/
 ```
 
 `verl` 固定在提交 `bec9ef74768dd201881cd4e54cd0385e87caae27`（release `v0.7.1`）。训练环境固定使用 vLLM 0.11.0、PyTorch 2.8.0、Transformers 4.57.1、FlashAttention 2.8.1、FlashInfer 0.3.1 和 SwanLab 0.9.1。冻结打分服务继续使用已经跑通 prompt logprob 的独立 vLLM 0.25.1 环境；两者不共享 Python 包。
+
+奖励实现不再位于 `AgentLoop`。当前默认管线只有
+`ExpectationDeviationRewardProvider`，融合器的权重为 1，因此数值与重构前完全一致。每个提供者返回自己的原始标量和诊断，`RewardComposer` 再生成 GRPO 最终需要的一个标量。现有融合器支持显式加权和硬门控；以后增加完整任务官方奖励时，应新增独立 provider，再选择融合器，不能把评测代码复制进训练循环。
+
+需要注意，τ²-Bench 官方奖励只能在候选策略继续完成整个任务后计算。离线原轨迹的最终成功分对同一决策状态下的所有候选都相同，把它逐项相加不会提供候选间的区分，并会在 GRPO 的组内标准化中消失。因此当前重构只建立接口，不把局部状态变化或参考动作匹配伪装成官方奖励。
 
 LoRA rollout 按该版本官方要求使用 `vLLM + safetensors load_format`，并开启逐层权重同步以控制峰值显存。项目没有修改 `verl` 的参数更新算法；自定义部分仅是单步环境和奖励来源。
 

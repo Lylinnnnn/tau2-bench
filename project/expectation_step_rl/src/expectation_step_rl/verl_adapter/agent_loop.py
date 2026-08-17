@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -17,9 +18,16 @@ from verl.experimental.agent_loop.tool_parser import ToolParser
 from verl.utils.profiler import simple_timer
 from verl.workers.rollout.replica import TokenOutput
 
-from expectation_step_rl.expectation.calibration import RewardResult, TrainCalibration
-from expectation_step_rl.expectation.scoring import VLLMExpectationScorer
-from expectation_step_rl.expectation.structure import result_structure_key
+from expectation_step_rl.reward.composer import WeightedSumRewardComposer
+from expectation_step_rl.reward.expectation import (
+    ExpectationDeviationRewardProvider,
+)
+from expectation_step_rl.reward.interface import (
+    CandidateAction,
+    CandidateTransition,
+    RewardDecision,
+)
+from expectation_step_rl.reward.pipeline import RewardPipeline
 from expectation_step_rl.tau2_adapter.execution import execute_one_tool_call
 from expectation_step_rl.verl_adapter.reward_fields import build_agent_extra_fields
 
@@ -40,57 +48,31 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
         invalid_action_penalty: float = -5.0,
         tool_error_penalty: float = -4.0,
         unsupported_tool_penalty: float = -3.0,
+        expectation_reward_weight: float = 1.0,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.response_length = self.rollout_config.response_length
         self.tool_parser = ToolParser.get_tool_parser("hermes", self.tokenizer)
-        self.scorer = VLLMExpectationScorer(
-            base_urls=[value.strip() for value in scorer_base_urls.split(",")],
-            api_key=scorer_api_key,
-            model=scorer_model,
+        expectation_provider = ExpectationDeviationRewardProvider(
+            scorer_base_urls=[value.strip() for value in scorer_base_urls.split(",")],
+            scorer_api_key=scorer_api_key,
+            scorer_model=scorer_model,
+            calibration_path=Path(calibration_path),
+            scorer_timeout_seconds=float(scorer_timeout_seconds),
             min_k_fraction=min_k_fraction,
-            timeout_seconds=float(scorer_timeout_seconds),
-        )
-        self.calibration = TrainCalibration.load(
-            Path(calibration_path),
-            clip=reward_clip,
+            reward_clip=reward_clip,
             invalid_action_penalty=invalid_action_penalty,
             tool_error_penalty=tool_error_penalty,
             unsupported_tool_penalty=unsupported_tool_penalty,
         )
-
-    @staticmethod
-    def _action_message(call_id: str, name: str, arguments: str) -> dict[str, Any]:
-        return {
-            "role": "assistant",
-            "content": None,
-            "tool_calls": [
-                {
-                    "id": call_id,
-                    "name": name,
-                    "type": "function",
-                    "function": {"name": name, "arguments": arguments},
-                }
-            ],
-        }
-
-    @staticmethod
-    def _invalid_extra(outcome: str) -> dict[str, Any]:
-        return {
-            "expectation_outcome": outcome,
-            "tool_name": None,
-            "tool_error": None,
-            "tool_result": None,
-            "contextual_min_k_deviation": None,
-            "calibrated_z": None,
-            "calibration_key": None,
-            "calibration_count": None,
-            "calibration_level": None,
-            "suffix_token_count": None,
-            "min_k_token_count": None,
-            "scorer_base_url": None,
-        }
+        self.reward_pipeline = RewardPipeline(
+            [expectation_provider],
+            WeightedSumRewardComposer(
+                {expectation_provider.name: expectation_reward_weight},
+                mode="expectation_only",
+            ),
+        )
 
     async def run(self, sampling_params: dict[str, Any], **kwargs) -> AgentLoopOutput:
         raw_prompt = list(kwargs["raw_prompt"])
@@ -112,119 +94,68 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
         )
         _, calls = await self.tool_parser.extract_tool_calls(response_ids)
 
+        transition = CandidateTransition(
+            domain=str(kwargs["domain"]),
+            task_id=str(kwargs["task_id"]),
+            raw_prompt=raw_prompt,
+            tools=tools,
+            replay_prefix_json=str(kwargs["replay_prefix_json"]),
+        )
         if len(calls) != 1:
-            reward = self.calibration.score(
-                domain=str(kwargs["domain"]),
-                tool_name=None,
-                raw_score=None,
-                action_valid=False,
-            )
-            extra = self._invalid_extra(
-                "no_tool_call" if not calls else "multiple_tool_calls"
+            transition = replace(
+                transition,
+                invalid_reason=("no_tool_call" if not calls else "multiple_tool_calls"),
             )
         else:
             call = calls[0]
             try:
                 arguments = json.loads(call.arguments)
             except json.JSONDecodeError:
-                reward = self.calibration.score(
-                    domain=str(kwargs["domain"]),
-                    tool_name=None,
-                    raw_score=None,
-                    action_valid=False,
+                transition = replace(
+                    transition,
+                    invalid_reason="invalid_tool_arguments_json",
                 )
-                extra = self._invalid_extra("invalid_tool_arguments_json")
             else:
                 if not isinstance(arguments, dict):
-                    reward = self.calibration.score(
-                        domain=str(kwargs["domain"]),
-                        tool_name=None,
-                        raw_score=None,
-                        action_valid=False,
+                    transition = replace(
+                        transition,
+                        invalid_reason="tool_arguments_are_not_an_object",
                     )
-                    extra = self._invalid_extra("tool_arguments_are_not_an_object")
-                    return self._output(
-                        prompt_ids=prompt_ids,
-                        response_ids=response_ids,
-                        response_logprobs=response_logprobs,
-                        metrics=metrics,
-                        reward=reward,
-                        extra=extra,
+                else:
+                    call_id = f"chatcmpl-tool-{uuid4().hex}"
+                    execution = await asyncio.to_thread(
+                        execute_one_tool_call,
+                        domain=transition.domain,
+                        task_id=transition.task_id,
+                        replay_prefix_json=transition.replay_prefix_json,
+                        tool_name=call.name,
+                        arguments=arguments,
+                        call_id=call_id,
                     )
-                call_id = f"chatcmpl-tool-{uuid4().hex}"
-                execution = await asyncio.to_thread(
-                    execute_one_tool_call,
-                    domain=str(kwargs["domain"]),
-                    task_id=str(kwargs["task_id"]),
-                    replay_prefix_json=str(kwargs["replay_prefix_json"]),
-                    tool_name=call.name,
-                    arguments=arguments,
-                    call_id=call_id,
-                )
-                measurement = None
-                structure_key = result_structure_key(execution.content)
-                if not execution.error and self.calibration.supports(
-                    str(kwargs["domain"]), call.name
-                ):
-                    action_message = self._action_message(
-                        call_id, call.name, call.arguments
+                    transition = CandidateTransition(
+                        domain=transition.domain,
+                        task_id=transition.task_id,
+                        raw_prompt=transition.raw_prompt,
+                        tools=transition.tools,
+                        replay_prefix_json=transition.replay_prefix_json,
+                        action=CandidateAction(
+                            call_id=call_id,
+                            name=call.name,
+                            arguments=arguments,
+                            arguments_json=call.arguments,
+                        ),
+                        tool_result=execution.content,
+                        tool_error=execution.error,
                     )
-                    result_message = {
-                        "role": "tool",
-                        "tool_call_id": call_id,
-                        "content": execution.content,
-                    }
-                    measurement = await asyncio.to_thread(
-                        self.scorer.measure,
-                        raw_prompt=raw_prompt,
-                        action_message=action_message,
-                        result_message=result_message,
-                        tools=tools,
-                        routing_key=call_id,
-                    )
-                reward = self.calibration.score(
-                    domain=str(kwargs["domain"]),
-                    tool_name=call.name,
-                    raw_score=(
-                        measurement.contextual_min_k_deviation
-                        if measurement is not None
-                        else None
-                    ),
-                    structure_key=structure_key,
-                    tool_error=execution.error,
-                )
-                extra = {
-                    "expectation_outcome": reward.outcome,
-                    "tool_name": call.name,
-                    "tool_error": execution.error,
-                    "tool_result": execution.content,
-                    "contextual_min_k_deviation": reward.raw_score,
-                    "calibrated_z": reward.z_score,
-                    "calibration_key": reward.calibration_key,
-                    "calibration_count": reward.calibration_count,
-                    "calibration_level": reward.calibration_level,
-                    "suffix_token_count": (
-                        measurement.suffix_token_count
-                        if measurement is not None
-                        else None
-                    ),
-                    "min_k_token_count": (
-                        measurement.min_k_token_count
-                        if measurement is not None
-                        else None
-                    ),
-                    "scorer_base_url": (
-                        measurement.scorer_base_url if measurement is not None else None
-                    ),
-                }
+
+        decision = await self.reward_pipeline.evaluate(transition)
 
         return self._output(
             prompt_ids=prompt_ids,
             response_ids=response_ids,
             response_logprobs=response_logprobs,
             metrics=metrics,
-            reward=reward,
-            extra=extra,
+            decision=decision,
         )
 
     @staticmethod
@@ -234,16 +165,15 @@ class Tau2ExpectationStepAgentLoop(AgentLoopBase):
         response_ids: list[int],
         response_logprobs: list[float] | None,
         metrics: dict[str, float | int],
-        reward: RewardResult,
-        extra: dict[str, Any],
+        decision: RewardDecision,
     ) -> AgentLoopOutput:
         return AgentLoopOutput(
             prompt_ids=prompt_ids,
             response_ids=response_ids,
             response_mask=[1] * len(response_ids),
             response_logprobs=response_logprobs,
-            reward_score=reward.reward,
+            reward_score=decision.reward,
             num_turns=2,
             metrics=AgentLoopMetrics.model_validate(metrics),
-            extra_fields=build_agent_extra_fields(extra, reward),
+            extra_fields=build_agent_extra_fields(decision),
         )

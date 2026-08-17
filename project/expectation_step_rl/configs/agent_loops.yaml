@@ -10,3 +10,4 @@
   invalid_action_penalty: -5.0
   tool_error_penalty: -4.0
   unsupported_tool_penalty: -3.0
+  expectation_reward_weight: 1.0

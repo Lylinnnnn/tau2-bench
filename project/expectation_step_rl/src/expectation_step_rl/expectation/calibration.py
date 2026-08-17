@@ -15,8 +15,8 @@ PRIMARY_SCORE = "contextual_min_k_deviation"
 
 
 @dataclass(frozen=True)
-class RewardResult:
-    """One calibrated reward and the statistics used to obtain it."""
+class CalibrationResult:
+    """One calibrated expectation score and its source statistics."""
 
     reward: float
     raw_score: float | None
@@ -68,11 +68,11 @@ class TrainCalibration:
         structure_key: str | None = None,
         action_valid: bool = True,
         tool_error: bool = False,
-    ) -> RewardResult:
+    ) -> CalibrationResult:
         """Map contextual deviation to reward; larger deviation is worse."""
 
         if not action_valid or tool_name is None:
-            return RewardResult(
+            return CalibrationResult(
                 self.invalid_action_penalty,
                 raw_score,
                 None,
@@ -82,7 +82,7 @@ class TrainCalibration:
                 "invalid_action",
             )
         if tool_error:
-            return RewardResult(
+            return CalibrationResult(
                 self.tool_error_penalty,
                 raw_score,
                 None,
@@ -108,7 +108,7 @@ class TrainCalibration:
                 else:
                     group = self.domain_fallbacks.get(domain)
                     if group is None:
-                        return RewardResult(
+                        return CalibrationResult(
                             self.unsupported_tool_penalty,
                             raw_score,
                             None,
@@ -126,7 +126,7 @@ class TrainCalibration:
         statistics = group["statistics"][PRIMARY_SCORE]
         z_score = (raw_score - statistics["mean"]) / statistics["std"]
         clipped = max(-self.clip, min(self.clip, z_score))
-        return RewardResult(
+        return CalibrationResult(
             reward=-float(clipped),
             raw_score=float(raw_score),
             z_score=float(z_score),
