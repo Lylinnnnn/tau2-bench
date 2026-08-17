@@ -46,10 +46,16 @@ RSYNC_BIN="${RSYNC_BIN:-}"
 if [[ -z "$RSYNC_BIN" ]] || ! command -v "$RSYNC_BIN" &>/dev/null; then
   echo "WARNING: rsync not found, falling back to cp -a for staging" >&2
   RSYNC_BIN="cp"
-  RSYNC_ARGS="-a"
-else
-  RSYNC_ARGS="-a --info=progress2"
 fi
+
+# Function to copy files with appropriate arguments based on the command
+stage_copy() {
+  if [[ "$RSYNC_BIN" == "cp" ]]; then
+    cp -a "$@"
+  else
+    "$RSYNC_BIN" -a --info=progress2 "$@"
+  fi
+}
 
 mkdir -p "$RUN_ROOT/logs" "$RUN_ROOT/vllm_logs"
 
@@ -228,7 +234,7 @@ if [[ "$STAGE_EVAL_INPUTS" == "1" ]]; then
   local_model_path="$stage_dir/model/Qwen3-32B"
   mkdir -p "$local_model_path"
   echo "Staging base model once: $SOURCE_MODEL_PATH -> $local_model_path"
-  "$RSYNC_BIN" $RSYNC_ARGS "$SOURCE_MODEL_PATH/" "$local_model_path/"
+  stage_copy "$SOURCE_MODEL_PATH/" "$local_model_path/"
   MODEL_PATH="$local_model_path"
   for ((model_index = 0; model_index < MODEL_COUNT; model_index++)); do
     if [[ -z "${adapter_paths[$model_index]}" ]]; then
